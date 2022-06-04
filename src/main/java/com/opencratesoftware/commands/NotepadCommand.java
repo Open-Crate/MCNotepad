@@ -28,6 +28,16 @@ public class NotepadCommand implements CommandExecutor
         return "";
     }
 
+    private File getNoteFile(CommandSender sender, String noteName)
+    {
+        if(noteName.contains(":"))
+        {
+            String NoteOwnerName = noteName.substring(0, noteName.indexOf(":"));
+            return new File(getNotesDir() + NoteOwnerName, noteName.substring( Math.min (noteName.indexOf(":") + 1, noteName.length() - 1)) + getNoteExt());
+        }
+        return new File(getNotesDir() + sender.getName(), noteName + getNoteExt());
+    }
+
     private void viewAction(CommandSender sender, String[] args)
     {
         if(args.length < 2)
@@ -36,11 +46,9 @@ public class NotepadCommand implements CommandExecutor
             return;
         }
         
-        String NoteOwner = sender.getName();
-
         Player player = (Player) sender;
 
-        File file = new File(getNotesDir() + NoteOwner + "/" + args[1]);
+        File file = getNoteFile(sender, args[1]);
 
         if (!file.exists())
         {
@@ -122,7 +130,7 @@ public class NotepadCommand implements CommandExecutor
             return;
         }
        
-        File file = new File(getNotesDir() + sender.getName(), args[1] + getNoteExt());
+        File file = ;
         
         if (file.exists())
         {
@@ -143,7 +151,7 @@ public class NotepadCommand implements CommandExecutor
                         type = "list";
                     }
                 }
-                
+
                 BufferedWriter fileOut = new BufferedWriter(new FileWriter(file));
                 fileOut.write(type);
                 fileOut.close();
@@ -235,6 +243,9 @@ public class NotepadCommand implements CommandExecutor
             case "add":
                 addAction(sender, args);
                 break;
+            
+            case "delete":
+            break;
 
             default:
                 sender.sendMessage(ChatColor.RED + "Unknown action.");
