@@ -1,0 +1,8 @@
+name: Notepad
+version: 0.1
+main: com.opencratesoftware.notepad.Notepad
+api-version: 1.14
+commands:
+  notepad:
+    description:
+    usage:
