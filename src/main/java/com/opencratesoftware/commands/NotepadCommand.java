@@ -1,5 +1,6 @@
 package com.opencratesoftware.commands;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
@@ -132,6 +133,7 @@ public class NotepadCommand implements CommandExecutor
             String type = "note";
             try 
             {
+                file.getParentFile().mkdirs();
                 file.createNewFile();
                 if (args.length > 2)
                 {
@@ -140,11 +142,13 @@ public class NotepadCommand implements CommandExecutor
                     {
                         type = "list";
                     }
-                        BufferedWriter fileOut = new BufferedWriter(new FileWriter(file));
-                        fileOut.write(type);
-                        fileOut.close();
-                    
                 }
+                
+                BufferedWriter fileOut = new BufferedWriter(new FileWriter(file));
+                fileOut.write(type);
+                fileOut.close();
+                    
+                
                 sender.sendMessage(ChatColor.GREEN + "Successfully created new " + type + ".");
             } 
             catch (Exception e) 
@@ -183,20 +187,18 @@ public class NotepadCommand implements CommandExecutor
             }
             try 
             {
-                BufferedWriter fileOut = new BufferedWriter(new FileWriter(file));
-                FileReader fileReader = new FileReader(file);
-                Scanner in = new Scanner(fileReader);
+ 
+                BufferedReader fileIn = new BufferedReader(new FileReader(file));
                 String fileContent = "";
-                while (in.hasNext())
+                String fileCurrentLine;
+                while ((fileCurrentLine = fileIn.readLine()) != null)
                 {
-                    fileContent += in.nextLine();
-                    sender.sendMessage(ChatColor.GREEN + fileContent);
-                    sender.sendMessage(ChatColor.GREEN + "a");
+                    fileContent += fileCurrentLine + "\n";
                 }
-                in.close();
-                fileReader.close();
+                fileIn.close();
 
-                fileOut.write(fileContent + "\n" + noteText);
+                BufferedWriter fileOut = new BufferedWriter(new FileWriter(file));
+                fileOut.write(fileContent + noteText);
                 fileOut.close();  
                 
                 sender.sendMessage(ChatColor.GREEN + "Successfully added '" + noteText + "' to note '" + args[1] + "'.");
