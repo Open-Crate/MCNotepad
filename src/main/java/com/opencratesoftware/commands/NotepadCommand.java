@@ -9,7 +9,6 @@ import java.util.Scanner;
 import java.util.UUID;
 import java.util.logging.Level;
 
-import javax.print.attribute.standard.Severity;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -38,6 +37,11 @@ public class NotepadCommand implements CommandExecutor
 
     private boolean playerTrustsPlayer(UUID trusteeUUID, UUID trusterUUID)
     {
+        if (trusteeUUID.equals(trusterUUID)) // immediately check if both UUIDs are the same, if they are then I sure would hope the user trusts themselves with their own notes
+        {
+            return true;
+        }
+
         File file = getUserTrustFile(trusterUUID);
         if (file.exists())
         {
@@ -64,6 +68,7 @@ public class NotepadCommand implements CommandExecutor
                 
             }
         }
+
         return false;
     }
 
@@ -155,7 +160,7 @@ public class NotepadCommand implements CommandExecutor
             }
 
             int currentLineNumber = 0;
-            player.sendMessage("----------------------------------------");
+            //player.sendMessage("----------------------------------------");
             while (in.hasNext()) 
             {
                 String currentLine = new String();
@@ -171,7 +176,7 @@ public class NotepadCommand implements CommandExecutor
                 contents += "\n" + currentLine;
 
                 player.sendMessage(currentLine);
-                player.sendMessage("----------------------------------------");
+                //player.sendMessage("----------------------------------------");
                 currentLineNumber++;
             }
 
@@ -257,44 +262,44 @@ public class NotepadCommand implements CommandExecutor
 
         if (!file.exists())
         {
-            sender.sendMessage(ChatColor.RED + "Failed to find file");
+            sender.sendMessage(ChatColor.RED + "Failed to find file.");
             return;
         }
-        else
+
+        String noteText = "";
+
+        for (int i = 2; i < args.length; i++) 
         {
-            String noteText = "";
-
-            for (int i = 2; i < args.length; i++) 
+            noteText += args[i];
+            if (i < args.length - 1)
             {
-                noteText += args[i];
-                if (i < args.length - 1)
-                {
-                    noteText += " ";
-                }
-            }
-            try 
-            {
- 
-                BufferedReader fileIn = new BufferedReader(new FileReader(file));
-                String fileContent = "";
-                String fileCurrentLine;
-                while ((fileCurrentLine = fileIn.readLine()) != null)
-                {
-                    fileContent += fileCurrentLine + "\n";
-                }
-                fileIn.close();
-
-                BufferedWriter fileOut = new BufferedWriter(new FileWriter(file));
-                fileOut.write(fileContent + noteText);
-                fileOut.close();  
-                
-                sender.sendMessage(ChatColor.GREEN + "Successfully added '" + noteText + "' to note '" + args[1] + "'.");
-            } 
-            catch (Exception e) 
-            {
-                sender.sendMessage(ChatColor.RED + "Unknown Error: Failed to write to file.");
+                noteText += " ";
             }
         }
+        try 
+        {
+ 
+            BufferedReader fileIn = new BufferedReader(new FileReader(file));
+            String fileContent = "";
+            String fileCurrentLine;
+            while ((fileCurrentLine = fileIn.readLine()) != null)
+            {
+                fileContent += fileCurrentLine + "\n";
+            }
+            fileIn.close();
+
+            BufferedWriter fileOut = new BufferedWriter(new FileWriter(file));
+            fileOut.write(fileContent + noteText);
+            fileOut.close();  
+                
+            sender.sendMessage(ChatColor.GREEN + "Successfully added '" + noteText + "' to note '" + args[1] + "'.");
+        } 
+        catch (Exception e) 
+        {
+            sender.sendMessage(ChatColor.RED + "Unknown Error: Failed to write to file.");
+            Bukkit.getLogger().log(Level.SEVERE, e.getMessage());
+        }
+        
     }
 
     private void deleteFileAction(CommandSender sender, String[] args)
@@ -474,6 +479,65 @@ public class NotepadCommand implements CommandExecutor
         sender.sendMessage("Actions: new, list, view, add, delete, trust, untrust, listtrusted, cleartrusted, help");
     }
 
+    private void removeLineAction(CommandSender sender, String[] args)
+    {
+        if ((args.length < 3) || (args[1].equalsIgnoreCase("help")))
+        {
+            sender.sendMessage(ChatColor.RED + "Usage: /notepad removeline <note name> <line number>");
+            sender.sendMessage(ChatColor.YELLOW + "Tip: Use '/notepad view <note name> true' to see line numbers on non-list files.");
+            return;
+        }
+        
+        File file = getNoteFile(sender, args[1]);
+
+        if (!file.exists())
+        {
+            sender.sendMessage(ChatColor.RED + "Could not find file.");
+            return;
+        }
+
+        try 
+        {
+            String removedLine = null;
+            BufferedReader fileIn = new BufferedReader(new FileReader(file));
+            String fileContent = "";
+            String fileCurrentLine;
+            int fileCurrentLineIndex = 0;
+            while ((fileCurrentLine = fileIn.readLine()) != null)
+            {
+                if (fileCurrentLineIndex == Integer.parseInt(args[2]) + 1) // add 1 because the first line is always the note type
+                {
+                    removedLine = fileCurrentLine;
+                }
+                else
+                {
+                    fileContent += fileCurrentLine + "\n";
+                }
+                fileCurrentLineIndex ++;
+            }
+            fileIn.close();
+
+            BufferedWriter fileOut = new BufferedWriter(new FileWriter(file));
+            fileOut.write(fileContent);
+            fileOut.close();  
+            if (removedLine == null)
+            {
+                sender.sendMessage(ChatColor.RED + "Did not remove line.");
+            }
+            else
+            {
+                sender.sendMessage(ChatColor.GREEN + "Successfully removed line '" + removedLine + "' from note '" + args[1] + "'.");
+            }
+
+        } 
+        catch (Exception e) 
+        {
+            sender.sendMessage(ChatColor.RED + "Unknown Error: Failed to write to file.");
+            Bukkit.getLogger().log(Level.SEVERE, e.getMessage());
+        }
+
+    }
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
     {
@@ -523,6 +587,11 @@ public class NotepadCommand implements CommandExecutor
 
             case "help":
                 outputHelp(sender, args);
+                break;
+
+            
+            case "removeline":
+                removeLineAction(sender, args);
                 break;
 
             default:
