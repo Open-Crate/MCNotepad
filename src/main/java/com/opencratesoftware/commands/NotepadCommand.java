@@ -593,7 +593,7 @@ public class NotepadCommand implements CommandExecutor
             fileOut.close();  
             if (!didAddLine)
             {
-                sender.sendMessage(ChatColor.RED + "Did not remove line.");
+                sender.sendMessage(ChatColor.RED + "Did not add line.");
             }
             else
             {
