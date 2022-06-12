@@ -550,7 +550,7 @@ public class NotepadCommand implements CommandExecutor
 
     private void outputHelp(CommandSender sender, String[] args)
     {
-        sender.sendMessage("Actions: new, delete, list, view, add, removeline, insert, trust, untrust, listtrusted, cleartrusted, help");
+        sender.sendMessage("Actions: new, delete, list, view, add, removeline, insert, trust, untrust, listtrusted, cleartrusted, help, listalts, addalt, removealt");
     }
 
     private void removeLineAction(CommandSender sender, String[] args)
