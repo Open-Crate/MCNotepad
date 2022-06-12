@@ -20,6 +20,16 @@ import net.md_5.bungee.api.ChatColor;
 
 public class NotepadCommand implements CommandExecutor
 {
+    private File getAltListsDir()
+    {
+        File file = new File(getDataDir() + "/altlists/");
+        if (!file.exists())
+        {
+            file.mkdirs();
+        }
+        return file;
+    }
+
     private File getTrustListsDir()
     {
         File file = new File(getDataDir() + "/trustlists/");
@@ -33,6 +43,11 @@ public class NotepadCommand implements CommandExecutor
     private File getUserTrustFile(UUID userUUID)
     {
         return new File(getTrustListsDir().toString() + "/" + userUUID.toString());
+    }
+
+    private File getUserAltFile(UUID userUUID)
+    {
+        return new File(getAltListsDir().toString() + "/" + userUUID.toString());
     }
 
     private boolean playerTrustsPlayer(UUID trusteeUUID, UUID trusterUUID)
@@ -106,14 +121,70 @@ public class NotepadCommand implements CommandExecutor
         if(noteName.contains(":"))
         {
             String NoteOwnerName = noteName.substring(0, noteName.indexOf(":"));
-            if (playerTrustsPlayer(getNameUUID(sender.getName()), getNameUUID(NoteOwnerName)))
+            if(NoteOwnerName.length() < 28)
             {
-                return new File(getNotesDir() + getNameUUID(NoteOwnerName), noteName.substring( Math.min (noteName.indexOf(":") + 1, noteName.length() - 1)) + getNoteExt());
+                if (playerTrustsPlayer(getNameUUID(sender.getName()), getNameUUID(NoteOwnerName)))
+                {
+                    return new File(getNotesDir() + getNameUUID(NoteOwnerName), noteName.substring( Math.min (noteName.indexOf(":") + 1, noteName.length() - 1)) + getNoteExt());
+                }
             }
+            else
+            {
+                if (playerTrustsPlayer(getNameUUID(sender.getName()), UUID.fromString(NoteOwnerName)))
+                {
+                    return new File(getNotesDir() + NoteOwnerName, noteName.substring( Math.min (noteName.indexOf(":") + 1, noteName.length() - 1)) + getNoteExt());
+                }
+            }
+        
             return new File("getNotesDir()" + "ThisDirectoryProbablyDoesntExist/justlikethisdoesntprobably/alsothis/con/thisshouldbesafe.txt/incaseitisnt.exe/anddoublyso.app/andfinally.sh/done.finished//\\");
             // return something that probably doesn't exist
+            // random comment: it says "getNotesDir()" rather than getNotesDir() so it doesn't even actually look in the notes directory, wonderful.
         }
-        return new File(getNotesDir() + getNameUUID(sender.getName()), noteName + getNoteExt());
+
+        File file = new File(getNotesDir() + getNameUUID(sender.getName()), noteName + getNoteExt());
+        
+        if (!file.exists())
+        {
+            File altListFile = new File(getAltListsDir() + "/" + getSenderUUID(sender).toString());
+            if (!altListFile.exists())
+            {
+                return file;
+            }
+
+            try
+            {
+                BufferedReader fileIn = new BufferedReader(new FileReader(altListFile));
+                String fileCurrentLine;
+                boolean foundFile = false;
+                if ((fileCurrentLine = fileIn.readLine()) == null)
+                {
+                    foundFile = true;
+                }
+                while ( !foundFile)
+                {   
+                    file = getNoteFile(sender, fileCurrentLine + ":" + noteName);
+                    if (file.exists())
+                    {
+                        foundFile = true;
+                    }
+
+                    if ((fileCurrentLine = fileIn.readLine()) == null)
+                    {
+                        foundFile = true;
+                    }
+                }
+                fileIn.close();
+    
+            }
+            catch (Exception e) 
+            {
+                sender.sendMessage(ChatColor.RED + "Error: Error information sent to logs.");
+                Bukkit.getLogger().log(Level.SEVERE, e.getMessage());
+                return file;
+            }
+        }
+
+        return file ;
     }
 
     private void viewAction(CommandSender sender, String[] args)
@@ -130,7 +201,7 @@ public class NotepadCommand implements CommandExecutor
 
         if (!file.exists())
         {
-            sender.sendMessage(ChatColor.RED + "Failed to find file");
+            sender.sendMessage(ChatColor.RED + "Failed to find file.");
             return;
         }
 
@@ -244,7 +315,8 @@ public class NotepadCommand implements CommandExecutor
             } 
             catch (Exception e) 
             {
-                sender.sendMessage(ChatColor.RED + "Unknown Error: Failed to create file.");
+                sender.sendMessage(ChatColor.RED + "Error: Failed to create file. Error information sent to logs");
+                Bukkit.getLogger().log(Level.SEVERE, e.getMessage());
             }
         }
     }
@@ -295,7 +367,7 @@ public class NotepadCommand implements CommandExecutor
         } 
         catch (Exception e) 
         {
-            sender.sendMessage(ChatColor.RED + "Unknown Error: Failed to write to file.");
+            sender.sendMessage(ChatColor.RED + "Error: Failed to write to file. Error information sent to logs.");
             Bukkit.getLogger().log(Level.SEVERE, e.getMessage());
         }
         
@@ -340,7 +412,8 @@ public class NotepadCommand implements CommandExecutor
             } 
             catch (Exception e) 
             {
-                sender.sendMessage(ChatColor.RED + "Error: Unknown error trying to create file.");
+                sender.sendMessage(ChatColor.RED + "Error: Error trying to create file. Error information sent to logs.");
+                Bukkit.getLogger().log(Level.SEVERE, e.getMessage());
             }
             
         }
@@ -362,7 +435,8 @@ public class NotepadCommand implements CommandExecutor
         }
         catch (Exception e) 
         {
-            sender.sendMessage(ChatColor.RED + "Error: Unknown error trying to write to file."); // I could start giving the exception info to the server, maybe in future? Oh, also maybe start adding comments more... a lot more.
+            sender.sendMessage(ChatColor.RED + "Error: Error trying to write to file. Error information sent to logs."); 
+            Bukkit.getLogger().log(Level.SEVERE, e.getMessage());
             return;
         }
     }
@@ -371,7 +445,7 @@ public class NotepadCommand implements CommandExecutor
     {
         if (args.length < 2)
         {
-            sender.sendMessage(ChatColor.RED + "Usage: /notepad untrust <username>");
+            sender.sendMessage(ChatColor.RED + "Usage: /notepad untrust <username or UUID>");
             return;
         }
         File trustFile = getUserTrustFile(getSenderUUID(sender));
@@ -414,7 +488,8 @@ public class NotepadCommand implements CommandExecutor
         }
         catch (Exception e) 
         {
-            sender.sendMessage(ChatColor.RED + "Error: Unknown error trying to write to file.");
+            sender.sendMessage(ChatColor.RED + "Error: Error trying to write to file. Error information sent to logs.");
+            Bukkit.getLogger().log(Level.SEVERE, e.getMessage());
             return;
         }
     }
@@ -448,7 +523,7 @@ public class NotepadCommand implements CommandExecutor
         }
         catch (Exception e) 
         {
-            sender.sendMessage(ChatColor.RED + "Error: Unknown error.");
+            sender.sendMessage(ChatColor.RED + "Error: Error information sent to logs.");
             Bukkit.getLogger().log(Level.SEVERE, e.getMessage());
             return;
         }
@@ -531,7 +606,7 @@ public class NotepadCommand implements CommandExecutor
         } 
         catch (Exception e) 
         {
-            sender.sendMessage(ChatColor.RED + "Unknown Error: Failed to write to file.");
+            sender.sendMessage(ChatColor.RED + "Error: Failed to write to file. Error information sent to logs.");
             Bukkit.getLogger().log(Level.SEVERE, e.getMessage());
         }
 
@@ -603,8 +678,142 @@ public class NotepadCommand implements CommandExecutor
         } 
         catch (Exception e) 
         {
-            sender.sendMessage(ChatColor.RED + "Unknown Error: Failed to write to file.");
+            sender.sendMessage(ChatColor.RED + "Error: Failed to write to file. Error information sent to logs.");
             Bukkit.getLogger().log(Level.SEVERE, e.getMessage());
+        }
+    }
+
+    private void addAltAction(CommandSender sender, String[] args)
+    {
+        if (args.length < 2)
+        {
+            sender.sendMessage(ChatColor.RED + "Usage: /notepad addalt <username>");
+            return;
+        }
+        File altFile = getUserAltFile(getSenderUUID(sender));
+        if(!altFile.exists())
+        {
+            altFile.getParentFile().mkdirs();
+            try 
+            {
+                altFile.createNewFile();
+            } 
+            catch (Exception e) 
+            {
+                sender.sendMessage(ChatColor.RED + "Error: Error trying to create file. Error information sent to logs.");
+                Bukkit.getLogger().log(Level.SEVERE, e.getMessage());
+            }
+            
+        }
+        try
+        {
+            BufferedReader fileIn = new BufferedReader(new FileReader(altFile));
+            String fileContent = "";
+            String fileCurrentLine;
+            while ((fileCurrentLine = fileIn.readLine()) != null)
+            {
+                fileContent += fileCurrentLine + "\n";
+            }
+            fileIn.close();
+
+            BufferedWriter fileOut = new BufferedWriter(new FileWriter(altFile));
+            fileOut.write(fileContent + getNameUUID(args[1]).toString());
+            fileOut.close();  
+            sender.sendMessage(ChatColor.GREEN + "Successfully added '" + args[1] + "' UUID to file. UUID: '" + getNameUUID(args[1]).toString() + "'");
+        }
+        catch (Exception e) 
+        {
+            sender.sendMessage(ChatColor.RED + "Error: Error trying to write to file. Error information sent to logs."); 
+            Bukkit.getLogger().log(Level.SEVERE, e.getMessage());
+            return;
+        }
+    }
+
+    private void removeAltAction(CommandSender sender, String[] args)
+    {
+        if (args.length < 2)
+        {
+            sender.sendMessage(ChatColor.RED + "Usage: /notepad removealt <username or UUID>");
+            return;
+        }
+        File altFile = getUserAltFile(getSenderUUID(sender));
+        if(!altFile.exists())
+        {
+            return;           
+        }
+        try
+        {
+            BufferedReader fileIn = new BufferedReader(new FileReader(altFile));
+            String fileContent = "";
+            String fileCurrentLine;
+            boolean everRemovedAnything = false;
+            while ((fileCurrentLine = fileIn.readLine()) != null)
+            {
+                if (!(getNameUUID(args[1]).toString().equalsIgnoreCase(fileCurrentLine)) && !(args[1].equalsIgnoreCase(fileCurrentLine)))
+                {
+                    fileContent += fileCurrentLine + "\n";
+                }
+                else
+                {
+                    everRemovedAnything = true;
+                }
+            }
+
+            if (!everRemovedAnything)
+            {
+                sender.sendMessage("User or UUID not found in alt list file.");
+            }
+            else
+            {
+                sender.sendMessage(ChatColor.GREEN + "Successfully removed all instances found in alt list file.");
+            }
+            
+            fileIn.close();
+
+            BufferedWriter fileOut = new BufferedWriter(new FileWriter(altFile));
+            fileOut.write(fileContent);
+            fileOut.close();  
+        }
+        catch (Exception e) 
+        {
+            sender.sendMessage(ChatColor.RED + "Error: Error trying to write to file. Error information sent to logs.");
+            Bukkit.getLogger().log(Level.SEVERE, e.getMessage());
+            return;
+        }
+    }
+
+    private void listAltsAction(CommandSender sender, String[] args)
+    {
+        File altListFile = new File(getAltListsDir() + "/" + getSenderUUID(sender).toString());
+        if (!altListFile.exists())
+        {
+            sender.sendMessage("No alt list file.");
+            return;
+        }
+
+        try
+        {
+            BufferedReader fileIn = new BufferedReader(new FileReader(altListFile));
+            String fileCurrentLine;
+            boolean everSentAnything = false;
+            while ((fileCurrentLine = fileIn.readLine()) != null)
+            {   
+                sender.sendMessage("Name: '" + Bukkit.getServer().getOfflinePlayer(UUID.fromString(fileCurrentLine)).getName() + "' UUID: '" + fileCurrentLine + "'");
+                everSentAnything = true;
+            }
+            fileIn.close();
+
+            if (!everSentAnything)
+            {
+                sender.sendMessage("No alternate directories found in file.");
+            }
+
+        }
+        catch (Exception e) 
+        {
+            sender.sendMessage(ChatColor.RED + "Error: Error information sent to logs.");
+            Bukkit.getLogger().log(Level.SEVERE, e.getMessage());
+            return;
         }
     }
 
@@ -658,7 +867,6 @@ public class NotepadCommand implements CommandExecutor
             case "help":
                 outputHelp(sender, args);
                 break;
-
             
             case "removeline":
                 removeLineAction(sender, args);
@@ -666,6 +874,18 @@ public class NotepadCommand implements CommandExecutor
 
             case "insert":
                 insertAction(sender, args);
+                break;
+                
+            case "addalt":
+                addAltAction(sender, args);
+                break;
+
+            case "removealt":
+                removeAltAction(sender, args);
+                break;
+
+            case "listalts":
+                listAltsAction(sender, args);
                 break;
 
             default:
