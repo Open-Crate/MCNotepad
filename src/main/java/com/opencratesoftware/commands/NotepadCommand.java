@@ -10,6 +10,7 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -234,7 +235,7 @@ public class NotepadCommand implements CommandExecutor
         }
         else
         {
-            String type = "note";
+            String type = "list";
             try 
             {
                 file.getParentFile().mkdirs();
@@ -245,6 +246,10 @@ public class NotepadCommand implements CommandExecutor
                     if(args[2].equalsIgnoreCase("list"))
                     {
                         type = "list";
+                    }
+                    else if(args[2].equalsIgnoreCase("note"))
+                    {
+                        type = "note";
                     }
                 }
 
@@ -920,18 +925,34 @@ public class NotepadCommand implements CommandExecutor
     {
         if(args.length > 1)
         {
-            sender.sendMessage("Help topic functionality not yet created.");
+            switch (args[1]) {
+                case "guide":
+                    
+                    break;
+
+                case "topics":
+
+                    break;
+
+                case "actions":
+                sender.sendMessage("--------------------------------------------------");
+                sender.sendMessage("Actions:");
+                sender.sendMessage(ChatColor.YELLOW + "Note/File Management: new, delete, list");
+                sender.sendMessage(ChatColor.GOLD + "Editing/viewing: view, add, removeline, insert, move");
+                sender.sendMessage(ChatColor.YELLOW + "Trust/Sharing: trust, untrust, listtrusted, cleartrusted");
+                sender.sendMessage(ChatColor.GOLD + "Alternate User Directories/Folders: listalts, addalt, removealt");
+                sender.sendMessage("--------------------------------------------------");
+                    break;
+
+                default:
+                    break;
+            }
             return;
         }
         sender.sendMessage("--------------------------------------------------");
-        sender.sendMessage("Actions:");
-        sender.sendMessage(ChatColor.YELLOW + "Note/File Management: new, delete, list");
-        sender.sendMessage(ChatColor.GOLD + "Editing/viewing: view, add, removeline, insert, move");
-        sender.sendMessage(ChatColor.YELLOW + "Trust/Sharing: trust, untrust, listtrusted, cleartrusted");
-        sender.sendMessage(ChatColor.GOLD + "Alternate User Directories/Folders: listalts, addalt, removealt");
-        sender.sendMessage("--------------------------------------------------");
-        sender.sendMessage("Use '/notepad help <topic>' to get information on a help topic");
-        sender.sendMessage("'/notepad help topics' for a full list of help topics.");
+        sender.sendMessage(ChatColor.YELLOW + "Use '/notepad help <topic>' to get information on a help topic");
+        sender.sendMessage(ChatColor.GOLD + "Use '/notepad help topics' for a full list of help topics.");
+        sender.sendMessage(ChatColor.YELLOW + "For a guide on simply making a new note or list, adding to it and removing from it, use '/notepad help guide'");
         sender.sendMessage("--------------------------------------------------");
     }
 
