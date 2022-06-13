@@ -200,6 +200,96 @@ public class NotepadCommand implements CommandExecutor
     }
 
     
+    /* File Management */
+
+    private void listAction(CommandSender sender, String[] args)
+    {
+        File notesDirectory = new File(getNotesDir() + getSenderUUID(sender));
+        File[] notes = notesDirectory.listFiles();
+        for (File file : notes) 
+        {
+            sender.sendMessage(sender.getName() + ":" + file.getName().replace(getNoteExt(), ""));    
+        }
+    }
+
+    private void newFileAction(CommandSender sender, String[] args)
+    {
+        if(args.length == 1)
+        {
+            sender.sendMessage(ChatColor.RED + "Usage: /notepad new <New Note Name> or Usage: /notepad new <New Note Name> <Note Type>");
+            return;
+        }
+       
+        File file = getNoteFile(sender, args[1], true);
+        
+        if(!getSenderUUID(sender).equals(UUID.fromString(file.getParentFile().getName())))
+        {
+            sender.sendMessage(ChatColor.RED + "Cannot create files for other players.");
+            return;
+        }
+
+        if (file.exists())
+        {
+            sender.sendMessage(ChatColor.RED + "File already exists");
+        }
+        else
+        {
+            String type = "note";
+            try 
+            {
+                file.getParentFile().mkdirs();
+                file.createNewFile();
+                if (args.length > 2)
+                {
+
+                    if(args[2].equalsIgnoreCase("list"))
+                    {
+                        type = "list";
+                    }
+                }
+
+                BufferedWriter fileOut = new BufferedWriter(new FileWriter(file));
+                fileOut.write(type);
+                fileOut.close();
+                    
+                
+                sender.sendMessage(ChatColor.GREEN + "Successfully created new " + type + ".");
+            } 
+            catch (Exception e) 
+            {
+                sender.sendMessage(ChatColor.RED + "Error: Failed to create file. Error information sent to logs");
+                Bukkit.getLogger().log(Level.SEVERE, e.getMessage());
+            }
+        }
+    }
+
+    private void deleteFileAction(CommandSender sender, String[] args)
+    {
+        if (args.length < 2)
+        {
+            sender.sendMessage(ChatColor.RED + "Usage: /notepad delete <Note Name>");
+        }
+        File file = getNoteFile(sender, args[1], true);
+        if (UUID.fromString(file.getParentFile().getName()).equals(getSenderUUID(sender))) // do not allow users to delete files not in their directory.
+        {
+            if (file.exists())
+            {
+                file.delete();
+                sender.sendMessage(ChatColor.GREEN + "Successfully deleted note.");
+            }
+            else
+            {
+                sender.sendMessage(ChatColor.RED + "Could not find file.");
+            }
+        }
+        else
+        {
+            sender.sendMessage(ChatColor.RED + "Did not delete note. Did not detect command user as owner.");
+            return;
+        }
+    }
+
+    /* File editing/viewing */
 
     private void viewAction(CommandSender sender, String[] args)
     {
@@ -274,67 +364,6 @@ public class NotepadCommand implements CommandExecutor
 
     }
 
-    private void listAction(CommandSender sender, String[] args)
-    {
-        File notesDirectory = new File(getNotesDir() + getSenderUUID(sender));
-        File[] notes = notesDirectory.listFiles();
-        for (File file : notes) 
-        {
-            sender.sendMessage(sender.getName() + ":" + file.getName().replace(getNoteExt(), ""));    
-        }
-    }
-
-    private void newFileAction(CommandSender sender, String[] args)
-    {
-        if(args.length == 1)
-        {
-            sender.sendMessage(ChatColor.RED + "Usage: /notepad new <New Note Name> or Usage: /notepad new <New Note Name> <Note Type>");
-            return;
-        }
-       
-        File file = getNoteFile(sender, args[1], true);
-        
-        if(!getSenderUUID(sender).equals(UUID.fromString(file.getParentFile().getName())))
-        {
-            sender.sendMessage(ChatColor.RED + "Cannot create files for other players.");
-            return;
-        }
-
-        if (file.exists())
-        {
-            sender.sendMessage(ChatColor.RED + "File already exists");
-        }
-        else
-        {
-            String type = "note";
-            try 
-            {
-                file.getParentFile().mkdirs();
-                file.createNewFile();
-                if (args.length > 2)
-                {
-
-                    if(args[2].equalsIgnoreCase("list"))
-                    {
-                        type = "list";
-                    }
-                }
-
-                BufferedWriter fileOut = new BufferedWriter(new FileWriter(file));
-                fileOut.write(type);
-                fileOut.close();
-                    
-                
-                sender.sendMessage(ChatColor.GREEN + "Successfully created new " + type + ".");
-            } 
-            catch (Exception e) 
-            {
-                sender.sendMessage(ChatColor.RED + "Error: Failed to create file. Error information sent to logs");
-                Bukkit.getLogger().log(Level.SEVERE, e.getMessage());
-            }
-        }
-    }
-
     private void addAction(CommandSender sender, String[] args)
     {
         if (args.length < 3)
@@ -387,31 +416,215 @@ public class NotepadCommand implements CommandExecutor
         
     }
 
-    private void deleteFileAction(CommandSender sender, String[] args)
+    private void removeLineAction(CommandSender sender, String[] args, boolean Silent)
     {
-        if (args.length < 2)
+        if ((args.length < 3) || (args[1].equalsIgnoreCase("help")))
         {
-            sender.sendMessage(ChatColor.RED + "Usage: /notepad delete <Note Name>");
-        }
-        File file = getNoteFile(sender, args[1], true);
-        if (UUID.fromString(file.getParentFile().getName()).equals(getSenderUUID(sender))) // do not allow users to delete files not in their directory.
-        {
-            if (file.exists())
+            if (!Silent)
             {
-                file.delete();
-                sender.sendMessage(ChatColor.GREEN + "Successfully deleted note.");
+                sender.sendMessage(ChatColor.RED + "Usage: /notepad removeline <note name> <line number>");
+                sender.sendMessage(ChatColor.GOLD + "Tip: Use '/notepad view <note name> true' to see line numbers on non-list files.");
+            }
+            return;
+        }
+        
+        File file = getNoteFile(sender, args[1], false);
+
+        if (!file.exists())
+        {
+            if (!Silent)
+                sender.sendMessage(ChatColor.RED + "Could not find file.");
+            return;
+        }
+
+        try 
+        {
+            String removedLine = null;
+            BufferedReader fileIn = new BufferedReader(new FileReader(file));
+            String fileContent = "";
+            String fileCurrentLine;
+            int fileCurrentLineIndex = 0;
+            while ((fileCurrentLine = fileIn.readLine()) != null)
+            {
+                if (fileCurrentLineIndex == Integer.parseInt(args[2]) + 1) // add 1 because the first line is always the note type
+                {
+                    removedLine = fileCurrentLine;
+                }
+                else
+                {
+                    fileContent += fileCurrentLine + "\n";
+                }
+                fileCurrentLineIndex ++;
+            }
+            fileIn.close();
+
+            BufferedWriter fileOut = new BufferedWriter(new FileWriter(file));
+            fileOut.write(fileContent);
+            fileOut.close();  
+            if (removedLine == null)
+            {
+                if (!Silent)
+                    sender.sendMessage(ChatColor.RED + "Did not remove line.");
             }
             else
             {
-                sender.sendMessage(ChatColor.RED + "Could not find file.");
+                if (!Silent)
+                    sender.sendMessage(ChatColor.GREEN + "Successfully removed line '" + removedLine + "' from note '" + args[1] + "'.");
             }
-        }
-        else
+
+        } 
+        catch (Exception e) 
         {
-            sender.sendMessage(ChatColor.RED + "Did not delete note. Did not detect command user as owner.");
+            sender.sendMessage(ChatColor.RED + "Error: Failed to write to file. Error information sent to logs.");
+            Bukkit.getLogger().log(Level.SEVERE, e.getMessage());
+        }
+
+    }
+
+    private void moveLineAction(CommandSender sender, String[] args)
+    {
+        if (args.length < 4)
+        {
+            sender.sendMessage(ChatColor.RED + "Usage: /notepad move <note name> <line number> <destination line number>");
+            return;
+        }
+
+        File noteFile = getNoteFile(sender, args[1], false);
+        if (!noteFile.exists())
+        {
+            sender.sendMessage("Could not find note.");
+            return;
+        }
+
+        try
+        {
+            BufferedReader fileIn = new BufferedReader(new FileReader(noteFile));
+            String fileCurrentLine = null;
+            String lineToMove = null;
+            int currentLine = 0;
+            while ((fileCurrentLine = fileIn.readLine()) != null)
+            {   
+                if (currentLine == Integer.parseInt(args[2]) + 1)
+                {
+                    lineToMove = fileCurrentLine;
+                }
+                currentLine++;
+            }
+            fileIn.close();
+
+            if (lineToMove == null)
+            {
+                sender.sendMessage(ChatColor.RED + "Could not find line in note.");
+            }
+
+            if ((Integer.parseInt(args[2]) > (Integer.parseInt(args[3]))))
+            {
+                String[] insertArgs = {"insert", args[1], args[3], lineToMove};
+                insertAction(sender, insertArgs, true);
+                String[] removelineArgs = {"removeline", args[1], String.valueOf(Integer.parseInt(args[2]) + 1)};
+                removeLineAction(sender, removelineArgs, true);
+            }
+            else if (((Integer.parseInt(args[2]) < (Integer.parseInt(args[3])))))
+            {
+                String[] insertArgs = {"insert", args[1],String.valueOf(Integer.parseInt(args[3]) + 1), lineToMove};
+                insertAction(sender, insertArgs, true);
+                String[] removelineArgs = {"removeline", args[1], args[2]};
+                removeLineAction(sender, removelineArgs, true);
+            }
+            else 
+            {
+                sender.sendMessage(ChatColor.RED + "Cannot move line to location line is already in.");
+                return;
+            }
+            sender.sendMessage(ChatColor.GREEN + "Successfully moved lines.");      
+        }
+        catch (Exception e) 
+        {
+            sender.sendMessage(ChatColor.RED + "Error: Error information sent to logs.");
+            Bukkit.getLogger().log(Level.SEVERE, e.getMessage());
             return;
         }
     }
+
+    private void insertAction(CommandSender sender, String[] args, boolean Silent)
+    {
+        if ((args.length < 3) || (args[1].equalsIgnoreCase("help")))
+        {
+            if (!Silent)
+            {
+                sender.sendMessage(ChatColor.RED + "Usage: /notepad insert <note name> <line number> <line text>");
+                sender.sendMessage(ChatColor.YELLOW + "Tip: Use '/notepad view <note name> true' to see line numbers on non-list files.");
+            }
+            return;
+        }
+
+        File file = getNoteFile(sender, args[1], false);
+
+        if (!file.exists())
+        {
+            if (!Silent)
+                sender.sendMessage(ChatColor.RED + "Could not find file.");
+            return;
+        }
+
+        try 
+        {
+            String lineToAdd = "";
+
+            for (int i = 3; i < args.length; i++) 
+            {
+                lineToAdd += args[i];
+                if (i < args.length - 1)
+                {
+                    lineToAdd += " ";
+                }
+            }
+
+            boolean didAddLine = false;
+            BufferedReader fileIn = new BufferedReader(new FileReader(file));
+            String fileContent = "";
+            String fileCurrentLine;
+            int fileCurrentLineIndex = 0;
+
+            while ((fileCurrentLine = fileIn.readLine()) != null)
+            {
+                if (fileCurrentLineIndex == Integer.parseInt(args[2]) + 1) // add 1 because the first line is always the note type
+                {
+                    fileContent += lineToAdd + "\n" + fileCurrentLine + "\n";
+                    didAddLine = true;
+                }
+                else
+                {
+                    fileContent += fileCurrentLine + "\n";
+                }
+                fileCurrentLineIndex ++;
+            }
+            fileIn.close();
+
+            BufferedWriter fileOut = new BufferedWriter(new FileWriter(file));
+            fileOut.write(fileContent);
+            fileOut.close();  
+            if (!Silent)
+            {
+                if (!didAddLine)
+                {
+                    sender.sendMessage(ChatColor.RED + "Did not add line.");
+                }
+                else
+                {
+                    sender.sendMessage(ChatColor.GREEN + "Successfully inserted line '" + lineToAdd + "' into note '" + args[1] + "'.");
+                }
+            }
+
+        } 
+        catch (Exception e) 
+        {
+            sender.sendMessage(ChatColor.RED + "Error: Failed to write to file. Error information sent to logs.");
+            Bukkit.getLogger().log(Level.SEVERE, e.getMessage());
+        }
+    }
+
+    /* User Trust/File Sharing */
 
     private void trustUserAction(CommandSender sender, String[] args)
     {
@@ -566,153 +779,7 @@ public class NotepadCommand implements CommandExecutor
         
     }
 
-    private void outputHelp(CommandSender sender, String[] args)
-    {
-        sender.sendMessage("Actions: new, delete, list, view, add, removeline, insert, trust, untrust, listtrusted, cleartrusted, help, listalts, addalt, removealt");
-    }
-
-    private void removeLineAction(CommandSender sender, String[] args, boolean Silent)
-    {
-        if ((args.length < 3) || (args[1].equalsIgnoreCase("help")))
-        {
-            if (!Silent)
-            {
-                sender.sendMessage(ChatColor.RED + "Usage: /notepad removeline <note name> <line number>");
-                sender.sendMessage(ChatColor.YELLOW + "Tip: Use '/notepad view <note name> true' to see line numbers on non-list files.");
-            }
-            return;
-        }
-        
-        File file = getNoteFile(sender, args[1], false);
-
-        if (!file.exists())
-        {
-            if (!Silent)
-                sender.sendMessage(ChatColor.RED + "Could not find file.");
-            return;
-        }
-
-        try 
-        {
-            String removedLine = null;
-            BufferedReader fileIn = new BufferedReader(new FileReader(file));
-            String fileContent = "";
-            String fileCurrentLine;
-            int fileCurrentLineIndex = 0;
-            while ((fileCurrentLine = fileIn.readLine()) != null)
-            {
-                if (fileCurrentLineIndex == Integer.parseInt(args[2]) + 1) // add 1 because the first line is always the note type
-                {
-                    removedLine = fileCurrentLine;
-                }
-                else
-                {
-                    fileContent += fileCurrentLine + "\n";
-                }
-                fileCurrentLineIndex ++;
-            }
-            fileIn.close();
-
-            BufferedWriter fileOut = new BufferedWriter(new FileWriter(file));
-            fileOut.write(fileContent);
-            fileOut.close();  
-            if (removedLine == null)
-            {
-                if (!Silent)
-                    sender.sendMessage(ChatColor.RED + "Did not remove line.");
-            }
-            else
-            {
-                if (!Silent)
-                    sender.sendMessage(ChatColor.GREEN + "Successfully removed line '" + removedLine + "' from note '" + args[1] + "'.");
-            }
-
-        } 
-        catch (Exception e) 
-        {
-            sender.sendMessage(ChatColor.RED + "Error: Failed to write to file. Error information sent to logs.");
-            Bukkit.getLogger().log(Level.SEVERE, e.getMessage());
-        }
-
-    }
-
-    private void insertAction(CommandSender sender, String[] args, boolean Silent)
-    {
-        if ((args.length < 3) || (args[1].equalsIgnoreCase("help")))
-        {
-            if (!Silent)
-            {
-                sender.sendMessage(ChatColor.RED + "Usage: /notepad insert <note name> <line number> <line text>");
-                sender.sendMessage(ChatColor.YELLOW + "Tip: Use '/notepad view <note name> true' to see line numbers on non-list files.");
-            }
-            return;
-        }
-
-        File file = getNoteFile(sender, args[1], false);
-
-        if (!file.exists())
-        {
-            if (!Silent)
-                sender.sendMessage(ChatColor.RED + "Could not find file.");
-            return;
-        }
-
-        try 
-        {
-            String lineToAdd = "";
-
-            for (int i = 3; i < args.length; i++) 
-            {
-                lineToAdd += args[i];
-                if (i < args.length - 1)
-                {
-                    lineToAdd += " ";
-                }
-            }
-
-            boolean didAddLine = false;
-            BufferedReader fileIn = new BufferedReader(new FileReader(file));
-            String fileContent = "";
-            String fileCurrentLine;
-            int fileCurrentLineIndex = 0;
-
-            while ((fileCurrentLine = fileIn.readLine()) != null)
-            {
-                if (fileCurrentLineIndex == Integer.parseInt(args[2]) + 1) // add 1 because the first line is always the note type
-                {
-                    fileContent += lineToAdd + "\n" + fileCurrentLine + "\n";
-                    didAddLine = true;
-                }
-                else
-                {
-                    fileContent += fileCurrentLine + "\n";
-                }
-                fileCurrentLineIndex ++;
-            }
-            fileIn.close();
-
-            BufferedWriter fileOut = new BufferedWriter(new FileWriter(file));
-            fileOut.write(fileContent);
-            fileOut.close();  
-            if (!Silent)
-            {
-                if (!didAddLine)
-                {
-                    sender.sendMessage(ChatColor.RED + "Did not add line.");
-                }
-                else
-                {
-                    sender.sendMessage(ChatColor.GREEN + "Successfully inserted line '" + lineToAdd + "' into note '" + args[1] + "'.");
-                }
-            }
-
-        } 
-        catch (Exception e) 
-        {
-            sender.sendMessage(ChatColor.RED + "Error: Failed to write to file. Error information sent to logs.");
-            Bukkit.getLogger().log(Level.SEVERE, e.getMessage());
-        }
-    }
+    /* Alternative Directories */
 
     private void addAltAction(CommandSender sender, String[] args)
     {
@@ -848,69 +915,24 @@ public class NotepadCommand implements CommandExecutor
         }
     }
 
-    private void moveLineAction(CommandSender sender, String[] args)
+    /* Help */
+    private void outputHelp(CommandSender sender, String[] args)
     {
-        if (args.length < 4)
+        if(args.length > 1)
         {
-            sender.sendMessage(ChatColor.RED + "Usage: /notepad move <note name> <line number> <destination line number>");
+            sender.sendMessage("Help topic functionality not yet created.");
             return;
         }
-
-        File noteFile = getNoteFile(sender, args[1], false);
-        if (!noteFile.exists())
-        {
-            sender.sendMessage("Could not find note.");
-            return;
-        }
-
-        try
-        {
-            BufferedReader fileIn = new BufferedReader(new FileReader(noteFile));
-            String fileCurrentLine = null;
-            String lineToMove = null;
-            int currentLine = 0;
-            while ((fileCurrentLine = fileIn.readLine()) != null)
-            {   
-                if (currentLine == Integer.parseInt(args[2]) + 1)
-                {
-                    lineToMove = fileCurrentLine;
-                }
-                currentLine++;
-            }
-            fileIn.close();
-
-            if (lineToMove == null)
-            {
-                sender.sendMessage(ChatColor.RED + "Could not find line in note.");
-            }
-
-            if ((Integer.parseInt(args[2]) > (Integer.parseInt(args[3]))))
-            {
-                String[] insertArgs = {"insert", args[1], args[3], lineToMove};
-                insertAction(sender, insertArgs, true);
-                String[] removelineArgs = {"removeline", args[1], String.valueOf(Integer.parseInt(args[2]) + 1)};
-                removeLineAction(sender, removelineArgs, true);
-            }
-            else if (((Integer.parseInt(args[2]) < (Integer.parseInt(args[3])))))
-            {
-                String[] insertArgs = {"insert", args[1],String.valueOf(Integer.parseInt(args[3]) + 1), lineToMove};
-                insertAction(sender, insertArgs, true);
-                String[] removelineArgs = {"removeline", args[1], args[2]};
-                removeLineAction(sender, removelineArgs, true);
-            }
-            else 
-            {
-                sender.sendMessage(ChatColor.RED + "Cannot move line to location line is already in.");
-                return;
-            }
-            sender.sendMessage(ChatColor.GREEN + "Successfully moved lines.");      
-        }
-        catch (Exception e) 
-        {
-            sender.sendMessage(ChatColor.RED + "Error: Error information sent to logs.");
-            Bukkit.getLogger().log(Level.SEVERE, e.getMessage());
-            return;
-        }
+        sender.sendMessage("--------------------------------------------------");
+        sender.sendMessage("Actions:");
+        sender.sendMessage(ChatColor.YELLOW + "Note/File Management: new, delete, list");
+        sender.sendMessage(ChatColor.GOLD + "Editing/viewing: view, add, removeline, insert, move");
+        sender.sendMessage(ChatColor.YELLOW + "Trust/Sharing: trust, untrust, listtrusted, cleartrusted");
+        sender.sendMessage(ChatColor.GOLD + "Alternate User Directories/Folders: listalts, addalt, removealt");
+        sender.sendMessage("--------------------------------------------------");
+        sender.sendMessage("Use '/notepad help <topic>' to get information on a help topic");
+        sender.sendMessage("'/notepad help topics' for a full list of help topics.");
+        sender.sendMessage("--------------------------------------------------");
     }
 
     @Override
