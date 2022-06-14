@@ -200,8 +200,9 @@ public class NotepadCommand implements CommandExecutor
         return file; // file exists if it executes here or execution decided to return an non existent file (likely meaning the command will give a file not found error)
     }
 
-    
+    /////////////////////
     /* File Management */
+    /////////////////////
 
     private void listAction(CommandSender sender, String[] args)
     {
@@ -294,7 +295,9 @@ public class NotepadCommand implements CommandExecutor
         }
     }
 
+    //////////////////////////
     /* File editing/viewing */
+    //////////////////////////
 
     private void viewAction(CommandSender sender, String[] args)
     {
@@ -629,7 +632,9 @@ public class NotepadCommand implements CommandExecutor
         }
     }
 
+    /////////////////////////////
     /* User Trust/File Sharing */
+    /////////////////////////////
 
     private void trustUserAction(CommandSender sender, String[] args)
     {
@@ -784,7 +789,9 @@ public class NotepadCommand implements CommandExecutor
         
     }
 
+    /////////////////////////////
     /* Alternative Directories */
+    /////////////////////////////
 
     private void addAltAction(CommandSender sender, String[] args)
     {
@@ -947,7 +954,7 @@ public class NotepadCommand implements CommandExecutor
                 sender.sendMessage(ChatColor.YELLOW + "guide - guide on creating a note, adding to it and removing from it, then deleting it");
                 sender.sendMessage(ChatColor.GOLD + "management - information on managing notes/files");
                 sender.sendMessage(ChatColor.YELLOW + "sharing - information on trusting other users (mainly for sharing notes with others)");
-                sender.sendMessage(ChatColor.GOLD + "alts - information on alternative user directories/folders");
+                sender.sendMessage(ChatColor.GOLD + "alts - information on alternative user directories/folders (for making shared notes easier to refer to)");
                 sender.sendMessage("--------------------------------------------------");
                     break;
 
@@ -959,6 +966,33 @@ public class NotepadCommand implements CommandExecutor
                 sender.sendMessage(ChatColor.YELLOW + "Trust/Sharing: trust, untrust, listtrusted, cleartrusted");
                 sender.sendMessage(ChatColor.GOLD + "Alternate User Directories/Folders: listalts, addalt, removealt");
                 sender.sendMessage("--------------------------------------------------");
+                    break;
+
+                case "alts":
+                sender.sendMessage("--------------------------------------------------");
+                sender.sendMessage("Alts, Alt Folders or Alt Directories are just a way for notepad to automatically search other user's notes without having to put their name or UUID. Usually when a user shares their notes with you, and you want to view them, you must refer to the note as '[Owner Name or UUID]:[Note Name]'. Alts help with this.");
+                sender.sendMessage(" ");
+                sender.sendMessage("Say if a user adds you to their trust list, allowing you to view and edit their notes and you don't want to have to type their name and notename, just the note name. All you have to do is add them as an altdir for your notes! This tells notepad to search through the notes of all of the users in the altdirs list when you can't find it in the command sender's notes.");
+                sender.sendMessage(" ");
+                sender.sendMessage("To add a user, simply use '/notepad addalt [username or uuid]'\n \nTo remove one, use '/notepad removealt [username or uuid]'\n \nAnd finally, to list all alts you have added, use '/notepad listalts'.");
+                sender.sendMessage("--------------------------------------------------");
+                    break;
+
+                case "sharing":
+                    sender.sendMessage("--------------------------------------------------");
+                    sender.sendMessage("Sharing notes in notepad is simple, you simply must add a user whom you want to share a note with to your trustlist, and they'll be able to edit and view your note! Trusted users cannot delete the note file or add note files to your notes, however they can clear a note file and add to one, so use with caution.");
+                    sender.sendMessage(" ");
+                    sender.sendMessage("To add a user to your trusted list, use '/notepad trust [username or UUID]'.\n \nTo remove a user, use '/notepad untrust [username or UUID]'.\n \nAnd to list all trusted users, use '/notepad listtrusted'.\n \nTo clear all trusted users instantly, use '/notepad cleartrusted'");
+                    sender.sendMessage("--------------------------------------------------");
+                    break;
+
+                case "management":
+                    sender.sendMessage("--------------------------------------------------");
+                    sender.sendMessage("Managing notes in notepad is easy, the three main commands to know are 'new', 'delete' and 'list'.\n ");
+                    sender.sendMessage("new - Adds a new file to your directory/notes folder. Usage is '/notepad new [notename]'. Optionally you can specify a type of note (note or list) by adding so to the end (ex. '/notepad new [notename] note'), the default is list. Lists automatically show numbers on each line whereas notes simply display as raw text.\n ");
+                    sender.sendMessage("delete - Deletes a note. Usage is '/notepad delete [notename]'" + ChatColor.RED + " You cannot delete other user's notes, even if you are trusted by the owner.\n ");
+                    sender.sendMessage("list - Lists all of your notes. Usage is '/notepad list'.");
+                    sender.sendMessage("--------------------------------------------------");
                     break;
 
                 default:
