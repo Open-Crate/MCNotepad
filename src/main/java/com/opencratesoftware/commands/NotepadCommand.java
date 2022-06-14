@@ -920,18 +920,35 @@ public class NotepadCommand implements CommandExecutor
         }
     }
 
+    //////////
     /* Help */
+    //////////
+    
     private void outputHelp(CommandSender sender, String[] args)
     {
         if(args.length > 1)
         {
-            switch (args[1]) {
+            switch (args[1].toLowerCase()) {
                 case "guide":
-                    
+                sender.sendMessage("--------------------------------------------------");
+                sender.sendMessage("This brief guide will instruct you on how to get started making and using notes/lists.\n \nFirst, to create a new list, use '/notepad new <notename>'. Optionally, you can specify list or note by adding so to the end. A list shows numbers on the side by default when using view. Default note type is list.\n ");
+                sender.sendMessage("Now, to add to the note use '/notepad add <notename> <text to add>' this will add a new line of text to the end of the note.\n ");
+                sender.sendMessage("Use '/notepad view <notename>' to see your note. If your note type is not a list, it will not show numbers on the end by default. Add ' true' to the end of the command to show numbers. To show a list without line numbers, use ' false'.\n ");
+                sender.sendMessage("To remove a line from your note, use '/notepad removeline <notename> <line number>' line number should be the number to the side of whatever line you want to remove, when you use the view command with numbers showing.\n ");
+                sender.sendMessage("To delete your note, use /notepad delete <notename>");
+                sender.sendMessage("You can view a list of your notes using '/notepad list'");
+                sender.sendMessage("--------------------------------------------------");
                     break;
 
                 case "topics":
-
+                sender.sendMessage("--------------------------------------------------");
+                sender.sendMessage("Help Topics:");
+                sender.sendMessage(ChatColor.GOLD + "actions - lists all actions");
+                sender.sendMessage(ChatColor.YELLOW + "guide - guide on creating a note, adding to it and removing from it, then deleting it");
+                sender.sendMessage(ChatColor.GOLD + "management - information on managing notes/files");
+                sender.sendMessage(ChatColor.YELLOW + "sharing - information on trusting other users (mainly for sharing notes with others)");
+                sender.sendMessage(ChatColor.GOLD + "alts - information on alternative user directories/folders");
+                sender.sendMessage("--------------------------------------------------");
                     break;
 
                 case "actions":
@@ -945,6 +962,7 @@ public class NotepadCommand implements CommandExecutor
                     break;
 
                 default:
+                sender.sendMessage("Unknown help topic. Use '/notepad help topics' for a list of known topics.");
                     break;
             }
             return;
@@ -955,6 +973,10 @@ public class NotepadCommand implements CommandExecutor
         sender.sendMessage(ChatColor.YELLOW + "For a guide on simply making a new note or list, adding to it and removing from it, use '/notepad help guide'");
         sender.sendMessage("--------------------------------------------------");
     }
+
+    ////////////////////////
+    /* onCommand function */
+    ////////////////////////
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
