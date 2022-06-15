@@ -10,7 +10,6 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Color;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -317,7 +316,6 @@ public class NotepadCommand implements CommandExecutor
             return;
         }
 
-        String contents = new String();
         try 
         {
             boolean showLineNumbers = false;
@@ -355,8 +353,6 @@ public class NotepadCommand implements CommandExecutor
                 {
                     currentLine = in.nextLine();
                 }
-
-                contents += "\n" + currentLine;
 
                 player.sendMessage(currentLine);
                 currentLineNumber++;
