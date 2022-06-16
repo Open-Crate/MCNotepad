@@ -22,6 +22,10 @@ import net.md_5.bungee.api.ChatColor;
 public class NotepadCommand implements CommandExecutor
 {
 
+    ///////////
+    /* Utils */
+    ///////////
+
     private File getNoteFile(CommandSender sender, String noteName, boolean IgnoreAltDirs)
     {
         return Utils.getNoteFile(sender, noteName, IgnoreAltDirs);
