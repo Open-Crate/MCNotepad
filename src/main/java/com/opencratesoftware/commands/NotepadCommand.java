@@ -242,6 +242,8 @@ public class NotepadCommand implements CommandExecutor
                 noteText += " ";
             }
         }
+        noteText = Utils.formatStringForNotes(noteText);
+
         try 
         {
  
@@ -431,6 +433,8 @@ public class NotepadCommand implements CommandExecutor
                     lineToAdd += " ";
                 }
             }
+
+            lineToAdd = Utils.formatStringForNotes(lineToAdd);
 
             boolean didAddLine = false;
             BufferedReader fileIn = new BufferedReader(new FileReader(file));

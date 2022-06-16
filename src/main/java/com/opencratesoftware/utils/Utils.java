@@ -1,9 +1,11 @@
 package com.opencratesoftware.utils;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
 
 import com.opencratesoftware.utils.Utils;
 
@@ -16,6 +18,88 @@ import net.md_5.bungee.api.ChatColor;
 
 public class Utils 
 {
+    /////////////////////////
+    /* Declare config vars */
+    /////////////////////////
+
+    private static boolean useWhiteList = true;
+
+    private static List<Character> characterWhitelist;
+    
+    private static long storageCapacity;
+
+    public static void Log(String msg)
+    {
+        Bukkit.getLogger().log(Level.INFO, msg);
+    }
+
+    public static FileConfiguration getConfig()
+    {
+        return Bukkit.getPluginManager().getPlugin("Notepad").getConfig();
+    }
+
+    public static boolean getUseWhitelist()
+    {
+        return useWhiteList;
+    }
+
+    public static List<?> getCharacterWhiteList()
+    {
+        return characterWhitelist;
+    }
+
+    public static long getStorageCapacity()
+    {
+        return storageCapacity;
+    }
+
+    public static void updateConfiguration()
+    {
+        useWhiteList = getConfig().getBoolean("use-character-whitelist");
+        characterWhitelist = getConfig().getCharacterList("whitelisted-characters");
+        storageCapacity = getConfig().getLong("storage-capacity-per-user");
+    }
+
+    public static String formatStringForNotes(String string)
+    {      
+        String returnValue = string;
+
+        returnValue = whitelistFilterString(returnValue);
+
+        return returnValue;
+    }
+
+    public static String whitelistFilterString(String string)
+    {
+        String returnValue = string;
+        for (int i = 0; i < string.length(); i++) 
+        {
+            if (!isCharWhitelisted(returnValue.charAt(i)))
+            {
+                returnValue.replaceAll(String.valueOf(returnValue.charAt(i)), " ");
+            }
+        }
+
+        return returnValue;
+    }
+
+    public static boolean isCharWhitelisted(Character character)
+    {
+        if (!useWhiteList)
+        {
+            return true;
+        }
+
+        for (Character currentChar : characterWhitelist) 
+        {
+            if (currentChar == character)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
         // gets UUID from player username
         public static UUID getNameUUID(String name)
         {
