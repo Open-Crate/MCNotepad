@@ -303,7 +303,7 @@ public class Utils
         return true;
     }
 
-    public static boolean addLineToFileAt(String lineToAdd, File file, long lineIndex)
+    public static boolean addLineToFileAt(String lineToAdd, File file, int lineIndex)
     {
         if (!file.exists())
         {

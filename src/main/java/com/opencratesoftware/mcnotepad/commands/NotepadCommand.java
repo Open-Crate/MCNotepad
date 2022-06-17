@@ -245,7 +245,7 @@ public class NotepadCommand implements CommandExecutor
 
         noteText = Utils.formatStringForNotes(noteText);
 
-        if (!Utils.addLineToFileAt(noteText, file, Long.MAX_VALUE))
+        if (!Utils.addLineToFileAt(noteText, file, Integer.MAX_VALUE))
         {
             sender.sendMessage(ChatColor.RED + "Error: Failed to write to file. Error information sent to logs.");
         }
@@ -420,7 +420,7 @@ public class NotepadCommand implements CommandExecutor
 
         lineToAdd = Utils.formatStringForNotes(lineToAdd);
 
-        if (!Utils.addLineToFileAt(lineToAdd, file, Long.valueOf(args[2]) + 1))
+        if (!Utils.addLineToFileAt(lineToAdd, file, Integer.valueOf(args[2]) + 1))
         {
             sender.sendMessage(ChatColor.RED + "Error: Failed to write to file. Error information sent to logs.");
         }
