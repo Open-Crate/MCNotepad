@@ -273,47 +273,18 @@ public class NotepadCommand implements CommandExecutor
                 sender.sendMessage(ChatColor.RED + "Could not find file.");
             return;
         }
+        
+        Note note = Note.getNote(file);
 
-        try 
+        if(note.removeLineAt(Integer.parseInt(args[2])))
         {
-            String removedLine = null;
-            BufferedReader fileIn = new BufferedReader(new FileReader(file));
-            String fileContent = "";
-            String fileCurrentLine;
-            int fileCurrentLineIndex = 0;
-            while ((fileCurrentLine = fileIn.readLine()) != null)
-            {
-                if (fileCurrentLineIndex == Integer.parseInt(args[2]) + 1) // add 1 because the first line is always the note type
-                {
-                    removedLine = fileCurrentLine;
-                }
-                else
-                {
-                    fileContent += fileCurrentLine + "\n";
-                }
-                fileCurrentLineIndex ++;
-            }
-            fileIn.close();
-
-            BufferedWriter fileOut = new BufferedWriter(new FileWriter(file));
-            fileOut.write(fileContent);
-            fileOut.close();  
-            if (removedLine == null)
-            {
-                if (!Silent)
-                    sender.sendMessage(ChatColor.RED + "Did not remove line.");
-            }
-            else
-            {
-                if (!Silent)
-                    sender.sendMessage(ChatColor.GREEN + "Successfully removed line '" + removedLine + "' from note '" + args[1] + "'.");
-            }
-
-        } 
-        catch (Exception e) 
+            if (!Silent)
+            sender.sendMessage(ChatColor.GREEN + "Successfully removed line from note '" + args[1] + "' if line existed.");
+        }
+        else
         {
-            sender.sendMessage(ChatColor.RED + "Error: Failed to write to file. Error information sent to logs.");
-            Bukkit.getLogger().log(Level.SEVERE, e.getMessage());
+            if (!Silent)
+            sender.sendMessage(ChatColor.RED + "Did not remove line.");
         }
 
     }

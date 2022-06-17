@@ -3,6 +3,7 @@ package com.opencratesoftware.mcnotepad;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.util.UUID;
 
 import com.opencratesoftware.mcnotepad.utils.Config;
 import com.opencratesoftware.mcnotepad.utils.Utils;
@@ -20,6 +21,8 @@ public class Note
     private boolean hasInitialized = false;
 
     private String noteName;
+
+    private UUID owner;
 
     Note(File file)
     {
@@ -39,6 +42,8 @@ public class Note
         {
             return;
         }
+        
+        owner = UUID.fromString(noteFile.getParentFile().getName());
 
         updateInformation();
 
@@ -165,7 +170,7 @@ public class Note
 
         while ((newLinePos = contents.indexOf('\n', newLinePos + 1)) != -1) 
         {
-            if(currentLineIndex == lineIndex)
+            if(currentLineIndex == lineIndex - 1)
             {
                 String contentsPart1 = contents.substring(0, newLinePos);
                 int nextLinePos = contents.indexOf('\n', newLinePos + 1);
@@ -173,16 +178,20 @@ public class Note
                 {
                     contents = contentsPart1;
                 }
-                
+                else
+                {
+                    contents = contentsPart1 + contents.substring(nextLinePos);
+                }
+                return Utils.setFileContents(contents, noteFile);
             }
+            currentLineIndex++;
         }
-
-        return Utils.setFileContents(contents, noteFile);
+        return true;
     }
 
     public static void InitializeNoteMemory()
     {
-        Utils.log("Note memory initialized with a capacity of " + String.valueOf(Config.getMaxMemorizedNotes()) + " notes.");
+        Utils.log("[Notepad] Note memory initialized with a capacity of " + String.valueOf(Config.getMaxMemorizedNotes()) + " notes.");
         notes = new Note[Config.getMaxMemorizedNotes()];
         for (int i = 0; i < notes.length; i++) 
         {
