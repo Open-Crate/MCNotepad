@@ -1,7 +1,7 @@
-package com.opencratesoftware.notepad;
+package com.opencratesoftware.mcnotepad;
 
-import com.opencratesoftware.commands.NotepadCommand;
-import com.opencratesoftware.utils.Utils;
+import com.opencratesoftware.mcnotepad.commands.NotepadCommand;
+import com.opencratesoftware.mcnotepad.utils.Utils;
 
 import org.bukkit.plugin.java.JavaPlugin;
 

@@ -1,4 +1,4 @@
-package com.opencratesoftware.commands;
+package com.opencratesoftware.mcnotepad.commands;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -15,7 +15,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.opencratesoftware.utils.Utils;
+import com.opencratesoftware.mcnotepad.utils.Utils;
 
 import net.md_5.bungee.api.ChatColor;
 

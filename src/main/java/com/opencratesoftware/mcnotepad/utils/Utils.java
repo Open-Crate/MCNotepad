@@ -1,4 +1,4 @@
-package com.opencratesoftware.utils;
+package com.opencratesoftware.mcnotepad.utils;
 
 import java.util.List;
 import java.util.UUID;
@@ -7,7 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import com.opencratesoftware.utils.Utils;
+import com.opencratesoftware.mcnotepad.utils.Utils;
 
 import java.io.BufferedReader;
 import java.io.File;
