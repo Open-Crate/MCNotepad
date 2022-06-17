@@ -15,6 +15,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.opencratesoftware.mcnotepad.Note;
+import com.opencratesoftware.mcnotepad.NoteType;
 import com.opencratesoftware.mcnotepad.utils.Utils;
 
 import net.md_5.bungee.api.ChatColor;
@@ -83,36 +85,29 @@ public class NotepadCommand implements CommandExecutor
         }
         else
         {
+
+            Note note;
             String type = "list";
-            try 
+
+            if(args.length > 2)
             {
-                file.getParentFile().mkdirs();
-                file.createNewFile();
-                if (args.length > 2)
-                {
-
-                    if(args[2].equalsIgnoreCase("list"))
-                    {
-                        type = "list";
-                    }
-                    else if(args[2].equalsIgnoreCase("note"))
-                    {
-                        type = "note";
-                    }
-                }
-
-                BufferedWriter fileOut = new BufferedWriter(new FileWriter(file));
-                fileOut.write(type);
-                fileOut.close();
-                    
-                
+                note = Note.getNote(file, NoteType.valueOf(args[2].toLowerCase()));
+                type = note.getType().toString();
+            }
+            else
+            {
+                note = Note.getNote(file, NoteType.list);
+            }
+            
+            if(note.isValid())
+            {
                 sender.sendMessage(ChatColor.GREEN + "Successfully created new " + type + ".");
-            } 
-            catch (Exception e) 
+            }
+            else
             {
                 sender.sendMessage(ChatColor.RED + "Error: Failed to create file. Error information sent to logs");
-                Bukkit.getLogger().log(Level.SEVERE, e.getMessage());
             }
+
         }
     }
 
@@ -232,6 +227,8 @@ public class NotepadCommand implements CommandExecutor
             return;
         }
 
+        Note note = Note.getNote(file);
+
         String noteText = "";
 
         for (int i = 2; i < args.length; i++) 
@@ -245,7 +242,7 @@ public class NotepadCommand implements CommandExecutor
 
         noteText = Utils.formatStringForNotes(noteText);
 
-        if (!Utils.addLineToFileAt(noteText, file, Integer.MAX_VALUE))
+        if (!note.addLine(noteText))
         {
             sender.sendMessage(ChatColor.RED + "Error: Failed to write to file. Error information sent to logs.");
         }
@@ -407,6 +404,8 @@ public class NotepadCommand implements CommandExecutor
             return;
         }
 
+        Note note = Note.getNote(file);
+
         String lineToAdd = "";
 
         for (int i = 3; i < args.length; i++) 
@@ -420,7 +419,7 @@ public class NotepadCommand implements CommandExecutor
 
         lineToAdd = Utils.formatStringForNotes(lineToAdd);
 
-        if (!Utils.addLineToFileAt(lineToAdd, file, Integer.valueOf(args[2]) + 1))
+        if (!note.addLineAt(lineToAdd, Integer.valueOf(args[2])))
         {
             sender.sendMessage(ChatColor.RED + "Error: Failed to write to file. Error information sent to logs.");
         }

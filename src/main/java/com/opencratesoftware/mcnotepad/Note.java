@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 
+import com.opencratesoftware.mcnotepad.utils.Config;
 import com.opencratesoftware.mcnotepad.utils.Utils;
 
 public class Note 
@@ -17,6 +18,8 @@ public class Note
     private NoteType type;
 
     private boolean hasInitialized = false;
+
+    private String noteName;
 
     Note(File file)
     {
@@ -42,6 +45,7 @@ public class Note
         hasInitialized = true;
     }
 
+    
     public void initialize(NoteType noteType)
     {
         if (!noteFile.exists())
@@ -74,6 +78,7 @@ public class Note
             if ((fileCurrentLine = fileIn.readLine()) != null)
             {
                 type = NoteType.valueOf(fileCurrentLine);
+                contents += fileCurrentLine + "\n";
             }
 
             while ((fileCurrentLine = fileIn.readLine()) != null)
@@ -90,6 +95,31 @@ public class Note
         }
     }
 
+    public int getLineCount()
+    {
+        return lineCount;
+    }
+
+    public String getContents()
+    {
+        return contents;
+    }
+
+    public File getFile()
+    {
+        return noteFile;
+    }
+
+    public NoteType getType()
+    {
+        return type;
+    }
+
+    public boolean isValid()
+    {
+        return hasInitialized;
+    }
+
     // For inserting a line at a specified location, if you want to add a line to the end then use the addline function. Returns true if no errors occur
     public boolean addLineAt(String lineToAdd, int lineIndex)
     {
@@ -104,10 +134,10 @@ public class Note
         // keep searching through newlines in content and insert the line after the specified line is found
         while ((newLinePos = contents.indexOf('\n', newLinePos + 1)) != -1) 
         {
-            if(currentLineIndex == lineIndex)
+            if(currentLineIndex == lineIndex - 1)
             {
-                String contentsPart1 = contents.substring(0, newLinePos) + lineToAdd + "\n";
-                contents = contentsPart1 + contents.substring(newLinePos);
+                String contentsPart1 = contents.substring(0, newLinePos + 1) + lineToAdd + "\n";
+                contents = contentsPart1 + contents.substring(newLinePos + 1);
             }
 
             currentLineIndex++;
@@ -148,5 +178,89 @@ public class Note
         }
 
         return Utils.setFileContents(contents, noteFile);
+    }
+
+    public static void InitializeNoteMemory()
+    {
+        Utils.log("Note memory initialized with a capacity of " + String.valueOf(Config.getMaxMemorizedNotes()) + " notes.");
+        notes = new Note[Config.getMaxMemorizedNotes()];
+        for (int i = 0; i < notes.length; i++) 
+        {
+            notes[i] = null;
+        }
+    }
+
+    private static Note[] notes;
+
+    public static Note[] getNotes()
+    {
+        return notes;
+    }
+
+    public static Note getNote(File file)
+    {
+        for (Note note : notes) 
+        {
+            if (note != null)
+            {
+                if(note.getFile() == file)
+                {
+                    return note;
+                }    
+            }
+        }
+
+        Note newNote = new Note(file);
+
+        if(newNote.isValid())
+        {
+            addNoteToMemory(newNote);
+        }
+
+        return newNote;
+    }
+
+    public static Note getNote(File file, NoteType noteType)
+    {
+
+        for (Note note : notes) 
+        {
+            if(note != null)
+            {
+                if(note.getFile() == file)
+                {
+                    return note;
+                }    
+            }
+        }
+
+        Note newNote = new Note(file, noteType);
+        addNoteToMemory(newNote);
+        return newNote;
+    }
+
+    public static int addNoteToMemory(Note noteToAdd)
+    {
+        for (int i = 0; i < notes.length; i++) // parse for any empty space and add the note there 
+        {
+            if(notes[i] != null)
+            {
+                if(notes[i].getFile().exists())
+                {
+                    continue;
+                }
+            }
+            notes[i] = noteToAdd;
+            return i;
+        }
+
+        for (int i = 1; i < notes.length; i++) 
+        {
+            notes[i - 1] = notes[i];
+        }
+
+        notes[notes.length - 1] = noteToAdd;
+
+        return notes.length - 1;
     }
 }

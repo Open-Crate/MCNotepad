@@ -1,3 +1,3 @@
 package com.opencratesoftware.mcnotepad;
 
-public enum NoteType {note, list}
+public enum NoteType {list, note}

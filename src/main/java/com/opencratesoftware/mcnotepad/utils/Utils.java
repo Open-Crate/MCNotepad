@@ -7,7 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import com.opencratesoftware.mcnotepad.utils.Utils;
+import com.opencratesoftware.mcnotepad.utils.Config;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -65,6 +65,7 @@ public class Utils
         useWhiteList = getConfig().getBoolean("use-character-whitelist");
         characterWhitelist = getConfig().getCharacterList("whitelisted-characters");
         storageCapacity = getConfig().getLong("storage-capacity-per-user");
+        Config.setConfigValues(getConfig());
     }
 
     public static String formatStringForNotes(String string)
