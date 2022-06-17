@@ -76,7 +76,7 @@ public class Utils
         {
             if (!isCharWhitelisted(returnValue.charAt(i)))
             {
-                returnValue.replaceAll(String.valueOf(returnValue.charAt(i)), " ");
+                returnValue = returnValue.replaceAll(String.valueOf(returnValue.charAt(i)), "#");
             }
         }
 
