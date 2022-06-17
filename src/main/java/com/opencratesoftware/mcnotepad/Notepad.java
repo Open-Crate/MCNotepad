@@ -15,6 +15,8 @@ public final class Notepad  extends JavaPlugin
 
         Utils.updateConfiguration();
 
+        Note.InitializeNoteMemory();
+
         getCommand("notepad").setExecutor(new NotepadCommand());
     }
 }

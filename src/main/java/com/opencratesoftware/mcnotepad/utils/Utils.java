@@ -7,7 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import com.opencratesoftware.mcnotepad.utils.Utils;
+import com.opencratesoftware.mcnotepad.utils.Config;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -65,6 +65,7 @@ public class Utils
         useWhiteList = getConfig().getBoolean("use-character-whitelist");
         characterWhitelist = getConfig().getCharacterList("whitelisted-characters");
         storageCapacity = getConfig().getLong("storage-capacity-per-user");
+        Config.setConfigValues(getConfig());
     }
 
     public static String formatStringForNotes(String string)
@@ -287,7 +288,23 @@ public class Utils
         return false;
     }
 
-    public static boolean addLineToFileAt(String lineToAdd, File file, long lineIndex)
+    public static boolean setFileContents(String newContents, File file)
+    {
+        try 
+        {
+            BufferedWriter fileOut = new BufferedWriter(new FileWriter(file));
+            fileOut.write(newContents);
+            fileOut.close();
+        } 
+        catch (Exception e) 
+        {
+            logError(e.getMessage());
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean addLineToFileAt(String lineToAdd, File file, int lineIndex)
     {
         if (!file.exists())
         {
