@@ -287,6 +287,22 @@ public class Utils
         return false;
     }
 
+    public static boolean setFileContents(String newContents, File file)
+    {
+        try 
+        {
+            BufferedWriter fileOut = new BufferedWriter(new FileWriter(file));
+            fileOut.write(newContents);
+            fileOut.close();
+        } 
+        catch (Exception e) 
+        {
+            logError(e.getMessage());
+            return false;
+        }
+        return true;
+    }
+
     public static boolean addLineToFileAt(String lineToAdd, File file, long lineIndex)
     {
         if (!file.exists())
