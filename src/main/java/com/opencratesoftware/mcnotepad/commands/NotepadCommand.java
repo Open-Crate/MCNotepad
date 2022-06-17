@@ -242,32 +242,18 @@ public class NotepadCommand implements CommandExecutor
                 noteText += " ";
             }
         }
+
         noteText = Utils.formatStringForNotes(noteText);
 
-        try 
-        {
- 
-            BufferedReader fileIn = new BufferedReader(new FileReader(file));
-            String fileContent = "";
-            String fileCurrentLine;
-            while ((fileCurrentLine = fileIn.readLine()) != null)
-            {
-                fileContent += fileCurrentLine + "\n";
-            }
-            fileIn.close();
-
-            BufferedWriter fileOut = new BufferedWriter(new FileWriter(file));
-            fileOut.write(fileContent + noteText);
-            fileOut.close();  
-                
-            sender.sendMessage(ChatColor.GREEN + "Successfully added '" + noteText + "' to note '" + args[1] + "'.");
-        } 
-        catch (Exception e) 
+        if (!Utils.addLineToFileAt(noteText, file, Long.MAX_VALUE))
         {
             sender.sendMessage(ChatColor.RED + "Error: Failed to write to file. Error information sent to logs.");
-            Bukkit.getLogger().log(Level.SEVERE, e.getMessage());
         }
-        
+        else
+        {
+            sender.sendMessage(ChatColor.GREEN + "Successfully added '" + noteText + "' to note '" + args[1] + "'.");
+        }
+
     }
 
     private void removeLineAction(CommandSender sender, String[] args, boolean Silent)
@@ -421,62 +407,26 @@ public class NotepadCommand implements CommandExecutor
             return;
         }
 
-        try 
+        String lineToAdd = "";
+
+        for (int i = 3; i < args.length; i++) 
         {
-            String lineToAdd = "";
-
-            for (int i = 3; i < args.length; i++) 
+            lineToAdd += args[i];
+            if (i < args.length - 1)
             {
-                lineToAdd += args[i];
-                if (i < args.length - 1)
-                {
-                    lineToAdd += " ";
-                }
+                lineToAdd += " ";
             }
+        }
 
-            lineToAdd = Utils.formatStringForNotes(lineToAdd);
+        lineToAdd = Utils.formatStringForNotes(lineToAdd);
 
-            boolean didAddLine = false;
-            BufferedReader fileIn = new BufferedReader(new FileReader(file));
-            String fileContent = "";
-            String fileCurrentLine;
-            int fileCurrentLineIndex = 0;
-
-            while ((fileCurrentLine = fileIn.readLine()) != null)
-            {
-                if (fileCurrentLineIndex == Integer.parseInt(args[2]) + 1) // add 1 because the first line is always the note type
-                {
-                    fileContent += lineToAdd + "\n" + fileCurrentLine + "\n";
-                    didAddLine = true;
-                }
-                else
-                {
-                    fileContent += fileCurrentLine + "\n";
-                }
-                fileCurrentLineIndex ++;
-            }
-            fileIn.close();
-
-            BufferedWriter fileOut = new BufferedWriter(new FileWriter(file));
-            fileOut.write(fileContent);
-            fileOut.close();  
-            if (!Silent)
-            {
-                if (!didAddLine)
-                {
-                    sender.sendMessage(ChatColor.RED + "Did not add line.");
-                }
-                else
-                {
-                    sender.sendMessage(ChatColor.GREEN + "Successfully inserted line '" + lineToAdd + "' into note '" + args[1] + "'.");
-                }
-            }
-
-        } 
-        catch (Exception e) 
+        if (!Utils.addLineToFileAt(lineToAdd, file, Long.valueOf(args[2]) + 1))
         {
             sender.sendMessage(ChatColor.RED + "Error: Failed to write to file. Error information sent to logs.");
-            Bukkit.getLogger().log(Level.SEVERE, e.getMessage());
+        }
+        else
+        {
+            sender.sendMessage(ChatColor.GREEN + "Successfully inserted line '" + lineToAdd + "' into note '" + args[1] + "'.");
         }
     }
 

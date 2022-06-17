@@ -10,8 +10,10 @@ import org.bukkit.configuration.file.FileConfiguration;
 import com.opencratesoftware.mcnotepad.utils.Utils;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.util.logging.Level;
 
 import net.md_5.bungee.api.ChatColor;
@@ -28,9 +30,14 @@ public class Utils
     
     private static long storageCapacity;
 
-    public static void Log(String msg)
+    public static void log(String msg)
     {
         Bukkit.getLogger().log(Level.INFO, msg);
+    }
+
+    public static void logError(String msg)
+    {
+        Bukkit.getLogger().log(Level.SEVERE, msg);
     }
 
     public static FileConfiguration getConfig()
@@ -279,4 +286,63 @@ public class Utils
 
         return false;
     }
+
+    public static boolean addLineToFileAt(String lineToAdd, File file, long lineIndex)
+    {
+        if (!file.exists())
+        {
+            log("Tried to add line to file \'" + file.toString() + "\' but file did not exist.");
+            return false;
+        }
+
+        try 
+        {
+            boolean didAddLine = false;
+            BufferedReader fileIn = new BufferedReader(new FileReader(file));
+            String fileContent = "";
+            String fileCurrentLine;
+            int fileCurrentLineIndex = 0;
+
+            while ((fileCurrentLine = fileIn.readLine()) != null)
+            {
+                if (fileCurrentLineIndex == lineIndex)
+                {
+                    fileContent += lineToAdd + "\n" + fileCurrentLine + "\n";
+                    didAddLine = true;
+                }
+                else
+                {
+                    fileContent += fileCurrentLine + "\n";
+                }
+                fileCurrentLineIndex ++;
+            }
+
+            if (!didAddLine)
+            {
+                if(lineIndex < 0)
+                {
+                    fileContent = lineToAdd + fileContent;
+                }
+                else
+                {
+                    fileContent = fileContent + lineToAdd;
+                }
+            }
+
+            fileIn.close();
+
+            BufferedWriter fileOut = new BufferedWriter(new FileWriter(file));
+            fileOut.write(fileContent);
+            fileOut.close();
+
+        } 
+        catch (Exception e) 
+        {
+            logError(e.getMessage());
+            return false;
+        }
+
+        return true;
+    }
+
 }
