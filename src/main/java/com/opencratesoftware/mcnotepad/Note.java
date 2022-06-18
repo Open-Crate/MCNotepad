@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.UUID;
 
+import org.checkerframework.checker.builder.qual.ReturnsReceiver;
+
 import com.opencratesoftware.mcnotepad.utils.Config;
 import com.opencratesoftware.mcnotepad.utils.Utils;
 
@@ -68,6 +70,28 @@ public class Note
         }
 
         initialize();
+    }
+
+    public String getViewableContents(boolean showLineNumbers)
+    {
+        String returnValue = contents.substring(contents.indexOf('\n', 0) + 1);
+        
+        if (showLineNumbers)
+        {
+            returnValue = "0. " + returnValue;
+            int newLinePos = 0;
+            int currentLine = 1;
+            while ((newLinePos = returnValue.indexOf('\n', newLinePos + 1)) != -1) 
+            {
+                if (newLinePos > returnValue.length() - 2)
+                    break;
+
+                returnValue = returnValue.substring(0, newLinePos + 1) + String.valueOf(currentLine) + ". " + returnValue.substring(newLinePos + 1);
+                newLinePos = newLinePos + (String.valueOf(currentLine) + ". ").length();
+                currentLine++;
+            }
+        }
+        return returnValue;
     }
 
     public void updateInformation()

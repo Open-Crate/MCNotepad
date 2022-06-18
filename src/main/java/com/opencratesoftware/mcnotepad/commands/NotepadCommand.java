@@ -159,56 +159,29 @@ public class NotepadCommand implements CommandExecutor
             return;
         }
 
-        try 
+        Note note = Note.getNote(file);
+
+        boolean showLineNumbers = false;
+
+        if (note.getType() == NoteType.list)
         {
-            boolean showLineNumbers = false;
-
-            FileReader fileReader = new FileReader(file);
-            Scanner in = new Scanner(fileReader);
-
-            String Type = in.nextLine();
-            if (Type.equalsIgnoreCase("list"))
+            showLineNumbers = true;
+        }
+        if (args.length > 2)
+        {
+            if (args[2].equalsIgnoreCase("true"))
             {
                 showLineNumbers = true;
             }
-            if (args.length > 2)
+            else
             {
-                if (args[2].equalsIgnoreCase("true"))
-                {
-                    showLineNumbers = true;
-                }
-                else
-                {
-                    showLineNumbers = false;
-                }
+                showLineNumbers = false;
             }
-
-            int currentLineNumber = 0;
-            player.sendMessage("--------------------------------------------------");
-            while (in.hasNext()) 
-            {
-                String currentLine = new String();
-                if (showLineNumbers)
-                {
-                    currentLine = currentLineNumber + ". " + in.nextLine();
-                }
-                else
-                {
-                    currentLine = in.nextLine();
-                }
-
-                player.sendMessage(currentLine);
-                currentLineNumber++;
-            }
-            player.sendMessage("--------------------------------------------------");
-            fileReader.close();
-            in.close();
-
-        } catch (Exception e) 
-        {
-          
         }
 
+        player.sendMessage("--------------------------------------------------");
+        player.sendMessage(note.getViewableContents(showLineNumbers));
+        player.sendMessage("--------------------------------------------------");
     }
 
     private void addAction(CommandSender sender, String[] args)
