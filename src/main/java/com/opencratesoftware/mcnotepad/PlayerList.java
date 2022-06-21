@@ -10,6 +10,7 @@ import java.util.UUID;
 import javax.naming.ContextNotEmptyException;
 
 import com.google.common.hash.Hashing;
+import com.opencratesoftware.mcnotepad.utils.Config;
 import com.opencratesoftware.mcnotepad.utils.Utils;
 
 /* Class for lists that store player UUIDs for any purpose */
@@ -101,6 +102,11 @@ public class PlayerList
         return uuidCount;
     }
 
+    public File getFile()
+    {
+        return file;
+    }
+
     public void updateInformation()
     {
         try 
@@ -166,5 +172,53 @@ public class PlayerList
 
         return Utils.setFileContents(contents, file); 
     }
+    
+    ///////////////////////
+    // memory management //
+    ///////////////////////
 
+    protected static PlayerList[] lists;
+
+    public static void initializeListMemory()
+    {
+        lists = new PlayerList[Config.getMaxPlayerListsInMemory()];
+    }
+    
+    public static PlayerList getList(File listFile)
+    {
+        for (int i = 0; i < lists.length; i++)
+        {
+            if (lists[i].getFile() == listFile)
+            {
+                return lists[i];
+            }
+        }
+
+        PlayerList newList = new PlayerList(listFile, Config.getPlayerListCapacity());
+        
+        addListToMemory(newList);
+
+        return newList;
+    }
+
+    public static int addListToMemory(PlayerList list)
+    {
+        for (int i = 0; i < lists.length; i++)
+        {
+            if (lists[i] == null)
+            {
+                lists[i] = list;
+                return i;
+            }
+        }
+
+        for (int i = 0; i < lists.length + 1; i++) 
+        {
+            lists[i] = lists[i + 1];
+        }
+
+        lists[lists.length - 1] = list;
+
+        return lists.length - 1;
+    }
 }

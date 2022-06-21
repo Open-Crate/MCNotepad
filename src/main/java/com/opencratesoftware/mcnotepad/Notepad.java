@@ -17,6 +17,8 @@ public final class Notepad  extends JavaPlugin
 
         Note.InitializeNoteMemory();
 
+        PlayerList.initializeListMemory();
+
         getCommand("notepad").setExecutor(new NotepadCommand());
     }
 }
