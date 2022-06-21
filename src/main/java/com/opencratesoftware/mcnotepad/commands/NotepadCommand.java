@@ -17,6 +17,7 @@ import org.bukkit.entity.Player;
 
 import com.opencratesoftware.mcnotepad.Note;
 import com.opencratesoftware.mcnotepad.NoteType;
+import com.opencratesoftware.mcnotepad.TrustList;
 import com.opencratesoftware.mcnotepad.utils.Utils;
 
 import net.md_5.bungee.api.ChatColor;
@@ -399,28 +400,18 @@ public class NotepadCommand implements CommandExecutor
             }
             
         }
-        try
-        {
-            BufferedReader fileIn = new BufferedReader(new FileReader(trustFile));
-            String fileContent = "";
-            String fileCurrentLine;
-            while ((fileCurrentLine = fileIn.readLine()) != null)
-            {
-                fileContent += fileCurrentLine + "\n";
-            }
-            fileIn.close();
 
-            BufferedWriter fileOut = new BufferedWriter(new FileWriter(trustFile));
-            fileOut.write(fileContent + getNameUUID(args[1]).toString());
-            fileOut.close();  
+        TrustList trustList = TrustList.getList(trustFile);
+
+        if (trustList.add(getNameUUID(args[1])))
+        {
             sender.sendMessage(ChatColor.GREEN + "Successfully added '" + args[1] + "' UUID to file. UUID: '" + getNameUUID(args[1]).toString() + "'");
         }
-        catch (Exception e) 
+        else
         {
             sender.sendMessage(ChatColor.RED + "Error: Error trying to write to file. Error information sent to logs."); 
-            Bukkit.getLogger().log(Level.SEVERE, e.getMessage());
-            return;
         }
+
     }
 
     private void untrustUserAction(CommandSender sender, String[] args)
@@ -435,45 +426,28 @@ public class NotepadCommand implements CommandExecutor
         {
             return;           
         }
-        try
-        {
-            BufferedReader fileIn = new BufferedReader(new FileReader(trustFile));
-            String fileContent = "";
-            String fileCurrentLine;
-            boolean everRemovedAnything = false;
-            while ((fileCurrentLine = fileIn.readLine()) != null)
-            {
-                if (!(getNameUUID(args[1]).toString().equalsIgnoreCase(fileCurrentLine)) && !(args[1].equalsIgnoreCase(fileCurrentLine)))
-                {
-                    fileContent += fileCurrentLine + "\n";
-                }
-                else
-                {
-                    everRemovedAnything = true;
-                }
-            }
 
-            if (!everRemovedAnything)
-            {
-                sender.sendMessage("User or UUID not found in trust file.");
-            }
-            else
-            {
-                sender.sendMessage(ChatColor.GREEN + "Successfully removed all instances found in trust file.");
-            }
-            
-            fileIn.close();
+        TrustList trustList = TrustList.getList(trustFile);
 
-            BufferedWriter fileOut = new BufferedWriter(new FileWriter(trustFile));
-            fileOut.write(fileContent);
-            fileOut.close();  
-        }
-        catch (Exception e) 
+        UUID uuidToRemove;
+        if (args[1].length() > 24)
         {
-            sender.sendMessage(ChatColor.RED + "Error: Error trying to write to file. Error information sent to logs.");
-            Bukkit.getLogger().log(Level.SEVERE, e.getMessage());
-            return;
+            uuidToRemove = UUID.fromString(args[1]);
         }
+        else
+        {
+            uuidToRemove = getNameUUID(args[1]);
+        }
+
+        if (trustList.remove(uuidToRemove))
+        {
+            sender.sendMessage(ChatColor.GREEN + "Successfully removed from trust file.");
+        }
+        else
+        {
+            sender.sendMessage(ChatColor.RED + "Error: Error information sent to logs if any."); 
+        }
+
     }
 
     private void listTrustedAction(CommandSender sender, String[] args)
@@ -485,30 +459,15 @@ public class NotepadCommand implements CommandExecutor
             return;           
         }
 
-        try
-        {
-            BufferedReader fileIn = new BufferedReader(new FileReader(trustFile));
-            String fileCurrentLine;
-            boolean everSentAnything = false;
-            while ((fileCurrentLine = fileIn.readLine()) != null)
-            {   
-                sender.sendMessage("Name: '" + Bukkit.getServer().getOfflinePlayer(UUID.fromString(fileCurrentLine)).getName() + "' UUID: '" + fileCurrentLine + "'");
-                everSentAnything = true;
-            }
-            fileIn.close();
+        TrustList trustList = TrustList.getList(trustFile);
+        UUID[] trustListContents = trustList.getUUIDs();
 
-            if (!everSentAnything)
-            {
-                sender.sendMessage("No trusted users found in file.");
-            }
-
-        }
-        catch (Exception e) 
+        sender.sendMessage("-----------------------------------");   
+        for (UUID uuid : trustListContents) 
         {
-            sender.sendMessage(ChatColor.RED + "Error: Error information sent to logs.");
-            Bukkit.getLogger().log(Level.SEVERE, e.getMessage());
-            return;
+            sender.sendMessage(uuid.toString());    
         }
+        sender.sendMessage("-----------------------------------");   
     }
 
     private void clearTrustedAction(CommandSender sender, String[] args)

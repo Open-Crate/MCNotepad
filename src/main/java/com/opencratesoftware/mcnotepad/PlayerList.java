@@ -7,23 +7,23 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.UUID;
 
-import javax.naming.ContextNotEmptyException;
-
-import com.google.common.hash.Hashing;
 import com.opencratesoftware.mcnotepad.utils.Config;
 import com.opencratesoftware.mcnotepad.utils.Utils;
 
 /* Class for lists that store player UUIDs for any purpose */
 public class PlayerList 
 {
-    private UUID[] uuids;
-    private String contents;
+    protected UUID[] uuids;
 
-    private File file;
+    protected String contents = "";
 
-    private Integer uuidCount;
+    protected File file;
+
+    protected Integer uuidCount;
 
     boolean Initialized = false;
+
+    protected PlayerList(){}
 
     PlayerList(File listFile, int capacity)
     {
@@ -138,7 +138,6 @@ public class PlayerList
     public boolean add(UUID addition)
     {
         if (getUUIDCount() >= getCapacity()){ return false; } // do not add if we've reached capacity
-
         contents += addition.toString() + "\n";
         uuids[getUUIDCount()] = addition;
 
@@ -188,9 +187,12 @@ public class PlayerList
     {
         for (int i = 0; i < lists.length; i++)
         {
-            if (lists[i].getFile() == listFile)
+            if (lists[i] != null)
             {
-                return lists[i];
+                if (lists[i].getFile() == listFile)
+                {
+                    return lists[i];
+                }
             }
         }
 
@@ -212,7 +214,7 @@ public class PlayerList
             }
         }
 
-        for (int i = 0; i < lists.length + 1; i++) 
+        for (int i = 0; i < lists.length - 1; i++) 
         {
             lists[i] = lists[i + 1];
         }
