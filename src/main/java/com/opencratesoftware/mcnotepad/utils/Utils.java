@@ -362,4 +362,35 @@ public class Utils
         return true;
     }
 
+    public static boolean removeLineFromString(String string, int lineIndex)
+    {
+        int newLinePos = 0;
+        int currentLineIndex = 0;
+        
+        if(lineIndex < 0)
+        {
+            return false;
+        }
+
+        while ((newLinePos = string.indexOf('\n', newLinePos + 1)) != -1) 
+        {
+            if(currentLineIndex == lineIndex)
+            {
+                String contentsPart1 = string.substring(0, newLinePos);
+                int nextLinePos = string.indexOf('\n', newLinePos + 1);
+                if(nextLinePos == -1)
+                {
+                    string = contentsPart1;
+                }
+                else
+                {
+                    string = contentsPart1 + string.substring(nextLinePos);
+                }
+                return true;
+            }
+            currentLineIndex++;
+        }
+        return false;
+    }
+
 }
