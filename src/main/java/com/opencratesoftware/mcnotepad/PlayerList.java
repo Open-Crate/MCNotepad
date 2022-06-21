@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import javax.naming.ContextNotEmptyException;
 
+import com.google.common.hash.Hashing;
 import com.opencratesoftware.mcnotepad.utils.Utils;
 
 /* Class for lists that store player UUIDs for any purpose */
@@ -18,6 +19,8 @@ public class PlayerList
     private String contents;
 
     private File file;
+
+    private Integer uuidCount;
 
     boolean Initialized = false;
 
@@ -48,7 +51,21 @@ public class PlayerList
         Initialized = true;
     }
 
+    // in most cases using this will get better performance than getUUIDsRaw as this will only have non null UUIDS in the array, however the overhead of this may not be worth it in some cases, and in those cases use getUUIDsRaw
     public UUID[] getUUIDs()
+    {
+        UUID[] returnValue = new UUID[getUUIDCount()];
+
+        for (int i = 0; i < returnValue.length; i++) 
+        {
+            returnValue[i] = uuids[i];    
+        }
+
+        return returnValue;
+    }
+
+    // returns all UUIDs (including null ones)
+    public UUID[] getUUIDsRaw()
     {
         return uuids;
     }
@@ -63,14 +80,25 @@ public class PlayerList
         return uuids.length;
     }
 
-    public int getUUIDCount()
+    public int getUUIDCount(boolean countSlow)
     {
+        if(!countSlow){ return getUUIDCount(); }
+
         int returnValue = 0;
         for (UUID uuid : uuids) 
         {
-            returnValue++;
+            if(uuid != null)
+            {
+                returnValue++;
+            }
         }
+
         return returnValue;
+    }
+
+    public int getUUIDCount()
+    {
+        return uuidCount;
     }
 
     public void updateInformation()
@@ -97,6 +125,8 @@ public class PlayerList
         {
             Utils.logError(e.getMessage());
         }
+
+        uuidCount = getUUIDCount(true);
     }
     
     public boolean add(UUID addition)
@@ -105,8 +135,36 @@ public class PlayerList
 
         contents += addition.toString() + "\n";
         uuids[getUUIDCount()] = addition;
-        
+
+        uuidCount++;
+
         return Utils.setFileContents(contents, file);
+    }
+
+    public boolean remove(UUID uuidToRemove)
+    {
+        int removedUUIDIndex = -1;
+        for (int i = 0; i < uuids.length; i++) 
+        {
+            if (uuids[i] == uuidToRemove)
+            {
+                uuids[i] = null;
+                removedUUIDIndex = i;
+            }
+        }
+
+        if (removedUUIDIndex == -1) { return false; } // if we didn't find it then stop
+
+        for (int i = removedUUIDIndex + 1; i < uuids.length; i++) // new for loop starting where we left off instead of same with branch to skip running the branch when searching
+        {
+            uuids[i - 1] = uuids[i];
+        }
+
+        Utils.removeLineFromString(contents, removedUUIDIndex); 
+
+        uuidCount--; 
+
+        return Utils.setFileContents(contents, file); 
     }
 
 }
