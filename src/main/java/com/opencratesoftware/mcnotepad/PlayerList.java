@@ -151,10 +151,13 @@ public class PlayerList
         int removedUUIDIndex = -1;
         for (int i = 0; i < uuids.length; i++) 
         {
-            if (uuids[i] == uuidToRemove)
+            if(uuids[i] == null){ continue; }
+
+            if (uuids[i].equals(uuidToRemove))
             {
                 uuids[i] = null;
                 removedUUIDIndex = i;
+                break;
             }
         }
 
@@ -165,7 +168,7 @@ public class PlayerList
             uuids[i - 1] = uuids[i];
         }
 
-        Utils.removeLineFromString(contents, removedUUIDIndex); 
+        contents = Utils.removeLineFromString(contents, removedUUIDIndex); 
 
         uuidCount--; 
 
