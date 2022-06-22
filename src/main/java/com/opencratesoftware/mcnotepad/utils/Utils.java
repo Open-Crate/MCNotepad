@@ -32,12 +32,12 @@ public class Utils
 
     public static void log(String msg)
     {
-        Bukkit.getLogger().log(Level.INFO, msg);
+        Bukkit.getLogger().log(Level.INFO, "[Notepad]" + msg);
     }
 
     public static void logError(String msg)
     {
-        Bukkit.getLogger().log(Level.SEVERE, msg);
+        Bukkit.getLogger().log(Level.SEVERE, "[Notepad]" + msg);
     }
 
     public static FileConfiguration getConfig()
