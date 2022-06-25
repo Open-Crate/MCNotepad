@@ -150,13 +150,18 @@ public class Note
     // For inserting a line at a specified location, if you want to add a line to the end then use the addline function. Returns true if no errors occur
     public FunctionResult addLineAt(String lineToAdd, int lineIndex)
     {
-        int newLinePos = 0;
-        int currentLineIndex = -1;
-        
+        if (noteFile.length() >= Config.getMaxNoteSize())
+        {
+            return new FunctionResult(false, "Adding to this note would exceed the file size limit set by the server administrators (" + ((float) Config.getMaxNoteSize()) / 1024.0 + " kilobytes) ", "filesizelimit");
+        }
+
         if (lineIndex < 0)
         {
             return new FunctionResult(false, "Invalid line index (less than 0)");
         }
+
+        int newLinePos = 0;
+        int currentLineIndex = -1;
 
         // keep searching through newlines in content and insert the line after the specified line is found
         while ((newLinePos = contents.indexOf('\n', newLinePos + 1)) != -1) 
@@ -175,6 +180,11 @@ public class Note
 
     public FunctionResult addLine(String lineToAdd)
     {
+        if (noteFile.length() >= Config.getMaxNoteSize())
+        {
+            return new FunctionResult(false, "Adding to this note would exceed the file size limit set by the server administrators (" + ((float) Config.getMaxNoteSize()) / 1024.0 + " kilobytes) ", "filesizelimit");
+        }
+
         contents += lineToAdd + "\n";
         return Utils.setFileContents(contents, noteFile);
     }
@@ -210,7 +220,7 @@ public class Note
         }
         return new FunctionResult(true, "");
     }
-    
+
     /* First the ability to request PlayerLists to end themselves, now notes :( */
     public void delete()
     {
