@@ -211,6 +211,13 @@ public class Note
         return new FunctionResult(true, "");
     }
     
+    /* First the ability to request PlayerLists to end themselves, now notes :( */
+    public void delete()
+    {
+        removeNoteFromMemory(this);
+        noteFile.delete();
+    }
+
     ///////////////////////
     /* Memory Management */
     ///////////////////////
@@ -297,6 +304,25 @@ public class Note
         notes[notes.length - 1] = noteToAdd;
 
         return notes.length - 1;
+    }
+
+    public static FunctionResult removeNoteFromMemory(Note noteToRemove)
+    {
+        for (int i = 0; i < notes.length; i++)
+        {
+            if (notes[i] == noteToRemove)
+            {
+                for (int j = i; j > 0; j--) 
+                {
+                    notes[j] = notes[j - 1];
+                }
+                notes[0] = null;
+                
+                return new FunctionResult(true, "Successfully removed list from memory.");
+            }
+        }
+
+        return new FunctionResult(false, "Could not locate list in memory.", "notfound");  
     }
 
     ///////////////////////////////////

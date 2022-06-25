@@ -242,7 +242,6 @@ public class PlayerList
 
     public static FunctionResult removeListFromMemory(PlayerList list)
     {
-
         for (int i = 0; i < lists.length; i++)
         {
             if (lists[i] == list)

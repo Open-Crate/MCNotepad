@@ -130,9 +130,10 @@ public class NotepadCommand implements CommandExecutor
         File file = getNoteFile(sender, args[1], true);
         if (UUID.fromString(file.getParentFile().getName()).equals(getSenderUUID(sender))) // do not allow users to delete files not in their directory.
         {
-            if (file.exists())
+            Note note = Note.getNote(file);
+            if (note.isValid())
             {
-                file.delete();
+                note.delete();
                 sender.sendMessage(ChatColor.GREEN + "Successfully deleted note.");
             }
             else
@@ -485,7 +486,7 @@ public class NotepadCommand implements CommandExecutor
         sender.sendMessage("-----------------------------------");   
     }
 
-    private void clearTrustedAction(CommandSender sender, String[] args) // definitely update soon
+    private void clearTrustedAction(CommandSender sender, String[] args)
     {
         File file = getUserTrustFile(getSenderUUID(sender));
 
