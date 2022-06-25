@@ -215,7 +215,7 @@ public class Note
 
     public static void InitializeNoteMemory()
     {
-        Utils.log("[Notepad] Note memory initialized with a capacity of " + String.valueOf(Config.getMaxMemorizedNotes()) + " notes.");
+        Utils.log("Note memory initialized with a capacity of " + String.valueOf(Config.getMaxMemorizedNotes()) + " notes.");
         notes = new Note[Config.getMaxMemorizedNotes()];
         for (int i = 0; i < notes.length; i++) 
         {

@@ -15,6 +15,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.opencratesoftware.mcnotepad.FunctionResult;
 import com.opencratesoftware.mcnotepad.Note;
 import com.opencratesoftware.mcnotepad.NoteType;
 import com.opencratesoftware.mcnotepad.TrustList;
@@ -439,13 +440,15 @@ public class NotepadCommand implements CommandExecutor
             uuidToRemove = getNameUUID(args[1]);
         }
 
-        if (trustList.remove(uuidToRemove))
+        FunctionResult removeResult = trustList.remove(uuidToRemove);
+
+        if (removeResult.successful())
         {
             sender.sendMessage(ChatColor.GREEN + "Successfully removed from trust file.");
         }
         else
         {
-            sender.sendMessage(ChatColor.RED + "Error: Error information sent to logs if any."); 
+            sender.sendMessage(removeResult.getUserFriendlyMessage()); 
         }
 
     }
@@ -465,12 +468,12 @@ public class NotepadCommand implements CommandExecutor
         sender.sendMessage("-----------------------------------");   
         for (UUID uuid : trustListContents) 
         {
-            sender.sendMessage(uuid.toString());    
+            sender.sendMessage( "Name: '" + Bukkit.getOfflinePlayer(uuid).getName() + "'\n" + "UUID: '" + uuid.toString());    
         }
         sender.sendMessage("-----------------------------------");   
     }
 
-    private void clearTrustedAction(CommandSender sender, String[] args)
+    private void clearTrustedAction(CommandSender sender, String[] args) // definitely update soon
     {
         File file = getUserTrustFile(getSenderUUID(sender));
 

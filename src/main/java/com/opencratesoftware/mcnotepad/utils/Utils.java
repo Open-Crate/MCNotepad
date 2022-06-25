@@ -7,6 +7,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 
+import com.google.common.base.Function;
+import com.opencratesoftware.mcnotepad.FunctionResult;
 import com.opencratesoftware.mcnotepad.utils.Config;
 
 import java.io.BufferedReader;
@@ -288,7 +290,7 @@ public class Utils
         return false;
     }
 
-    public static boolean setFileContents(String newContents, File file)
+    public static FunctionResult setFileContents(String newContents, File file)
     {
         try 
         {
@@ -299,9 +301,9 @@ public class Utils
         catch (Exception e) 
         {
             logError(e.getMessage());
-            return false;
+            return new FunctionResult(false, "Error: Error information sent to logs.");
         }
-        return true;
+        return new FunctionResult(true, "");
     }
 
     public static boolean addLineToFileAt(String lineToAdd, File file, int lineIndex)

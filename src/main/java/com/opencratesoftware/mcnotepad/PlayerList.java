@@ -7,8 +7,11 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.UUID;
 
+import com.google.common.base.Function;
 import com.opencratesoftware.mcnotepad.utils.Config;
 import com.opencratesoftware.mcnotepad.utils.Utils;
+
+import net.md_5.bungee.api.ChatColor;
 
 /* Class for lists that store player UUIDs for any purpose */
 public class PlayerList 
@@ -135,9 +138,9 @@ public class PlayerList
         uuidCount = getUUIDCount(true);
     }
     
-    public boolean add(UUID addition)
+    public FunctionResult add(UUID addition)
     {
-        if (getUUIDCount() >= getCapacity()){ return false; } // do not add if we've reached capacity
+        if (getUUIDCount() >= getCapacity()){ return new FunctionResult(false, ChatColor.RED + "List has reached maximum capacity.", "full"); } // do not add if we've reached capacity
         contents += addition.toString() + "\n";
         uuids[getUUIDCount()] = addition;
 
@@ -146,7 +149,7 @@ public class PlayerList
         return Utils.setFileContents(contents, file);
     }
 
-    public boolean remove(UUID uuidToRemove)
+    public FunctionResult remove(UUID uuidToRemove)
     {
         int removedUUIDIndex = -1;
         for (int i = 0; i < uuids.length; i++) 
@@ -161,7 +164,7 @@ public class PlayerList
             }
         }
 
-        if (removedUUIDIndex == -1) { return false; } // if we didn't find it then stop
+        if (removedUUIDIndex == -1) { return new FunctionResult(false, ChatColor.RED + "Could not find player in list.", "notfound"); } // if we didn't find it then stop
 
         for (int i = removedUUIDIndex + 1; i < uuids.length; i++) // new for loop starting where we left off instead of same with branch to skip running the branch when searching
         {
