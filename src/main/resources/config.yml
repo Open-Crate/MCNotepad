@@ -1,8 +1,7 @@
-storage-capacity-per-user: 2000000
-max-notes-per-user: 30
-max-note-file-size: 10000
+max-notes-per-user: 20
+max-note-file-size: 100000
 max-characters-per-line: 300
-filename-max-characters: 30
+filename-max-characters: 40
 
 max-notes-in-memory: 8
 max-notes-in-memory-per-player: 2

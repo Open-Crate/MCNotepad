@@ -27,8 +27,6 @@ public class Utils
     private static boolean useWhiteList = true;
 
     private static List<Character> characterWhitelist;
-    
-    private static long storageCapacity;
 
     public static void log(String msg)
     {
@@ -55,16 +53,10 @@ public class Utils
         return characterWhitelist;
     }
 
-    public static long getStorageCapacity()
-    {
-        return storageCapacity;
-    }
-
     public static void updateConfiguration()
     {
         useWhiteList = getConfig().getBoolean("use-character-whitelist");
         characterWhitelist = getConfig().getCharacterList("whitelisted-characters");
-        storageCapacity = getConfig().getLong("storage-capacity-per-user");
         Config.setConfigValues(getConfig());
     }
 

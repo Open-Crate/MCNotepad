@@ -196,6 +196,7 @@ public class PlayerList
     public static void initializeListMemory()
     {
         lists = new PlayerList[Config.getMaxPlayerListsInMemory()];
+        Utils.log("Player list array (memory) initialized with a capacity of " + Config.getMaxPlayerListsInMemory());
     }
     
     public static PlayerList getList(File listFile)

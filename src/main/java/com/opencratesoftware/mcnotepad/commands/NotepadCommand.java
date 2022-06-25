@@ -18,6 +18,7 @@ import com.opencratesoftware.mcnotepad.FunctionResult;
 import com.opencratesoftware.mcnotepad.Note;
 import com.opencratesoftware.mcnotepad.NoteType;
 import com.opencratesoftware.mcnotepad.TrustList;
+import com.opencratesoftware.mcnotepad.utils.Config;
 import com.opencratesoftware.mcnotepad.utils.Utils;
 
 import net.md_5.bungee.api.ChatColor;
@@ -83,8 +84,15 @@ public class NotepadCommand implements CommandExecutor
         if (file.exists())
         {
             sender.sendMessage(ChatColor.RED + "File already exists");
+            return;
         }
-        else
+        
+        if (!(file.getParentFile().listFiles().length < Config.getMaxNotesPerPlayer()))
+        {
+            sender.sendMessage(ChatColor.RED + "Creating a new note would exceed the max note limit per player set by the server administrators (" + Config.getMaxNotesPerPlayer() + ").");
+            return;
+        }
+
         {
 
             Note note;

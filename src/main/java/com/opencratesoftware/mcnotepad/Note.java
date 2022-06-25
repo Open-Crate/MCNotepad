@@ -53,7 +53,7 @@ public class Note
     
     public void initialize(NoteType noteType)
     {
-        if (!noteFile.exists())
+        if (!noteFile.exists() && noteFile.getParentFile().listFiles().length < Config.getMaxNotesPerPlayer())
         {
             try 
             {
@@ -210,6 +210,10 @@ public class Note
         }
         return new FunctionResult(true, "");
     }
+    
+    ///////////////////////
+    /* Memory Management */
+    ///////////////////////
 
     public static void InitializeNoteMemory()
     {
@@ -293,5 +297,18 @@ public class Note
         notes[notes.length - 1] = noteToAdd;
 
         return notes.length - 1;
+    }
+
+    ///////////////////////////////////
+    /* User Note Storage Information */
+    ///////////////////////////////////
+
+    public static int getPlayerNoteCount(UUID uuid)
+    {
+        File notesDirectory = new File(Utils.getNotesDir() + uuid.toString());
+
+        if(!notesDirectory.exists() || notesDirectory.isFile()) { return 0; }
+
+        return notesDirectory.listFiles().length;
     }
 }
