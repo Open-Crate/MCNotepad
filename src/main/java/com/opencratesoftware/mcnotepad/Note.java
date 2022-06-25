@@ -5,8 +5,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.UUID;
 
-import org.checkerframework.checker.builder.qual.ReturnsReceiver;
-
 import com.opencratesoftware.mcnotepad.utils.Config;
 import com.opencratesoftware.mcnotepad.utils.Utils;
 
@@ -150,14 +148,14 @@ public class Note
     }
 
     // For inserting a line at a specified location, if you want to add a line to the end then use the addline function. Returns true if no errors occur
-    public boolean addLineAt(String lineToAdd, int lineIndex)
+    public FunctionResult addLineAt(String lineToAdd, int lineIndex)
     {
         int newLinePos = 0;
         int currentLineIndex = -1;
         
         if (lineIndex < 0)
         {
-            return true;
+            return new FunctionResult(false, "Invalid line index (less than 0)");
         }
 
         // keep searching through newlines in content and insert the line after the specified line is found
@@ -175,21 +173,21 @@ public class Note
         return Utils.setFileContents(contents, noteFile);
     }
 
-    public boolean addLine(String lineToAdd)
+    public FunctionResult addLine(String lineToAdd)
     {
         contents += lineToAdd + "\n";
         return Utils.setFileContents(contents, noteFile);
     }
 
     // Removes line at specified line of note (does not count the type identifier at the top of note) Returns true if no errors occur
-    public boolean removeLineAt(int lineIndex)
+    public FunctionResult removeLineAt(int lineIndex)
     {
         int newLinePos = 0;
         int currentLineIndex = -1;
         
         if(lineIndex < 0)
         {
-            return true;
+            return new FunctionResult(false, "Invalid line index (less than 0)");
         }
 
         while ((newLinePos = contents.indexOf('\n', newLinePos + 1)) != -1) 
@@ -210,7 +208,7 @@ public class Note
             }
             currentLineIndex++;
         }
-        return true;
+        return new FunctionResult(true, "");
     }
 
     public static void InitializeNoteMemory()

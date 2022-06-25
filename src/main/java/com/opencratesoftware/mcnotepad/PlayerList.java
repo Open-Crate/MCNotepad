@@ -1,13 +1,10 @@
 package com.opencratesoftware.mcnotepad;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.util.UUID;
 
-import com.google.common.base.Function;
 import com.opencratesoftware.mcnotepad.utils.Config;
 import com.opencratesoftware.mcnotepad.utils.Utils;
 
@@ -110,6 +107,11 @@ public class PlayerList
         return file;
     }
 
+    public boolean isValid()
+    {
+        return Initialized;
+    }
+
     public void updateInformation()
     {
         try 
@@ -177,7 +179,14 @@ public class PlayerList
 
         return Utils.setFileContents(contents, file); 
     }
-    
+
+    /* Request your playerlist to end itself, how cruel :( */
+    public void delete()
+    {
+        removeListFromMemory(this);
+        file.delete();
+    }
+
     ///////////////////////
     // memory management //
     ///////////////////////
@@ -228,5 +237,25 @@ public class PlayerList
         lists[lists.length - 1] = list;
 
         return lists.length - 1;
+    }
+
+    public static FunctionResult removeListFromMemory(PlayerList list)
+    {
+
+        for (int i = 0; i < lists.length; i++)
+        {
+            if (lists[i] == list)
+            {
+                for (int j = i; j > 0; j--) 
+                {
+                    lists[j] = lists[j - 1];
+                }
+                lists[0] = null;
+                
+                return new FunctionResult(true, "Successfully removed list from memory.");
+            }
+        }
+
+        return new FunctionResult(false, "Could not locate list in memory.", "notfound");    
     }
 }

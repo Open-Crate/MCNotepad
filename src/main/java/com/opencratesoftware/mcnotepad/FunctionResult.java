@@ -3,10 +3,10 @@ package com.opencratesoftware.mcnotepad;
 public class FunctionResult 
 {
 
-    public FunctionResult(boolean inSuccess, String inUserFriendlyErrorMessage)
+    public FunctionResult(boolean inSuccess, String inUserFriendlyMessage)
     {
         success = inSuccess;
-        userFriendlyErrorMessage = inUserFriendlyErrorMessage;
+        userFriendlyMessage = inUserFriendlyMessage;
     }
 
     public FunctionResult(boolean inSuccess, String inUserFriendlyMessage, String inIdentifier)

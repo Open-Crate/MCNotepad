@@ -5,7 +5,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.util.Scanner;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -216,15 +215,13 @@ public class NotepadCommand implements CommandExecutor
         }
 
         noteText = Utils.formatStringForNotes(noteText);
-
-        if (!note.addLine(noteText))
-        {
-            sender.sendMessage(ChatColor.RED + "Error: Failed to write to file. Error information sent to logs.");
-        }
-        else
+        FunctionResult addResult = note.addLine(noteText);
+        if (addResult.successful())
         {
             sender.sendMessage(ChatColor.GREEN + "Successfully added '" + noteText + "' to note '" + args[1] + "'.");
+            return;
         }
+        sender.sendMessage(ChatColor.RED + addResult.getUserFriendlyMessage());
 
     }
 
@@ -251,7 +248,9 @@ public class NotepadCommand implements CommandExecutor
         
         Note note = Note.getNote(file);
 
-        if(note.removeLineAt(Integer.parseInt(args[2])))
+        FunctionResult removeResult = note.removeLineAt(Integer.parseInt(args[2]));
+
+        if(removeResult.successful())
         {
             if (!Silent)
             sender.sendMessage(ChatColor.GREEN + "Successfully removed line from note '" + args[1] + "' if line existed.");
@@ -259,7 +258,7 @@ public class NotepadCommand implements CommandExecutor
         else
         {
             if (!Silent)
-            sender.sendMessage(ChatColor.RED + "Did not remove line.");
+            sender.sendMessage(ChatColor.RED + "Did not remove line:" + removeResult.getUserFriendlyMessage());
         }
 
     }
@@ -365,9 +364,11 @@ public class NotepadCommand implements CommandExecutor
 
         lineToAdd = Utils.formatStringForNotes(lineToAdd);
 
-        if (!note.addLineAt(lineToAdd, Integer.valueOf(args[2])))
+        FunctionResult addResult = note.addLineAt(lineToAdd, Integer.valueOf(args[2]));
+
+        if (!addResult.successful())
         {
-            sender.sendMessage(ChatColor.RED + "Error: Failed to write to file. Error information sent to logs.");
+            sender.sendMessage(ChatColor.RED + addResult.getUserFriendlyMessage());
         }
         else
         {
@@ -404,13 +405,15 @@ public class NotepadCommand implements CommandExecutor
 
         TrustList trustList = TrustList.getList(trustFile);
 
-        if (trustList.add(getNameUUID(args[1])))
+        FunctionResult addResult = trustList.add(getNameUUID(args[1]));
+
+        if (addResult.successful())
         {
             sender.sendMessage(ChatColor.GREEN + "Successfully added '" + args[1] + "' UUID to file. UUID: '" + getNameUUID(args[1]).toString() + "'");
         }
         else
         {
-            sender.sendMessage(ChatColor.RED + "Error: Error trying to write to file. Error information sent to logs."); 
+            sender.sendMessage(ChatColor.RED + addResult.getUserFriendlyMessage()); 
         }
 
     }
@@ -477,9 +480,11 @@ public class NotepadCommand implements CommandExecutor
     {
         File file = getUserTrustFile(getSenderUUID(sender));
 
-        if(file.exists())
+        TrustList trustList = TrustList.getList(file);
+
+        if(trustList.isValid())
         {
-            file.delete();
+            trustList.delete();
             sender.sendMessage(ChatColor.GREEN + "Successfully cleared file.");  
             return;
         }
