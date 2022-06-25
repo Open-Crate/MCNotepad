@@ -1,7 +1,6 @@
 package com.opencratesoftware.mcnotepad;
 
 import java.io.File;
-import java.util.UUID;
 
 import com.opencratesoftware.mcnotepad.utils.Config;
 

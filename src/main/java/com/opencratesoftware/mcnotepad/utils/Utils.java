@@ -7,9 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import com.google.common.base.Function;
 import com.opencratesoftware.mcnotepad.FunctionResult;
-import com.opencratesoftware.mcnotepad.utils.Config;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
