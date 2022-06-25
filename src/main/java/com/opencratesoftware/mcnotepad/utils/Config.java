@@ -8,8 +8,6 @@ public class Config
 
     private static int maxMemorizedNotes = 0;
 
-    private static int maxMemorizedNotesPerPlayer = 0;
-
     private static int maxNoteSize = 0;
 
     private static int maxNotesPerPlayer = 0;
@@ -21,7 +19,6 @@ public class Config
     public static void setConfigValues(Configuration config)
     {
         maxMemorizedNotes = config.getInt("max-notes-in-memory");
-        maxMemorizedNotesPerPlayer = config.getInt("max-notes-in-memory-per-player");
         maxPlayerListsInMemory = config.getInt("max-player-lists-in-memory");
         playerListCapacity = config.getInt("player-list-capacity");
         maxNoteSize = config.getInt("max-note-file-size");
@@ -29,8 +26,6 @@ public class Config
     }    
 
     public static int getMaxMemorizedNotes() { return maxMemorizedNotes; }
-
-    public static int getMaxMemorizedNotesPerPlayer() { return maxMemorizedNotesPerPlayer; }
 
     public static int getMaxPlayerListsInMemory() { return maxPlayerListsInMemory; }
 
