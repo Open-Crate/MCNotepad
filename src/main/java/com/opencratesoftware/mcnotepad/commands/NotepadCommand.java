@@ -14,6 +14,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.opencratesoftware.mcnotepad.AltList;
 import com.opencratesoftware.mcnotepad.FunctionResult;
 import com.opencratesoftware.mcnotepad.Note;
 import com.opencratesoftware.mcnotepad.NoteType;
@@ -516,42 +517,27 @@ public class NotepadCommand implements CommandExecutor
             sender.sendMessage(ChatColor.RED + "Usage: /notepad addalt <username>");
             return;
         }
-        File altFile = Utils.getUserAltFile(getSenderUUID(sender));
-        if(!altFile.exists())
-        {
-            altFile.getParentFile().mkdirs();
-            try 
-            {
-                altFile.createNewFile();
-            } 
-            catch (Exception e) 
-            {
-                sender.sendMessage(ChatColor.RED + "Error: Error trying to create file. Error information sent to logs.");
-                Bukkit.getLogger().log(Level.SEVERE, e.getMessage());
-            }
-            
-        }
-        try
-        {
-            BufferedReader fileIn = new BufferedReader(new FileReader(altFile));
-            String fileContent = "";
-            String fileCurrentLine;
-            while ((fileCurrentLine = fileIn.readLine()) != null)
-            {
-                fileContent += fileCurrentLine + "\n";
-            }
-            fileIn.close();
 
-            BufferedWriter fileOut = new BufferedWriter(new FileWriter(altFile));
-            fileOut.write(fileContent + getNameUUID(args[1]).toString());
-            fileOut.close();  
+        UUID uuidToAdd = getNameUUID(args[1]);
+
+        File altFile = Utils.getUserAltFile(getSenderUUID(sender));
+
+        AltList altList = AltList.getList(altFile);
+
+        if(!altList.isValid())
+        {
+            sender.sendMessage(ChatColor.RED + "Error: Could not initialize file. Error information sent to logs.");
+        }
+
+        FunctionResult addResult = altList.add(uuidToAdd);
+
+        if (addResult.successful())
+        {
             sender.sendMessage(ChatColor.GREEN + "Successfully added '" + args[1] + "' UUID to file. UUID: '" + getNameUUID(args[1]).toString() + "'");
         }
-        catch (Exception e) 
+        else
         {
-            sender.sendMessage(ChatColor.RED + "Error: Error trying to write to file. Error information sent to logs."); 
-            Bukkit.getLogger().log(Level.SEVERE, e.getMessage());
-            return;
+            sender.sendMessage(ChatColor.RED + addResult.getUserFriendlyMessage()); 
         }
     }
 
@@ -562,49 +548,36 @@ public class NotepadCommand implements CommandExecutor
             sender.sendMessage(ChatColor.RED + "Usage: /notepad removealt <username or UUID>");
             return;
         }
+        
         File altFile = Utils.getUserAltFile(getSenderUUID(sender));
-        if(!altFile.exists())
+
+        AltList altList = AltList.getList(altFile);
+
+        if(!altList.isValid())
         {
+            sender.sendMessage(ChatColor.RED + "Error: Could not initialize file. Error information sent to logs.");
             return;           
         }
-        try
+
+        UUID uuidToRemove;
+        if (args[1].length() > 24)
         {
-            BufferedReader fileIn = new BufferedReader(new FileReader(altFile));
-            String fileContent = "";
-            String fileCurrentLine;
-            boolean everRemovedAnything = false;
-            while ((fileCurrentLine = fileIn.readLine()) != null)
-            {
-                if (!(getNameUUID(args[1]).toString().equalsIgnoreCase(fileCurrentLine)) && !(args[1].equalsIgnoreCase(fileCurrentLine)))
-                {
-                    fileContent += fileCurrentLine + "\n";
-                }
-                else
-                {
-                    everRemovedAnything = true;
-                }
-            }
-
-            if (!everRemovedAnything)
-            {
-                sender.sendMessage("User or UUID not found in alt list file.");
-            }
-            else
-            {
-                sender.sendMessage(ChatColor.GREEN + "Successfully removed all instances found in alt list file.");
-            }
-            
-            fileIn.close();
-
-            BufferedWriter fileOut = new BufferedWriter(new FileWriter(altFile));
-            fileOut.write(fileContent);
-            fileOut.close();  
+            uuidToRemove = UUID.fromString(args[1]);
         }
-        catch (Exception e) 
+        else
         {
-            sender.sendMessage(ChatColor.RED + "Error: Error trying to write to file. Error information sent to logs.");
-            Bukkit.getLogger().log(Level.SEVERE, e.getMessage());
-            return;
+            uuidToRemove = getNameUUID(args[1]);
+        }
+
+        FunctionResult removeResult = altList.remove(uuidToRemove);
+
+        if (removeResult.successful())
+        {
+            sender.sendMessage(ChatColor.GREEN + "Successfully removed from altlist.");
+        }
+        else
+        {
+            sender.sendMessage(ChatColor.RED + removeResult.getUserFriendlyMessage());
         }
     }
 
@@ -617,30 +590,18 @@ public class NotepadCommand implements CommandExecutor
             return;
         }
 
-        try
-        {
-            BufferedReader fileIn = new BufferedReader(new FileReader(altListFile));
-            String fileCurrentLine;
-            boolean everSentAnything = false;
-            while ((fileCurrentLine = fileIn.readLine()) != null)
-            {   
-                sender.sendMessage("Name: '" + Bukkit.getServer().getOfflinePlayer(UUID.fromString(fileCurrentLine)).getName() + "' UUID: '" + fileCurrentLine + "'");
-                everSentAnything = true;
-            }
-            fileIn.close();
+        AltList altList = AltList.getList(altListFile);
 
-            if (!everSentAnything)
-            {
-                sender.sendMessage("No alternate directories found in file.");
-            }
+        UUID[] altListUUIDs = altList.getUUIDs();
 
-        }
-        catch (Exception e) 
+        boolean everSentAnything = false;
+        sender.sendMessage("-----------------------------------");   
+        for (UUID uuid : altListUUIDs) 
         {
-            sender.sendMessage(ChatColor.RED + "Error: Error information sent to logs.");
-            Bukkit.getLogger().log(Level.SEVERE, e.getMessage());
-            return;
+            sender.sendMessage("Name: '" + Bukkit.getServer().getOfflinePlayer(uuid).getName() + "' UUID: '" + uuid + "'");
+            everSentAnything = true;
         }
+        sender.sendMessage("-----------------------------------");
     }
 
     //////////
