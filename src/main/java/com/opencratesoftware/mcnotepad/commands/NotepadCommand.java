@@ -658,7 +658,7 @@ public class NotepadCommand implements CommandExecutor
 
                 case "sharing":
                     sender.sendMessage("--------------------------------------------------");
-                    sender.sendMessage("Sharing notes in notepad is simple, you simply must add a user whom you want to share a note with to your trustlist, and they'll be able to edit and view your note! Trusted users cannot delete the note file or add note files to your notes, however they can clear a note file and add to one, so use with caution.");
+                    sender.sendMessage("Sharing notes in notepad is simple, you simply must add a user whom you want to share a note with to your trustlist, and they'll be able to edit and view your note! Trusted users cannot delete the note file or create note files under your name, however they can clear a note file and add to one, so use with caution.");
                     sender.sendMessage(" ");
                     sender.sendMessage("To add a user to your trusted list, use '/notepad trust [username or UUID]'.\n \nTo remove a user, use '/notepad untrust [username or UUID]'.\n \nAnd to list all trusted users, use '/notepad listtrusted'.\n \nTo clear all trusted users instantly, use '/notepad cleartrusted'");
                     sender.sendMessage("--------------------------------------------------");
