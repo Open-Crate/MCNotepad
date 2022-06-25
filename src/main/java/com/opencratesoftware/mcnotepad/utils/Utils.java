@@ -30,12 +30,12 @@ public class Utils
 
     public static void log(String msg)
     {
-        Bukkit.getLogger().log(Level.INFO, "[Notepad]" + msg);
+        Bukkit.getLogger().log(Level.INFO, "[Notepad] " + msg);
     }
 
     public static void logError(String msg)
     {
-        Bukkit.getLogger().log(Level.SEVERE, "[Notepad]" + msg);
+        Bukkit.getLogger().log(Level.SEVERE, "[Notepad] " + msg);
     }
 
     public static FileConfiguration getConfig()
