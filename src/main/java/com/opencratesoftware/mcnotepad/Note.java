@@ -160,6 +160,8 @@ public class Note
             return new FunctionResult(false, "Invalid line index (less than 0)");
         }
 
+        lineToAdd = Utils.formatStringForNotes(lineToAdd);
+
         int newLinePos = 0;
         int currentLineIndex = -1;
 
@@ -184,7 +186,9 @@ public class Note
         {
             return new FunctionResult(false, "Adding to this note would exceed the file size limit set by the server administrators (" + ((float) Config.getMaxNoteSize()) / 1024.0 + " kilobytes) ", "filesizelimit");
         }
-
+        
+        lineToAdd = Utils.formatStringForNotes(lineToAdd);
+        
         contents += lineToAdd + "\n";
         return Utils.setFileContents(contents, noteFile);
     }

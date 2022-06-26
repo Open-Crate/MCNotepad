@@ -16,6 +16,8 @@ public class Config
 
     private static int playerListCapacity = 0;
 
+    private static int maxCharactersPerLine = 0;
+
     public static void setConfigValues(Configuration config)
     {
         maxMemorizedNotes = config.getInt("max-notes-in-memory");
@@ -23,6 +25,7 @@ public class Config
         playerListCapacity = config.getInt("player-list-capacity");
         maxNoteSize = config.getInt("max-note-file-size");
         maxNotesPerPlayer = config.getInt("max-notes-per-user");
+        maxCharactersPerLine = config.getInt("max-characters-per-line");
     }    
 
     public static int getMaxMemorizedNotes() { return maxMemorizedNotes; }
@@ -34,4 +37,6 @@ public class Config
     public static int getMaxNotesPerPlayer() { return maxNotesPerPlayer; }
 
     public static int getMaxNoteSize() { return maxNoteSize; }
+    
+    public static int getMaxCharactersPerLine() { return maxCharactersPerLine; }
 }

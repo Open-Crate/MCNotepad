@@ -65,8 +65,19 @@ public class Utils
         String returnValue = string;
 
         returnValue = whitelistFilterString(returnValue);
+        
+        returnValue = clampStringCharacterCount(returnValue, Config.getMaxCharactersPerLine());
 
         return returnValue;
+    }
+
+    public static String clampStringCharacterCount(String string, int max)
+    {
+        if (string.length() > max)
+        {
+            return string.substring(0, max);
+        }
+        return string;
     }
 
     public static String whitelistFilterString(String string)

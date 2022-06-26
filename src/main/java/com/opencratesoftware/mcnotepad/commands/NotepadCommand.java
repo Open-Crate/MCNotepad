@@ -224,7 +224,6 @@ public class NotepadCommand implements CommandExecutor
             }
         }
 
-        noteText = Utils.formatStringForNotes(noteText);
         FunctionResult addResult = note.addLine(noteText);
         if (addResult.successful())
         {
@@ -371,8 +370,6 @@ public class NotepadCommand implements CommandExecutor
                 lineToAdd += " ";
             }
         }
-
-        lineToAdd = Utils.formatStringForNotes(lineToAdd);
 
         FunctionResult addResult = note.addLineAt(lineToAdd, Integer.valueOf(args[2]));
 
