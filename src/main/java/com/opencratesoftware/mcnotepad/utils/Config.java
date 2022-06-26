@@ -1,5 +1,7 @@
 package com.opencratesoftware.mcnotepad.utils;
 
+import java.util.List;
+
 import org.bukkit.configuration.Configuration;
 
 public class Config 
@@ -18,6 +20,10 @@ public class Config
 
     private static int maxCharactersPerLine = 0;
 
+    private static boolean useFilenameCharWhitelist = false;
+
+    private static List<Character> filenameCharWhitelist;
+
     public static void setConfigValues(Configuration config)
     {
         maxMemorizedNotes = config.getInt("max-notes-in-memory");
@@ -26,6 +32,8 @@ public class Config
         maxNoteSize = config.getInt("max-note-file-size");
         maxNotesPerPlayer = config.getInt("max-notes-per-user");
         maxCharactersPerLine = config.getInt("max-characters-per-line");
+        useFilenameCharWhitelist = config.getBoolean("use-filename-character-whitelist");
+        filenameCharWhitelist = config.getCharacterList("filename-whitelisted-characters");
     }    
 
     public static int getMaxMemorizedNotes() { return maxMemorizedNotes; }
@@ -39,4 +47,8 @@ public class Config
     public static int getMaxNoteSize() { return maxNoteSize; }
     
     public static int getMaxCharactersPerLine() { return maxCharactersPerLine; }
+
+    public static List<Character> getFilenameCharacterWhitelist() { return filenameCharWhitelist; }
+    
+    public static boolean getUseFilenameCharacterWhitelist() { return useFilenameCharWhitelist; } 
 }

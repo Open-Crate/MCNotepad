@@ -87,13 +87,13 @@ public class Utils
         {
             if (!isCharWhitelisted(returnValue.charAt(i)))
             {
-                returnValue = returnValue.replaceAll(String.valueOf(returnValue.charAt(i)), "#");
+                returnValue = returnValue.replaceAll(String.valueOf(returnValue.charAt(i)), "_");
             }
         }
 
         return returnValue;
     }
-
+    
     public static boolean isCharWhitelisted(Character character)
     {
         if (!useWhiteList)
@@ -111,124 +111,156 @@ public class Utils
         return false;
     }
 
-        // gets UUID from player username
-        public static UUID getNameUUID(String name)
+    public static boolean isCharFilenameWhitelisted(Character character)
+    {
+        if (!Config.getUseFilenameCharacterWhitelist())
         {
-            if (Bukkit.getServer().getPlayerUniqueId(name) == null)
-            {
-                return new UUID(0, 0);
-            }
-            return Bukkit.getServer().getPlayerUniqueId(name);
+            return true;
         }
-    
-        // gets UUID from CommandSender type
-        public static UUID getSenderUUID(CommandSender sender)
+        
+        for (Character currentChar : Config.getFilenameCharacterWhitelist()) 
+        {   
+            if (currentChar == character)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static String fileNameWhitelistFilterString(String string)
+    {
+        String returnValue = string;
+        for (int i = 0; i < string.length(); i++) 
         {
-            return getNameUUID(sender.getName());
+            if (!isCharFilenameWhitelisted(returnValue.charAt(i)))
+            {
+                returnValue = returnValue.replaceAll(String.valueOf(returnValue.charAt(i)), "_");
+            }
         }
 
-                // retrieves note file as the sender, checking trustlists, altdirs and the like. Can return a non-existent file if the file is not found or user does not have required trust.
-                public static File getNoteFile(CommandSender sender, String noteName, boolean IgnoreAltDirs)
-                {
-                    if(noteName.contains(":")) // check if noteName specifies a directory to search through
-                    {
-                        String NoteOwnerName = noteName.substring(0, noteName.indexOf(":"));
-                        if(NoteOwnerName.length() < 28) // check if passed as a UUID (should be about 37 chars?) or username (always less than 16)
-                        {
-                            if (playerTrustsPlayer(getNameUUID(sender.getName()), getNameUUID(NoteOwnerName)))
-                            {
-                                return new File(getNotesDir() + getNameUUID(NoteOwnerName), noteName.substring( Math.min (noteName.indexOf(":") + 1, noteName.length() - 1)) + getNoteExt());
-                            }
-                        }
-                        else // if using UUID
-                        {
-                            if (playerTrustsPlayer(getNameUUID(sender.getName()), UUID.fromString(NoteOwnerName)))
-                            {
-                                return new File(getNotesDir() + NoteOwnerName, noteName.substring( Math.min (noteName.indexOf(":") + 1, noteName.length() - 1)) + getNoteExt());
-                            }
-                        }
-                        
-                        // if code is executing to this point then that means that the trust check failed, so return something that probably doesn't exist
-                        // so that a file not found error is likely presented. 
-                        return new File("getNotesDir()" + "ThisDirectoryProbablyDoesntExist/justlikethisdoesntprobably/alsothis/con/thisshouldbesafe.txt/incaseitisnt.exe/anddoublyso.app/andfinally.sh/done.finished//\\");
-                        // random comment: it says "getNotesDir()" rather than getNotesDir() so it doesn't even actually look in the notes directory, wonderful.
-                    }
-            
-                    // code executing past here means that no directory was specified to search in
-            
-                    File file = new File(getNotesDir() + getNameUUID(sender.getName()), noteName + getNoteExt()); // set 'file' to point to a file possibly inside of the user's note directory named the given note name
-                    
-                    if (!file.exists()) // check if the file exists
-                    {
-                        File altListFile = new File(getAltListsDir() + "/" + getSenderUUID(sender).toString()); // if the user has an alt list file this is where it would be so store that
-                        if (!altListFile.exists() || IgnoreAltDirs) // if alt list file doesn't exist or we've been instructed to ignore it, return the file that doesn't exist intentionally
-                        {
-                            return file;
-                        }
-            
-                        try
-                        {
-                            BufferedReader fileIn = new BufferedReader(new FileReader(altListFile));
-                            String fileCurrentLine;
-                            boolean stopSearching = false;
-                            if ((fileCurrentLine = fileIn.readLine()) == null)
-                            {
-                                stopSearching = true;
-                            }
-                            while ( !stopSearching)
-                            {   
-                                file = getNoteFile(sender, fileCurrentLine + ":" + noteName, true); // call getNoteFile (yes, our current function) but specifying what directory to search through
-                                if (file.exists())
-                                {
-                                    stopSearching = true; // if file is found, stop searching
-                                }
-            
-                                if ((fileCurrentLine = fileIn.readLine()) == null)
-                                {
-                                    stopSearching = true; // if we reach the end of the altdir file and still are searching, stop searching (will just return the last non existent file)
-                                }
-                            }
-                            fileIn.close();
-                
-                        }
-                        catch (Exception e) 
-                        {
-                            sender.sendMessage(ChatColor.RED + "Error: Error information sent to logs.");
-                            Bukkit.getLogger().log(Level.SEVERE, e.getMessage());
-                            return file;
-                        }
-                    }
-            
-                    return file; // file exists if it executes here or execution decided to return an non existent file (likely meaning the command will give a file not found error)
-                }
-        
-                    // returns a File that points to the directory where all altlists can be found
-            public static File getAltListsDir()
+        return returnValue;
+    }
+
+    // gets UUID from player username
+    public static UUID getNameUUID(String name)
+    {
+        if (Bukkit.getServer().getPlayerUniqueId(name) == null)
+        {
+            return new UUID(0, 0);
+        }
+        return Bukkit.getServer().getPlayerUniqueId(name);
+    }
+
+    // gets UUID from CommandSender type
+    public static UUID getSenderUUID(CommandSender sender)
+    {
+        return getNameUUID(sender.getName());
+    }
+
+    // retrieves note file as the sender, checking trustlists, altdirs and the like. Can return a non-existent file if the file is not found or user does not have required trust.
+    public static File getNoteFile(CommandSender sender, String noteName, boolean IgnoreAltDirs)
+    {   
+        noteName = fileNameWhitelistFilterString(noteName);
+        if(noteName.contains(":")) // check if noteName specifies a directory to search through
+        {
+            String NoteOwnerName = noteName.substring(0, noteName.indexOf(":"));
+            if(NoteOwnerName.length() < 28) // check if passed as a UUID (should be about 37 chars?) or username (always less than 16)
             {
-                File file = new File(getDataDir() + "/altlists/");
-                if (!file.exists())
+                if (playerTrustsPlayer(getNameUUID(sender.getName()), getNameUUID(NoteOwnerName)))
                 {
-                    file.mkdirs();
+                    return new File(getNotesDir() + getNameUUID(NoteOwnerName), noteName.substring( Math.min (noteName.indexOf(":") + 1, noteName.length() - 1)) + getNoteExt());
                 }
+            }
+            else // if using UUID
+            {
+                if (playerTrustsPlayer(getNameUUID(sender.getName()), UUID.fromString(NoteOwnerName)))
+                {
+                    return new File(getNotesDir() + NoteOwnerName, noteName.substring( Math.min (noteName.indexOf(":") + 1, noteName.length() - 1)) + getNoteExt());
+                }
+            }
+            
+            // if code is executing to this point then that means that the trust check failed, so return something that probably doesn't exist
+            // so that a file not found error is likely presented. 
+            return new File("getNotesDir()" + "ThisDirectoryProbablyDoesntExist/justlikethisdoesntprobably/alsothis/con/thisshouldbesafe.txt/incaseitisnt.exe/anddoublyso.app/andfinally.sh/done.finished//\\");
+            // random comment: it says "getNotesDir()" rather than getNotesDir() so it doesn't even actually look in the notes directory, wonderful.
+        }
+
+        // code executing past here means that no directory was specified to search in
+
+        File file = new File(getNotesDir() + getNameUUID(sender.getName()), noteName + getNoteExt()); // set 'file' to point to a file possibly inside of the user's note directory named the given note name
+        
+        if (!file.exists()) // check if the file exists
+        {
+            File altListFile = new File(getAltListsDir() + "/" + getSenderUUID(sender).toString()); // if the user has an alt list file this is where it would be so store that
+            if (!altListFile.exists() || IgnoreAltDirs) // if alt list file doesn't exist or we've been instructed to ignore it, return the file that doesn't exist intentionally
+            {
                 return file;
             }
-        
-            // returns a File that points to the directory where all trustlists can be found
-            public static File getTrustListsDir()
+
+            try
             {
-                File file = new File(getDataDir() + "/trustlists/");
-                if (!file.exists())
+                BufferedReader fileIn = new BufferedReader(new FileReader(altListFile));
+                String fileCurrentLine;
+                boolean stopSearching = false;
+                if ((fileCurrentLine = fileIn.readLine()) == null)
                 {
-                    file.mkdirs();
+                    stopSearching = true;
                 }
+                while ( !stopSearching)
+                {   
+                    file = getNoteFile(sender, fileCurrentLine + ":" + noteName, true); // call getNoteFile (yes, our current function) but specifying what directory to search through
+                    if (file.exists())
+                    {
+                        stopSearching = true; // if file is found, stop searching
+                    }
+
+                    if ((fileCurrentLine = fileIn.readLine()) == null)
+                    {
+                        stopSearching = true; // if we reach the end of the altdir file and still are searching, stop searching (will just return the last non existent file)
+                    }
+                }
+                fileIn.close();
+    
+            }
+            catch (Exception e) 
+            {
+                sender.sendMessage(ChatColor.RED + "Error: Error information sent to logs.");
+                Bukkit.getLogger().log(Level.SEVERE, e.getMessage());
                 return file;
             }
-            
-            // get a trustfile for a specific user
-            public static File getUserTrustFile(UUID userUUID)
-            {
-                return new File(getTrustListsDir().toString() + "/" + userUUID.toString());
-            }
+        }
+
+        return file; // file exists if it executes here or execution decided to return an non existent file (likely meaning the command will give a file not found error)
+    }
+    
+    // returns a File that points to the directory where all altlists can be found
+    public static File getAltListsDir()
+    {
+        File file = new File(getDataDir() + "/altlists/");
+        if (!file.exists())
+        {
+            file.mkdirs();
+        }
+        return file;
+    }
+        
+    // returns a File that points to the directory where all trustlists can be found
+    public static File getTrustListsDir()
+    {
+        File file = new File(getDataDir() + "/trustlists/");
+        if (!file.exists())
+        {
+            file.mkdirs();
+        }
+        return file;
+    }
+    
+    // get a trustfile for a specific user
+    public static File getUserTrustFile(UUID userUUID)
+    {
+        return new File(getTrustListsDir().toString() + "/" + userUUID.toString());
+    }
         
     // get a altlist for a specific user
     public static File getUserAltFile(UUID userUUID)
