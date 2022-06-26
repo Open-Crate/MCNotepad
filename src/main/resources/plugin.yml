@@ -6,3 +6,4 @@ commands:
   notepad:
     description:
     usage:
+    aliases: ["notes", "note"]
