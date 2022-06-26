@@ -24,6 +24,8 @@ public class Config
 
     private static List<Character> filenameCharWhitelist;
 
+    private static int maxFilenameCharacters = 0;
+
     public static void setConfigValues(Configuration config)
     {
         maxMemorizedNotes = config.getInt("max-notes-in-memory");
@@ -34,6 +36,7 @@ public class Config
         maxCharactersPerLine = config.getInt("max-characters-per-line");
         useFilenameCharWhitelist = config.getBoolean("use-filename-character-whitelist");
         filenameCharWhitelist = config.getCharacterList("filename-whitelisted-characters");
+        maxFilenameCharacters = config.getInt("filename-max-characters");
     }    
 
     public static int getMaxMemorizedNotes() { return maxMemorizedNotes; }
@@ -51,4 +54,6 @@ public class Config
     public static List<Character> getFilenameCharacterWhitelist() { return filenameCharWhitelist; }
     
     public static boolean getUseFilenameCharacterWhitelist() { return useFilenameCharWhitelist; } 
+
+    public static int getMaxFilenameCharacters() { return maxFilenameCharacters; }
 }

@@ -165,6 +165,7 @@ public class Utils
         if(noteName.contains(":")) // check if noteName specifies a directory to search through
         {
             String NoteOwnerName = noteName.substring(0, noteName.indexOf(":"));
+            noteName = clampStringCharacterCount(noteName, Config.getMaxFilenameCharacters() + NoteOwnerName.length() + 1);
             if(NoteOwnerName.length() < 28) // check if passed as a UUID (should be about 37 chars?) or username (always less than 16)
             {
                 if (playerTrustsPlayer(getNameUUID(sender.getName()), getNameUUID(NoteOwnerName)))
@@ -187,6 +188,8 @@ public class Utils
         }
 
         // code executing past here means that no directory was specified to search in
+
+        noteName = clampStringCharacterCount(noteName, Config.getMaxFilenameCharacters());
 
         File file = new File(getNotesDir() + getNameUUID(sender.getName()), noteName + getNoteExt()); // set 'file' to point to a file possibly inside of the user's note directory named the given note name
         
