@@ -10,7 +10,6 @@ public final class Notepad  extends JavaPlugin
     @Override
     public void onEnable()
     {
-        getConfig().options().copyDefaults();
         saveDefaultConfig();
 
         Utils.updateConfiguration();
