@@ -1,5 +1,5 @@
 name: Notepad
-version: 1.0.0
+version: 1.0.1
 main: com.opencratesoftware.mcnotepad.Notepad
 api-version: 1.14
 commands:

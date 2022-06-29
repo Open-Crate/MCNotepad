@@ -18,6 +18,7 @@ import com.opencratesoftware.mcnotepad.AltList;
 import com.opencratesoftware.mcnotepad.FunctionResult;
 import com.opencratesoftware.mcnotepad.Note;
 import com.opencratesoftware.mcnotepad.NoteType;
+import com.opencratesoftware.mcnotepad.Notepad;
 import com.opencratesoftware.mcnotepad.TrustList;
 import com.opencratesoftware.mcnotepad.utils.Config;
 import com.opencratesoftware.mcnotepad.utils.Utils;
@@ -603,6 +604,14 @@ public class NotepadCommand implements CommandExecutor
     }
 
     //////////
+    /* Misc. */
+    //////////
+    private void showVersionAction(CommandSender sender, String[] args)
+    {
+        sender.sendMessage("Running Notepad from Open-Crate version " + Bukkit.getPluginManager().getPlugin("Notepad").getDescription().getVersion());
+    }
+
+    //////////
     /* Help */
     //////////
     
@@ -640,6 +649,7 @@ public class NotepadCommand implements CommandExecutor
                 sender.sendMessage(ChatColor.GOLD + "Editing/viewing: view, add, removeline, insert, move");
                 sender.sendMessage(ChatColor.YELLOW + "Trust/Sharing: trust, untrust, listtrusted, cleartrusted");
                 sender.sendMessage(ChatColor.GOLD + "Alternate User Directories/Folders: listalts, addalt, removealt");
+                sender.sendMessage(ChatColor.YELLOW + "Misc: ver, version");
                 sender.sendMessage("--------------------------------------------------");
                     break;
 
@@ -680,9 +690,11 @@ public class NotepadCommand implements CommandExecutor
         sender.sendMessage(ChatColor.YELLOW + "Use '/notepad help <topic>' to get information on a help topic");
         sender.sendMessage(ChatColor.GOLD + "Use '/notepad help topics' for a full list of help topics.");
         sender.sendMessage(ChatColor.YELLOW + "For a guide on simply making a new note or list, adding to it and removing from it, use '/notepad help guide'");
+        sender.sendMessage(ChatColor.GOLD + "For a full list of actions, view the topic named 'actions'. ('/notepad help actions')");
+        sender.sendMessage(ChatColor.YELLOW + "Tip: You can use /notepad, /note and /notes interchangeably.");
         sender.sendMessage("--------------------------------------------------");
     }
-
+    
     ////////////////////////
     /* onCommand function */
     ////////////////////////
@@ -692,8 +704,8 @@ public class NotepadCommand implements CommandExecutor
     {
         if (args.length == 0)
         {
-            sender.sendMessage(ChatColor.RED + "Usage: /notepad <action> <additional args>");
-            sender.sendMessage(ChatColor.RED + "Use '/notepad help' for additional help.");
+            sender.sendMessage(ChatColor.YELLOW + "Usage: /notepad <action> <additional args>");
+            sender.sendMessage(ChatColor.YELLOW + "Use '/notepad help' for additional help.");
             return false;
         }
         
@@ -705,7 +717,11 @@ public class NotepadCommand implements CommandExecutor
             case "list":
                 listAction(sender, args);
                 break;
-            
+
+            case "ls":
+                listAction(sender, args);
+                break;
+
             case "view":
                 viewAction(sender, args);
                 break;
@@ -762,8 +778,16 @@ public class NotepadCommand implements CommandExecutor
                 listAltsAction(sender, args);
                 break;
 
+            case "version":
+                showVersionAction(sender, args);
+                break;
+
+            case "ver":
+                showVersionAction(sender, args);
+                break;
+
             default:
-                sender.sendMessage(ChatColor.RED + "Unknown action.");
+                sender.sendMessage(ChatColor.RED + "Unknown action. For help on how to use notepad, use '/notepad help'.");
                 break;
         }
 
