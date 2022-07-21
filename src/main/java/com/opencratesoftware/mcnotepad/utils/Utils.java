@@ -82,16 +82,16 @@ public class Utils
 
     public static String whitelistFilterString(String string)
     {
-        String returnValue = string;
+        StringBuilder returnValue = new StringBuilder(string);
         for (int i = 0; i < string.length(); i++) 
         {
             if (!isCharWhitelisted(returnValue.charAt(i)))
             {
-                returnValue = returnValue.replaceAll(String.valueOf(returnValue.charAt(i)), "_");
+                returnValue.setCharAt(i, '_');
             }
         }
 
-        return returnValue;
+        return returnValue.toString();
     }
     
     public static boolean isCharWhitelisted(Character character)
@@ -130,16 +130,16 @@ public class Utils
 
     public static String fileNameWhitelistFilterString(String string)
     {
-        String returnValue = string;
+        StringBuilder returnValue = new StringBuilder(string);
         for (int i = 0; i < string.length(); i++) 
         {
             if (!isCharFilenameWhitelisted(returnValue.charAt(i)))
             {
-                returnValue = returnValue.replaceAll(String.valueOf(returnValue.charAt(i)), "_");
+                returnValue.setCharAt(i, '_');
             }
         }
 
-        return returnValue;
+        return returnValue.toString();
     }
 
     // gets UUID from player username
