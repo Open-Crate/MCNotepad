@@ -74,27 +74,35 @@ public class NotepadCommand implements CommandExecutor
             sender.sendMessage(ChatColor.RED + "Usage: /notepad new <New Note Name> or Usage: /notepad new <New Note Name> <Note Type>");
             return;
         }
-       
+
         File file = getNoteFile(sender, args[1], true);
-        
-        if(!Utils.getSenderUUID(sender).equals(UUID.fromString(file.getParentFile().getName())))
-        {
-            sender.sendMessage(ChatColor.RED + "Cannot create files for other players.");
-            return;
-        }
 
-        if (file.exists())
+        if (file.getParentFile().exists())
         {
-            sender.sendMessage(ChatColor.RED + "File already exists");
-            return;
-        }
-        
-        if (!(file.getParentFile().listFiles().length < Config.getMaxNotesPerPlayer()))
-        {
-            sender.sendMessage(ChatColor.RED + "Creating a new note would exceed the max note limit per player set by the server administrators (" + Config.getMaxNotesPerPlayer() + ").");
-            return;
-        }
+            if(!Utils.getSenderUUID(sender).equals(UUID.fromString(file.getParentFile().getName())))
+            {
+                sender.sendMessage(ChatColor.RED + "Cannot create files for other players.");
+                return;
+            }
 
+            if (file.exists())
+            {
+                sender.sendMessage(ChatColor.RED + "File already exists");
+                return;
+            }
+            
+            File[] Notes = file.getParentFile().listFiles();
+
+            if (Notes != null)
+            {
+                if (!(file.getParentFile().listFiles().length < Config.getMaxNotesPerPlayer()))
+                {
+                    sender.sendMessage(ChatColor.RED + "Creating a new note would exceed the max note limit per player set by the server administrators (" + Config.getMaxNotesPerPlayer() + ").");
+                    return;
+                }
+            }
+
+        }
         {
 
             Note note;
