@@ -53,6 +53,8 @@ public class Note
     
     public void initialize(NoteType noteType)
     {
+        noteFile.getParentFile().mkdirs();
+
         if (!noteFile.exists() && noteFile.getParentFile().listFiles().length < Config.getMaxNotesPerPlayer())
         {
             try 
