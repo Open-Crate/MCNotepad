@@ -380,7 +380,7 @@ public class NotepadCommand implements CommandExecutor
             }
         }
 
-        FunctionResult addResult = note.addLineAt(lineToAdd, Integer.valueOf(args[2]));
+        FunctionResult addResult = note.addLineAt(lineToAdd, Integer.parseInt(args[2]));
 
         if (!addResult.successful())
         {
