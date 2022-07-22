@@ -60,7 +60,11 @@ public class NotepadCommand implements CommandExecutor
     private void listAction(CommandSender sender, String[] args)
     {
         File notesDirectory = new File(Utils.getNotesDir() + Utils.getSenderUUID(sender));
+
+        if (notesDirectory.listFiles() == null){ sender.sendMessage("No note directory, which means you likely haven't started using notepad. Use '/notepad help' for help on using notepad."); return; }
+
         File[] notes = notesDirectory.listFiles();
+        
         sender.sendMessage("-----------------------------------");
         for (File file : notes) 
         {
