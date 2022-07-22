@@ -412,6 +412,23 @@ public class Utils
             return returnValue;
         }
 
+        if (lineIndex == 0)
+        {
+            if((newLinePos = returnValue.indexOf('\n', newLinePos + 1)) != -1)
+            {
+                String contentsPart1 = returnValue.substring(newLinePos);
+                if(newLinePos != -1)
+                {
+                    returnValue = contentsPart1;
+                }
+                return returnValue;
+            }
+            else
+            {
+                return ""; // this means there is only one line, which is the line we were requested to remove
+            }
+        }
+
         while ((newLinePos = returnValue.indexOf('\n', newLinePos + 1)) != -1) 
         {
             if(currentLineIndex == lineIndex - 1)
