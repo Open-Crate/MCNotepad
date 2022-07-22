@@ -685,7 +685,7 @@ public class NotepadCommand implements CommandExecutor
                     sender.sendMessage("--------------------------------------------------");
                     sender.sendMessage("Managing notes in notepad is easy, the three main commands to know are 'new', 'delete' and 'list'.\n ");
                     sender.sendMessage("new - Adds a new file to your directory/notes folder. Usage is '/notepad new [notename]'. Optionally you can specify a type of note (note or list) by adding so to the end (ex. '/notepad new [notename] note'), the default is list. Lists automatically show numbers on each line whereas notes simply display as raw text.\n ");
-                    sender.sendMessage("delete - Deletes a note. Usage is '/notepad delete [notename]'" + ChatColor.RED + " You cannot delete other user's notes, even if you are trusted by the owner.\n ");
+                    sender.sendMessage("delete - Deletes a note. Usage is '/notepad delete [notename]'.\nYou cannot delete other user's notes, even if you are trusted by the owner.\n ");
                     sender.sendMessage("list - Lists all of your notes. Usage is '/notepad list'.");
                     sender.sendMessage("--------------------------------------------------");
                     break;
