@@ -61,10 +61,12 @@ public class NotepadCommand implements CommandExecutor
     {
         File notesDirectory = new File(Utils.getNotesDir() + Utils.getSenderUUID(sender));
         File[] notes = notesDirectory.listFiles();
+        sender.sendMessage("-----------------------------------");
         for (File file : notes) 
         {
             sender.sendMessage(sender.getName() + ":" + file.getName().replace(Utils.getNoteExt(), ""));    
         }
+        sender.sendMessage("-----------------------------------");
     }
 
     private void newFileAction(CommandSender sender, String[] args)
