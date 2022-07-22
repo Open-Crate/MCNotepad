@@ -1,9 +1,9 @@
 name: Notepad
-version: 1.1.0
+version: 1.0.2
 main: com.opencratesoftware.mcnotepad.Notepad
 api-version: 1.14
 commands:
   notepad:
     description: "Manage notes or lists for any purpose"
-    usage: "/note <action>"
+    usage:
     aliases: ["notes", "note"]
