@@ -142,12 +142,41 @@ public class Utils
         return returnValue.toString();
     }
 
+    public static boolean isValidUsername(String name)
+    {
+        if (name.length() < 3 || name.length() > 16)
+        {
+            return false;
+        }
+        for (int i = 0; i < name.length(); i++) 
+        {
+            Character[] allowedUsernameChars = {'_', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
+            boolean isAllowedChar = false;
+            for (int j = 0; j < allowedUsernameChars.length; j++) 
+            {
+                if (name.charAt(i) == allowedUsernameChars[j])
+                {
+                    isAllowedChar = true;
+                }    
+            }
+            if (!isAllowedChar)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
     // gets UUID from player username
     public static UUID getNameUUID(String name)
     {
+        if (!isValidUsername(name))
+        {
+            return UUID.fromString("00000000-0000-0000-0000-000000000000");
+        }
         if (Bukkit.getServer().getPlayerUniqueId(name) == null)
         {
-            return new UUID(0, 0);
+            return UUID.fromString("00000000-0000-0000-0000-000000000000");
         }
         return Bukkit.getServer().getPlayerUniqueId(name);
     }
@@ -258,7 +287,7 @@ public class Utils
         }
         return file;
     }
-    
+
     // get a trustfile for a specific user
     public static File getUserTrustFile(UUID userUUID)
     {

@@ -59,9 +59,10 @@ public class PlayerList
     public UUID[] getUUIDs()
     {
         UUID[] returnValue = new UUID[getUUIDCount()];
-        
+
         for (int i = 0; i < returnValue.length; i++) 
         {
+            
             returnValue[i] = entries[i].uuid;    
         }
 
@@ -138,12 +139,17 @@ public class PlayerList
             BufferedReader fileIn = new BufferedReader(new FileReader(file));
             String fileCurrentLine;
             int lineIndex = 0;
+            uuidCount = 0;
             while ((fileCurrentLine = fileIn.readLine()) != null)
             {
                 contents += fileCurrentLine + "\n";
                 if(lineIndex < entries.length)
                 {
-                    entries[lineIndex] = new PlayerListEntry(UUID.fromString(fileCurrentLine));
+                    if (fileCurrentLine.length() > 30)
+                    {
+                        entries[uuidCount] = new PlayerListEntry(UUID.fromString(fileCurrentLine));
+                        uuidCount++;
+                    }
                 }
                 lineIndex++;
             }
@@ -155,8 +161,6 @@ public class PlayerList
         {
             Utils.logError(e.getMessage());
         }
-
-        uuidCount = getUUIDCount(true);
     }
     
     public FunctionResult add(UUID addition)
