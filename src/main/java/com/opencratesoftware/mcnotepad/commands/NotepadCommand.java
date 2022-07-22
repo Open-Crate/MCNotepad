@@ -59,16 +59,42 @@ public class NotepadCommand implements CommandExecutor
 
     private void listAction(CommandSender sender, String[] args)
     {
-        File notesDirectory = new File(Utils.getNotesDir() + Utils.getSenderUUID(sender));
+        AltList altList = AltList.getList(Utils.getUserAltFile(getSenderUUID(sender)));
 
-        if (notesDirectory.listFiles() == null){ sender.sendMessage("No note directory, which means you likely haven't started using notepad. Use '/notepad help' for help on using notepad."); return; }
-
-        File[] notes = notesDirectory.listFiles();
-        
         sender.sendMessage("-----------------------------------");
-        for (File file : notes) 
+        for (int i = -1; i < altList.getUUIDCount(); i++) 
         {
-            sender.sendMessage(sender.getName() + ":" + file.getName().replace(Utils.getNoteExt(), ""));    
+            File notesDirectory;
+            boolean outputName = true; 
+            if (i == -1) // -1 means search the senders dir
+            {
+                notesDirectory = new File(Utils.getNotesDir() + Utils.getSenderUUID(sender));
+                outputName = false; // dont output the senders name to themself (anymore)
+            }
+            else
+            {
+                notesDirectory = new File(Utils.getNotesDir() + altList.getUUIDs()[i]);
+                if (!Utils.playerTrustsPlayer(getSenderUUID(sender), altList.getUUIDs()[i])){ continue; } // if not trusted then dont display the list of notes
+            }
+
+            if (!notesDirectory.exists()){ continue; }
+
+            if (notesDirectory.listFiles() == null){ continue; }
+            
+
+            File[] notes = notesDirectory.listFiles();
+
+            for (File file : notes) 
+            {
+                if (outputName)
+                {
+                    sender.sendMessage(Bukkit.getServer().getOfflinePlayer(altList.getUUIDs()[i]).getName() + ":" + file.getName().replace(Utils.getNoteExt(), ""));    
+                }
+                else
+                {
+                    sender.sendMessage(file.getName().replace(Utils.getNoteExt(), ""));    
+                }
+            }
         }
         sender.sendMessage("-----------------------------------");
     }
