@@ -5,15 +5,18 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.UUID;
 
+import org.bukkit.entity.Player;
+
 import com.opencratesoftware.mcnotepad.utils.Config;
 import com.opencratesoftware.mcnotepad.utils.Utils;
+import com.opencratesoftware.structs.PlayerListEntry;
 
 import net.md_5.bungee.api.ChatColor;
 
 /* Class for lists that store player UUIDs for any purpose */
 public class PlayerList 
 {
-    protected UUID[] uuids;
+    protected PlayerListEntry[] entries;
 
     protected String contents = "";
 
@@ -28,7 +31,7 @@ public class PlayerList
     PlayerList(File listFile, int capacity)
     {
         file = listFile;
-        uuids = new UUID[capacity];
+        entries = new PlayerListEntry[capacity];
         Initialize();
     }
 
@@ -56,19 +59,34 @@ public class PlayerList
     public UUID[] getUUIDs()
     {
         UUID[] returnValue = new UUID[getUUIDCount()];
-
+        
         for (int i = 0; i < returnValue.length; i++) 
         {
-            returnValue[i] = uuids[i];    
+            returnValue[i] = entries[i].uuid;    
         }
 
         return returnValue;
     }
 
-    // returns all UUIDs (including null ones)
+    // returns all UUIDs (including null ones) no longer recommended over getEntriesRaw()
     public UUID[] getUUIDsRaw()
     {
-        return uuids;
+        UUID[] returnValue = new UUID[entries.length];
+
+        for (int i = 0; i < returnValue.length; i++) 
+        {
+            if (entries[i] != null)
+            {
+                returnValue[i] = entries[i].uuid;    
+            }
+        }
+
+        return returnValue;
+    }
+
+    public PlayerListEntry[] getEntriesRaw()
+    {
+        return entries;
     }
 
     public String getContents()
@@ -78,7 +96,7 @@ public class PlayerList
 
     public int getCapacity()
     {
-        return uuids.length;
+        return entries.length;
     }
 
     public int getUUIDCount(boolean countSlow)
@@ -86,9 +104,10 @@ public class PlayerList
         if(!countSlow){ return getUUIDCount(); }
 
         int returnValue = 0;
-        for (UUID uuid : uuids) 
+
+        for (PlayerListEntry entry : entries) 
         {
-            if(uuid != null)
+            if(entry != null)
             {
                 returnValue++;
             }
@@ -122,9 +141,9 @@ public class PlayerList
             while ((fileCurrentLine = fileIn.readLine()) != null)
             {
                 contents += fileCurrentLine + "\n";
-                if(lineIndex < uuids.length)
+                if(lineIndex < entries.length)
                 {
-                    uuids[lineIndex] = UUID.fromString(fileCurrentLine);
+                    entries[lineIndex] = new PlayerListEntry(UUID.fromString(fileCurrentLine));
                 }
                 lineIndex++;
             }
@@ -144,7 +163,7 @@ public class PlayerList
     {
         if (getUUIDCount() >= getCapacity()){ return new FunctionResult(false, ChatColor.RED + "List has reached maximum capacity.", "full"); } // do not add if we've reached capacity
         contents += addition.toString() + "\n";
-        uuids[getUUIDCount()] = addition;
+        entries[getUUIDCount()] = new PlayerListEntry(addition);
 
         uuidCount++;
 
@@ -154,13 +173,13 @@ public class PlayerList
     public FunctionResult remove(UUID uuidToRemove)
     {
         int removedUUIDIndex = -1;
-        for (int i = 0; i < uuids.length; i++) 
+        for (int i = 0; i < entries.length; i++) 
         {
-            if(uuids[i] == null){ continue; }
+            if(entries[i] == null){ continue; }
 
-            if (uuids[i].equals(uuidToRemove))
+            if (entries[i].uuid.equals(uuidToRemove))
             {
-                uuids[i] = null;
+                entries[i] = null;
                 removedUUIDIndex = i;
                 break;
             }
@@ -168,9 +187,9 @@ public class PlayerList
 
         if (removedUUIDIndex == -1) { return new FunctionResult(false, ChatColor.RED + "Could not find player in list.", "notfound"); } // if we didn't find it then stop
 
-        for (int i = removedUUIDIndex + 1; i < uuids.length; i++) // new for loop starting where we left off instead of same with branch to skip running the branch when searching
+        for (int i = removedUUIDIndex + 1; i < entries.length; i++) // new for loop starting where we left off instead of same with branch to skip running the branch when searching
         {
-            uuids[i - 1] = uuids[i];
+            entries[i - 1] = entries[i];
         }
 
         contents = Utils.removeLineFromString(contents, removedUUIDIndex); 
