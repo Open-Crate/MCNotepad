@@ -304,7 +304,7 @@ public class NotepadCommand implements CommandExecutor
         if(removeResult.successful())
         {
             if (!Silent)
-            sender.sendMessage(ChatColor.GREEN + "Successfully removed line from note '" + args[1] + "' if line existed.");
+            sender.sendMessage(ChatColor.GREEN + removeResult.getUserFriendlyMessage());
         }
         else
         {

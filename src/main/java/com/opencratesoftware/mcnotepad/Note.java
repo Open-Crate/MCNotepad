@@ -8,6 +8,8 @@ import java.util.UUID;
 import com.opencratesoftware.mcnotepad.utils.Config;
 import com.opencratesoftware.mcnotepad.utils.Utils;
 
+import net.md_5.bungee.api.ChatColor;
+
 public class Note 
 {
     private File noteFile;
@@ -205,9 +207,10 @@ public class Note
         {
             return new FunctionResult(false, "Invalid line index (less than 0)");
         }
-
         while ((newLinePos = contents.indexOf('\n', newLinePos + 1)) != -1) 
         {
+            if (contents.indexOf('\n', newLinePos + 1) == -1) { continue; } //if next is end, stop
+
             if(currentLineIndex == lineIndex - 1)
             {
                 String contentsPart1 = contents.substring(0, newLinePos);
@@ -220,11 +223,19 @@ public class Note
                 {
                     contents = contentsPart1 + contents.substring(nextLinePos);
                 }
-                return Utils.setFileContents(contents, noteFile);
+                FunctionResult setContentsResult = Utils.setFileContents(contents, noteFile);
+                if (!setContentsResult.success)
+                {
+                    return setContentsResult;
+                }
+                else
+                {
+                    return new FunctionResult(true, ChatColor.GREEN + "Successfully removed line from note.");
+                }
             }
             currentLineIndex++;
         }
-        return new FunctionResult(true, "");
+        return new FunctionResult(true, ChatColor.RED + "Invalid line index (greater than highest line index).");
     }
 
     /* First the ability to request PlayerLists to end themselves, now notes :( */
