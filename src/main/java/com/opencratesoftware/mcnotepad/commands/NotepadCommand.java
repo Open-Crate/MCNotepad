@@ -167,6 +167,7 @@ public class NotepadCommand implements CommandExecutor
         if (args.length < 2)
         {
             sender.sendMessage(ChatColor.RED + "Usage: /notepad delete <Note Name>");
+            return;
         }
         File file = getNoteFile(sender, args[1], true);
         if (UUID.fromString(file.getParentFile().getName()).equals(getSenderUUID(sender))) // do not allow users to delete files not in their directory.
