@@ -187,6 +187,24 @@ public class Utils
         return getNameUUID(sender.getName());
     }
 
+    public static boolean isIntString(String str)
+    {   
+        String numberChars = "-0123456789";
+
+        for (int i = 0; i < str.length(); i++) 
+        {
+            String character = "";
+
+            character = character + str.charAt(i);
+            
+            if(!numberChars.contains(character))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
     // retrieves note file as the sender, checking trustlists, altdirs and the like. Can return a non-existent file if the file is not found or user does not have required trust.
     public static File getNoteFile(CommandSender sender, String noteName, boolean IgnoreAltDirs)
     {   

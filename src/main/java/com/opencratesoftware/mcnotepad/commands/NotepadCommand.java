@@ -287,7 +287,9 @@ public class NotepadCommand implements CommandExecutor
             }
             return;
         }
-        
+
+        if (!Utils.isIntString(args[2])){sender.sendMessage(ChatColor.RED + "Line Number parameter must be an integer (number without decimal)"); return;}
+
         File file = getNoteFile(sender, args[1], false);
 
         if (!file.exists())
@@ -329,6 +331,9 @@ public class NotepadCommand implements CommandExecutor
             return;
         }
 
+        if (!Utils.isIntString(args[2])){sender.sendMessage(ChatColor.RED + "Line Number parameter must be an integer (number without decimal)"); return;}
+        if (!Utils.isIntString(args[3])){sender.sendMessage(ChatColor.RED + "Destination Line Number parameter must be an integer (number without decimal)"); return;}
+        
         try
         {
             BufferedReader fileIn = new BufferedReader(new FileReader(noteFile));
@@ -390,6 +395,8 @@ public class NotepadCommand implements CommandExecutor
             }
             return;
         }
+
+        if (!Utils.isIntString(args[2])){sender.sendMessage(ChatColor.RED + "Line Number parameter must be an integer (number without decimal)"); return;}
 
         File file = getNoteFile(sender, args[1], false);
 
