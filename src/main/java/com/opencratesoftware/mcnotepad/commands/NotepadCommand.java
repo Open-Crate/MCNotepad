@@ -97,6 +97,15 @@ public class NotepadCommand implements CommandExecutor
             }
         }
         sender.sendMessage("-----------------------------------");
+        File notesDirectory = new File(Utils.getNotesDir() + getSenderUUID(sender));
+
+        if (notesDirectory.exists())
+        { 
+            sender.sendMessage("Note Storage: " + String.valueOf(notesDirectory.listFiles().length) + "/" + String.valueOf(Config.getMaxNotesPerPlayer()));
+            sender.sendMessage("-----------------------------------");
+        }
+
+
     }
 
     private void newFileAction(CommandSender sender, String[] args)
