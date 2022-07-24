@@ -1,10 +1,8 @@
 package com.opencratesoftware.mcnotepad.commands;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -18,7 +16,6 @@ import com.opencratesoftware.mcnotepad.AltList;
 import com.opencratesoftware.mcnotepad.FunctionResult;
 import com.opencratesoftware.mcnotepad.Note;
 import com.opencratesoftware.mcnotepad.NoteType;
-import com.opencratesoftware.mcnotepad.Notepad;
 import com.opencratesoftware.mcnotepad.TrustList;
 import com.opencratesoftware.mcnotepad.utils.Config;
 import com.opencratesoftware.mcnotepad.utils.Utils;
