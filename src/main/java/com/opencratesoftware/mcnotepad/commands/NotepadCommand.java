@@ -97,13 +97,65 @@ public class NotepadCommand implements CommandExecutor
             }
         }
         sender.sendMessage("-----------------------------------");
-        File notesDirectory = new File(Utils.getNotesDir() + getSenderUUID(sender));
-
-        if (notesDirectory.exists())
-        { 
-            sender.sendMessage("Note Storage: " + String.valueOf(notesDirectory.listFiles().length) + "/" + String.valueOf(Config.getMaxNotesPerPlayer()));
-            sender.sendMessage("-----------------------------------");
+        if(Config.getMaxNotesPerPlayer() <= 0)
+        {
+            return;
         }
+
+        File senderNotesDir = new File(Utils.getNotesDir() + getSenderUUID(sender));
+        int senderNoteCount = 0;
+        if (senderNotesDir.exists())
+        { 
+            senderNoteCount = senderNotesDir.listFiles().length;
+        }
+
+        String NoteStorageBarFill = "";
+
+        float SenderNoteCountPercentage = Float.valueOf(senderNoteCount)/Float.valueOf(Config.getMaxNotesPerPlayer());
+        ChatColor FillColor = ChatColor.GREEN;
+        if (SenderNoteCountPercentage > 0.4)
+        {
+            if (SenderNoteCountPercentage > 0.6)
+            {
+                if (SenderNoteCountPercentage > 0.8)
+                {
+                    if (SenderNoteCountPercentage >= 1.0)
+                    {
+                        FillColor = ChatColor.DARK_RED;
+                    }
+                    else
+                    {
+                        FillColor = ChatColor.RED;
+                    }
+                }
+                else
+                {
+                    FillColor = ChatColor.GOLD;
+                }
+            }
+            else
+            {
+                FillColor = ChatColor.YELLOW;
+            }
+        }
+
+        for (int index = 0; index < Math.round(SenderNoteCountPercentage * 10.0f); index++) 
+        {
+            NoteStorageBarFill = NoteStorageBarFill + FillColor + "█";
+        }
+
+        for (int i = 0; i < 10 - Math.round(SenderNoteCountPercentage * 10.0f); i++) 
+        {
+            NoteStorageBarFill = NoteStorageBarFill + ChatColor.WHITE + "█";
+        }
+
+        sender.sendMessage("Note Storage: " + String.valueOf(senderNoteCount) + "/" + String.valueOf(Config.getMaxNotesPerPlayer()) + " " + NoteStorageBarFill);
+        if (SenderNoteCountPercentage > 1.0)
+        {
+            sender.sendMessage(ChatColor.RED + "WARNING: NOTE COUNT IS MORE THAN THE LIMIT SET BY SERVER ADMINISTRATORS.");
+        }
+        sender.sendMessage("-----------------------------------");
+        
 
 
     }
