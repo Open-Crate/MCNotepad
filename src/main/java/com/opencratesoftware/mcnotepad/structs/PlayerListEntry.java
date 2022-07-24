@@ -1,4 +1,4 @@
-package com.opencratesoftware.structs;
+package com.opencratesoftware.mcnotepad.structs;
 
 import java.util.UUID;
 
@@ -8,6 +8,7 @@ public class PlayerListEntry
     {
         uuid = inUUID;
     }
+    
     public UUID uuid;
     
     public Variable[] Attributes;

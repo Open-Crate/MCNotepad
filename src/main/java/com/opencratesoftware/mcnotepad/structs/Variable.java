@@ -1,4 +1,4 @@
-package com.opencratesoftware.structs;
+package com.opencratesoftware.mcnotepad.structs;
 
 public class Variable 
 {
