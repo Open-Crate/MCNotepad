@@ -5,9 +5,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.UUID;
 
+import com.opencratesoftware.mcnotepad.structs.PlayerListEntry;
 import com.opencratesoftware.mcnotepad.utils.Config;
 import com.opencratesoftware.mcnotepad.utils.Utils;
-import com.opencratesoftware.structs.PlayerListEntry;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -60,7 +60,6 @@ public class PlayerList
 
         for (int i = 0; i < returnValue.length; i++) 
         {
-            
             returnValue[i] = entries[i].uuid;    
         }
 
@@ -161,11 +160,11 @@ public class PlayerList
         }
     }
     
-    public FunctionResult add(UUID addition)
+    public FunctionResult add(PlayerListEntry addition)
     {
         if (getUUIDCount() >= getCapacity()){ return new FunctionResult(false, ChatColor.RED + "List has reached maximum capacity.", "full"); } // do not add if we've reached capacity
         contents += addition.toString() + "\n";
-        entries[getUUIDCount()] = new PlayerListEntry(addition);
+        entries[getUUIDCount()] = addition;
 
         uuidCount++;
 

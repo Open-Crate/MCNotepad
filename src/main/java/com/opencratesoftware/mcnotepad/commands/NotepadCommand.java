@@ -19,6 +19,7 @@ import com.opencratesoftware.mcnotepad.NoteType;
 import com.opencratesoftware.mcnotepad.TrustList;
 import com.opencratesoftware.mcnotepad.utils.Config;
 import com.opencratesoftware.mcnotepad.utils.Utils;
+import com.opencratesoftware.mcnotepad.structs.PlayerListEntry;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -519,7 +520,7 @@ public class NotepadCommand implements CommandExecutor
 
         TrustList trustList = TrustList.getList(trustFile);
 
-        FunctionResult addResult = trustList.add(getNameUUID(args[1]));
+        FunctionResult addResult = trustList.add(new PlayerListEntry(getNameUUID(args[1])));
 
         if (addResult.successful())
         {
@@ -640,7 +641,7 @@ public class NotepadCommand implements CommandExecutor
             return; 
         }
 
-        FunctionResult addResult = altList.add(uuidToAdd);
+        FunctionResult addResult = altList.add(new PlayerListEntry(uuidToAdd));
 
         if (addResult.successful())
         {
