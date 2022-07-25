@@ -499,7 +499,7 @@ public class NotepadCommand implements CommandExecutor
     {
         if (args.length < 2)
         {
-            sender.sendMessage(ChatColor.RED + "Usage: /notepad trust <username>");
+            sender.sendMessage(ChatColor.RED + "Usage: /notepad trust <username> OR Usage: /notepad trust <username> <permissions>");
             return;
         }
         File trustFile = getUserTrustFile(getSenderUUID(sender));
@@ -730,8 +730,12 @@ public class NotepadCommand implements CommandExecutor
     
     private void outputHelp(CommandSender sender, String[] args)
     {
+        int page = 1;
+
         if(args.length > 1)
         {
+            if (args.length > 2) { if (Utils.isIntString(args[2])) { page = Integer.parseInt(args[2]); } } // if page arg is provided and is an int string, set that as the page number.
+
             switch (args[1].toLowerCase()) {
                 case "guide":
                 sender.sendMessage("--------------------------------------------------");
@@ -751,7 +755,8 @@ public class NotepadCommand implements CommandExecutor
                 sender.sendMessage(ChatColor.YELLOW + "guide - guide on creating a note, adding to it and removing from it, then deleting it");
                 sender.sendMessage(ChatColor.GOLD + "management - information on managing notes/files");
                 sender.sendMessage(ChatColor.YELLOW + "sharing - information on trusting other users (mainly for sharing notes with others)");
-                sender.sendMessage(ChatColor.GOLD + "alts - information on alternative user directories/folders (for making shared notes easier to refer to)");
+                sender.sendMessage(ChatColor.GOLD + "advancedsharing - information on controlling permissions given to other users, for better control.");
+                sender.sendMessage(ChatColor.YELLOW + "alts - information on alternative user directories/folders (for making shared notes easier to refer to)");
                 sender.sendMessage("--------------------------------------------------");
                     break;
 
@@ -780,7 +785,11 @@ public class NotepadCommand implements CommandExecutor
                     sender.sendMessage("--------------------------------------------------");
                     sender.sendMessage("Sharing notes in notepad is simple, you simply must add a user whom you want to share a note with to your trustlist, and they'll be able to edit and view your note! Trusted users cannot delete the note file or create note files under your name, however they can clear a note file and add to one, so use with caution.");
                     sender.sendMessage(" ");
-                    sender.sendMessage("To add a user to your trusted list, use '/notepad trust [username or UUID]'.\n \nTo remove a user, use '/notepad untrust [username or UUID]'.\n \nAnd to list all trusted users, use '/notepad listtrusted'.\n \nTo clear all trusted users instantly, use '/notepad cleartrusted'");
+                    sender.sendMessage(ChatColor.GOLD + "- To add a user to your trusted list, use '/notepad trust [username or UUID]'.");
+                    sender.sendMessage(ChatColor.YELLOW + "- To remove a user, use '/notepad untrust [username or UUID]'.");
+                    sender.sendMessage(ChatColor.GOLD + "- To list trusted users, use '/notepad listtrusted'.");
+                    sender.sendMessage(ChatColor.YELLOW + "- To clear your trustedlist, use '/notepad cleartrusted'");
+                    sender.sendMessage(ChatColor.WHITE + " \nView topic 'advancedsharing' to control permissions more.");
                     sender.sendMessage("--------------------------------------------------");
                     break;
 
@@ -792,7 +801,30 @@ public class NotepadCommand implements CommandExecutor
                     sender.sendMessage("list - Lists all of your notes. Usage is '/notepad list'.");
                     sender.sendMessage("--------------------------------------------------");
                     break;
-
+                
+                case "advancedsharing":
+                sender.sendMessage("--------------------------------------------------");
+                if (page == 1)
+                {
+                    sender.sendMessage("Notepad provides the option to add additional parameters for increased permission control over your notes. This allows you to do things such as choose what notes users can access, and what they can do to those notes.");
+                    sender.sendMessage(" \nUsing this you can do things such as grant a user access to only two notes, one note giving them full access (read, add and remove) and the other being read-only. Or, you can give access to all except for specific ones.");
+                    sender.sendMessage(ChatColor.YELLOW + " \nThis is a much more advanced and complex look into controlling permissions in notepad. You do not need this to use notepad, for most users the information in the 'sharing' topic is enough.");  
+                }
+                if (page == 2)
+                {
+                    sender.sendMessage("So in order to use this functionality, start with typing a standard '/notepad trust [user]' but before you send this command, additionally you must specific parameters or else the user will be given 100% access.");
+                    sender.sendMessage(" \nThese parameters are structured like this '[note]([permissions])'. For example, to give a user just view and add permissions to a note named 'note0' you would add 'note0(view,add)'.");
+                    sender.sendMessage(" \nAdditionally, you may use the keyword '\\ALL' in place of the note name, to specify permissions for all notes. Explicitly identifying a note by name will take priority over '\\ALL'.");
+                }
+                if (page == 3)
+                {
+                    sender.sendMessage("The permissions currently recognized by notepad right now are view, add, and remove. Add is for adding lines and remove is for removing lines. View is self explanatory but it's for viewing notes.");
+                    sender.sendMessage(" \nView is required for users to be able to see a note when they use list with you added as an altdir.");
+                    sender.sendMessage(" \nNew notes are not added with the exception of using the '\\ALL' keyword, so if you use the '\\ALL' keyword ensure you set permissions for new notes accordingly.");
+                }
+                sender.sendMessage(ChatColor.GOLD + " \nShowing page " + String.valueOf(page) + "/3. Append the page number you would like to view to switch pages.");
+                sender.sendMessage("--------------------------------------------------");
+                break;
                 default:
                 sender.sendMessage("Unknown help topic. Use '/notepad help topics' for a list of known topics.");
                     break;
