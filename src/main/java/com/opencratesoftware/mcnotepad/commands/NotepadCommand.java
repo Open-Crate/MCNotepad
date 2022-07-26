@@ -19,6 +19,7 @@ import com.opencratesoftware.mcnotepad.NoteType;
 import com.opencratesoftware.mcnotepad.TrustList;
 import com.opencratesoftware.mcnotepad.utils.Config;
 import com.opencratesoftware.mcnotepad.utils.Utils;
+import com.opencratesoftware.mcnotepad.structs.CommandData;
 import com.opencratesoftware.mcnotepad.structs.PlayerListEntry;
 
 import net.md_5.bungee.api.ChatColor;

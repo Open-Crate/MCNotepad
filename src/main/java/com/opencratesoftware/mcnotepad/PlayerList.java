@@ -163,7 +163,7 @@ public class PlayerList
     public FunctionResult add(PlayerListEntry addition)
     {
         if (getUUIDCount() >= getCapacity()){ return new FunctionResult(false, ChatColor.RED + "List has reached maximum capacity.", "full"); } // do not add if we've reached capacity
-        contents += addition.toString() + "\n";
+        contents += addition.uuid.toString() + Utils.mergeArray(addition.Attributes, " ") + "\n";
         entries[getUUIDCount()] = addition;
 
         uuidCount++;

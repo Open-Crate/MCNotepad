@@ -6,7 +6,9 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.checkerframework.checker.index.qual.SubstringIndexBottom;
 
+import com.google.common.reflect.Parameter;
 import com.opencratesoftware.mcnotepad.FunctionResult;
 import com.opencratesoftware.mcnotepad.structs.CommandData;
 
@@ -15,6 +17,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.lang.reflect.Array;
 import java.util.logging.Level;
 
 import net.md_5.bungee.api.ChatColor;
@@ -514,8 +517,10 @@ public class Utils
 
     public static String removeAllFromStart(String str, String removeStr)
     {
-        while(str.substring(0, removeStr.length()) != removeStr)
-        {
+        while(true)
+        {  
+            if (str.length() <= removeStr.length()) { break; }
+            if(str.substring(0, removeStr.length()) != removeStr){ break; }
             str = str.substring(removeStr.length());
         }
         return str;
@@ -536,19 +541,50 @@ public class Utils
     public static CommandData formatCommand(String command, String seperator)
     {
         CommandData returnValue = new CommandData();
+        returnValue.params = new String[0];
+        int currentParam = -1;
+        while(command.length() > 0)
+        {   
+            String subStr;
+            
+            command = removeAllFromStart(command, seperator);
+            
+            if (command.length() <= 0) { break; }
+            
+            if (!command.contains(seperator))
+            {
+                subStr = command;
+                command = "";
+            }
+            else
+            {
+                subStr = command.substring(0, command.indexOf(seperator));
+                if (command.length() > command.indexOf(seperator) + 1)
+                {
+                    command = command.substring(command.indexOf(seperator) + 1);
+                }
+                else
+                {
+                    command = "";
+                }
+            }
 
-        String[] substrings = command.split(seperator);
+            if (currentParam < 0) {returnValue.name = subStr; }
+            else 
+            {
+                String[] newParams = new String[returnValue.params.length + 1];
+                for (int i = 0; i < returnValue.params.length; i++) 
+                {
+                    newParams[i] = returnValue.params[i];    
+                }
 
-        returnValue.name = substrings[0];
+                newParams[currentParam] = subStr;
 
-        returnValue.params = new String[substrings.length];
+                returnValue.params = newParams;
+            }
 
-        for (int i = 1; i < substrings.length; i++) 
-        {
-            returnValue.params[i] = substrings[i];
+            currentParam++;
         }
-        
-
 
         return returnValue;
     }
