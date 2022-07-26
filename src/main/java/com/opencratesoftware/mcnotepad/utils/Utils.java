@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import com.opencratesoftware.mcnotepad.FunctionResult;
+import com.opencratesoftware.mcnotepad.structs.CommandData;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -494,6 +495,61 @@ public class Utils
             }
             currentLineIndex++;
         }
+        return returnValue;
+    }
+
+    public static String mergeArray(Object[] array, String seperator)
+    {
+        if(array.length <= 0) { return ""; }
+    
+        String returnValue = array[0].toString();
+
+        for (int i = 1; i < array.length; i++)
+        {
+            returnValue += seperator + array[i].toString();
+        }
+
+        return returnValue;
+    }
+
+    public static String removeAllFromStart(String str, String removeStr)
+    {
+        while(str.substring(0, removeStr.length()) != removeStr)
+        {
+            str = str.substring(removeStr.length());
+        }
+        return str;
+    }
+    
+    public static int findFirstOf(String str, String searchFor)
+    {
+        for (int i = 0; i < str.length(); i++) 
+        {
+            if (str.substring(i, searchFor.length()) == searchFor)
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public static CommandData formatCommand(String command, String seperator)
+    {
+        CommandData returnValue = new CommandData();
+
+        String[] substrings = command.split(seperator);
+
+        returnValue.name = substrings[0];
+
+        returnValue.params = new String[substrings.length];
+
+        for (int i = 1; i < substrings.length; i++) 
+        {
+            returnValue.params[i] = substrings[i];
+        }
+        
+
+
         return returnValue;
     }
 
