@@ -3,6 +3,7 @@ package com.opencratesoftware.mcnotepad.commands;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.security.Permission;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -21,6 +22,7 @@ import com.opencratesoftware.mcnotepad.utils.Config;
 import com.opencratesoftware.mcnotepad.utils.Utils;
 import com.opencratesoftware.mcnotepad.structs.CommandData;
 import com.opencratesoftware.mcnotepad.structs.PlayerListEntry;
+import com.opencratesoftware.mcnotepad.structs.Variable;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -500,7 +502,7 @@ public class NotepadCommand implements CommandExecutor
     {
         if (args.length < 2)
         {
-            sender.sendMessage(ChatColor.RED + "Usage: /notepad trust <username> OR Usage: /notepad trust <username> <permissions>");
+            sender.sendMessage(ChatColor.RED + "Usage: /notepad trust <username>");
             return;
         }
         File trustFile = getUserTrustFile(getSenderUUID(sender));
@@ -611,6 +613,56 @@ public class NotepadCommand implements CommandExecutor
         }
 
         
+    }
+
+    private void permEditAction(CommandSender sender, String[] args)
+    {
+        if (args.length < 3)
+        {
+            sender.sendMessage(ChatColor.RED + "Usage: /notepad permedit <username> <permissions>");
+            return;
+        }
+        
+        String userName = args[1];
+
+        File trustFile = getUserTrustFile(getSenderUUID(sender));
+
+        TrustList trustList = TrustList.getList(trustFile);
+
+        if (!trustFile.exists())    { return; }
+
+        PlayerListEntry Entry = new PlayerListEntry(getNameUUID(args[1]));
+
+        String[] permArgs = args;
+        permArgs[0] = "";
+        permArgs[1] = "|";
+        String mergedPermissions = Utils.mergeArray(permArgs, " ");
+        CommandData Permissions = Utils.formatCommand(mergedPermissions, " | ");
+        
+        CommandData[] FormattedPermissions = new CommandData[Permissions.params.length];
+
+        for (int i = 0; i < FormattedPermissions.length; i++) 
+        {
+            FormattedPermissions[i] = Utils.formatCommand(Permissions.params[i], " ");    
+        }
+
+        Entry.Attributes = new Variable[FormattedPermissions.length];
+
+        for (int i = 0; i < Entry.Attributes.length; i++) 
+        {
+            Entry.Attributes[i] = new Variable(FormattedPermissions[i].name, Utils.mergeArray(FormattedPermissions[i].params, " "));
+        }
+ 
+        FunctionResult addResult = trustList.add(Entry);
+
+        if (addResult.successful())
+        {
+            sender.sendMessage(ChatColor.GREEN + "Successfully added '" + userName + "' UUID to file. UUID: '" + getNameUUID(userName).toString() + "'");
+        }
+        else
+        {
+            sender.sendMessage(ChatColor.RED + addResult.getUserFriendlyMessage()); 
+        }
     }
 
     /////////////////////////////
@@ -813,13 +865,14 @@ public class NotepadCommand implements CommandExecutor
                 }
                 if (page == 2)
                 {
-                    sender.sendMessage("So in order to use this functionality, start with typing a standard '/notepad trust [user]' but before you send this command, additionally you must specific parameters or else the user will be given 100% access.");
-                    sender.sendMessage(" \nThese parameters are structured like this '[note]([permissions])'. For example, to give a user just view and add permissions to a note named 'note0' you would add 'note0(view,add)'.");
+                    sender.sendMessage("So in order to use this functionality, start with typing a standard '/notepad permedit [user]' but before you send this command, additionally you must specify parameters.");
+                    sender.sendMessage(" \nThese parameters are structured like this '[note] [permissions] | [note2] [permissions]'. For example, to give a user just view and add permissions to a note named 'note0' you would add 'note0 view add'.");
                     sender.sendMessage(" \nAdditionally, you may use the keyword '\\ALL' in place of the note name, to specify permissions for all notes. Explicitly identifying a note by name will take priority over '\\ALL'.");
+                    sender.sendMessage(" \nYou can do multiple notes for one user by using '|' as a seperator. For example, '/notepad permedit [player] \\ALL view add remove | note0 view | note1 view add remove'");
                 }
                 if (page == 3)
                 {
-                    sender.sendMessage("The permissions currently recognized by notepad right now are view, add, and remove. Add is for adding lines and remove is for removing lines. View is self explanatory but it's for viewing notes.");
+                    sender.sendMessage("The permissions currently recognized by notepad right now are view, add, and remove. Add is for adding lines and remove is for removing lines. View is for viewing notes.");
                     sender.sendMessage(" \nView is required for users to be able to see a note when they use list with you added as an altdir.");
                     sender.sendMessage(" \nNew notes are not added with the exception of using the '\\ALL' keyword, so if you use the '\\ALL' keyword ensure you set permissions for new notes accordingly.");
                 }
@@ -898,6 +951,10 @@ public class NotepadCommand implements CommandExecutor
 
             case "cleartrusted":
                 clearTrustedAction(sender, args);
+                break;
+            
+            case "permedit":
+                permEditAction(sender, args);
                 break;
 
             case "help":

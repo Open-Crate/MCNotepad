@@ -144,7 +144,7 @@ public class PlayerList
                 {
                     if (fileCurrentLine.length() > 30)
                     {
-                        entries[uuidCount] = new PlayerListEntry(UUID.fromString(fileCurrentLine));
+                        entries[uuidCount] = new PlayerListEntry(fileCurrentLine);
                         uuidCount++;
                     }
                 }
@@ -163,7 +163,7 @@ public class PlayerList
     public FunctionResult add(PlayerListEntry addition)
     {
         if (getUUIDCount() >= getCapacity()){ return new FunctionResult(false, ChatColor.RED + "List has reached maximum capacity.", "full"); } // do not add if we've reached capacity
-        contents += addition.uuid.toString() + Utils.mergeArray(addition.Attributes, " ") + "\n";
+        contents += addition.uuid.toString() + " " + Utils.mergeArray(addition.Attributes, " ") + "\n";
         entries[getUUIDCount()] = addition;
 
         uuidCount++;
