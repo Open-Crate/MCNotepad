@@ -66,6 +66,18 @@ public class PlayerList
         return returnValue;
     }
 
+    public PlayerListEntry[] getEntries()
+    {
+        PlayerListEntry[] returnValue = new PlayerListEntry[getUUIDCount()];
+
+        for (int i = 0; i < returnValue.length; i++) 
+        {
+            returnValue[i] = entries[i]; 
+        }
+
+        return returnValue;
+    }
+
     // returns all UUIDs (including null ones) no longer recommended over getEntriesRaw()
     public UUID[] getUUIDsRaw()
     {
