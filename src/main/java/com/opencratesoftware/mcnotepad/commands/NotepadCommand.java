@@ -616,9 +616,9 @@ public class NotepadCommand implements CommandExecutor
 
     private void permEditAction(CommandSender sender, String[] args)
     {
-        if (args.length < 3)
+        if (args.length < 4)
         {
-            sender.sendMessage(ChatColor.RED + "Usage: /notepad permedit <username> <permissions>");
+            sender.sendMessage(ChatColor.RED + "Usage: /notepad permedit <username> <operation> <permissions>");
             return;
         }
         
@@ -865,17 +865,22 @@ public class NotepadCommand implements CommandExecutor
                 if (page == 2)
                 {
                     sender.sendMessage("So in order to use this functionality, start with typing a standard '/notepad permedit [user]' but before you send this command, additionally you must specify parameters.");
-                    sender.sendMessage(" \nThese parameters are structured like this '[note] [permissions] | [note2] [permissions]'. For example, to give a user just view and add permissions to a note named 'note0' you would add 'note0 view add'.");
-                    sender.sendMessage(" \nAdditionally, you may use the keyword '\\ALL' in place of the note name, to specify permissions for all notes. Explicitly identifying a note by name will take priority over '\\ALL'.");
-                    sender.sendMessage(" \nYou can do multiple notes for one user by using '|' as a seperator. For example, '/notepad permedit [player] \\ALL view add remove | note0 view | note1 view add remove'");
+                    sender.sendMessage(" \nThe first additional parameter you must specify is an operation to do, the valid operations are 'add', 'remove', and 'set'. 'add' adds all specified parameters to the end, 'remove' removes them from anywhere in the line, and 'set' replaces entirely.");
                 }
                 if (page == 3)
                 {
-                    sender.sendMessage("The permissions currently recognized by notepad right now are view, add, and remove. Add is for adding lines and remove is for removing lines. View is for viewing notes.");
+                    sender.sendMessage("Now you can specify the permissions to perform the operation with.");
+                    sender.sendMessage(" \nThese parameters are structured like this '[note] [permissions] | [note2] [permissions]'. For example, to give a user just view and add permissions to a note named 'note0' you would add 'note0 view add'.");
+                    sender.sendMessage(" \nAdditionally, you may use the keyword '\\ALL' in place of the note name, to specify permissions for all notes. Explicitly identifying a note by name will stop notepad from reading permissions, whereas '\\ALL' will allow it to continue. This effectively results in '\\ALL' having less priority.");
+                    sender.sendMessage(" \nYou can do multiple notes for one user by using '|' as a seperator. For example, '/notepad permedit [player] \\ALL read write | note0 read | note1 read write'");
+                }
+                if (page == 4)
+                {
+                    sender.sendMessage("The permissions currently recognized by notepad right now are read and write. Write is for adding and removing lines. View is for viewing notes.");
                     sender.sendMessage(" \nView is required for users to be able to see a note when they use list with you added as an altdir.");
                     sender.sendMessage(" \nNew notes are not added with the exception of using the '\\ALL' keyword, so if you use the '\\ALL' keyword ensure you set permissions for new notes accordingly.");
                 }
-                sender.sendMessage(ChatColor.GOLD + " \nShowing page " + String.valueOf(page) + "/3. Append the page number you would like to view to switch pages.");
+                sender.sendMessage(ChatColor.GOLD + " \nShowing page " + String.valueOf(page) + "/4. Append the page number you would like to view to switch pages.");
                 sender.sendMessage("--------------------------------------------------");
                 break;
                 default:
