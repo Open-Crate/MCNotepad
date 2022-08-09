@@ -3,7 +3,6 @@ package com.opencratesoftware.mcnotepad.commands;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.security.Permission;
 import java.util.UUID;
 import java.util.logging.Level;
 

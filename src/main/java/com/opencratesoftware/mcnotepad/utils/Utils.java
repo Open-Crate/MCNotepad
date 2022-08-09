@@ -6,9 +6,7 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.checkerframework.checker.index.qual.SubstringIndexBottom;
 
-import com.google.common.reflect.Parameter;
 import com.opencratesoftware.mcnotepad.FunctionResult;
 import com.opencratesoftware.mcnotepad.structs.CommandData;
 
@@ -17,7 +15,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.lang.reflect.Array;
 import java.util.logging.Level;
 
 import net.md_5.bungee.api.ChatColor;
@@ -178,11 +175,14 @@ public class Utils
         {
             return UUID.fromString("00000000-0000-0000-0000-000000000000");
         }
-        if (Bukkit.getServer().getPlayerUniqueId(name) == null)
+        
+        UUID returnValue = Bukkit.getServer().getPlayerUniqueId(name);
+
+        if (returnValue == null)
         {
             return UUID.fromString("00000000-0000-0000-0000-000000000000");
         }
-        return Bukkit.getServer().getPlayerUniqueId(name);
+        return returnValue;
     }
 
     // gets UUID from CommandSender type
