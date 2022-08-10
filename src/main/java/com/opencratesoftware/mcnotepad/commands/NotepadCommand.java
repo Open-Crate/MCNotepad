@@ -624,6 +624,8 @@ public class NotepadCommand implements CommandExecutor
         
         String userName = args[1];
 
+        String operation = args[2];
+
         File trustFile = getUserTrustFile(getSenderUUID(sender));
 
         TrustList trustList = TrustList.getList(trustFile);
@@ -633,9 +635,13 @@ public class NotepadCommand implements CommandExecutor
         PlayerListEntry Entry = new PlayerListEntry(getNameUUID(args[1]));
 
         String[] permArgs = args;
-        permArgs[0] = "";
+        permArgs[0] = ""; // set the first one to "" as merge array won't put a " " before the first string element, which means it won't be seen by formatCommand(mergedPermissions)
         permArgs[1] = "|";
+        permArgs[2] = "|"; 
         String mergedPermissions = Utils.mergeArray(permArgs, " ");
+        
+        mergedPermissions = mergedPermissions.substring(1);
+        
         CommandData Permissions = Utils.formatCommand(mergedPermissions, " | ");
         
         CommandData[] FormattedPermissions = new CommandData[Permissions.params.length];
@@ -859,7 +865,7 @@ public class NotepadCommand implements CommandExecutor
                 if (page == 1)
                 {
                     sender.sendMessage("Notepad provides the option to add additional parameters for increased permission control over your notes. This allows you to do things such as choose what notes users can access, and what they can do to those notes.");
-                    sender.sendMessage(" \nUsing this you can do things such as grant a user access to only two notes, one note giving them full access (read, add and remove) and the other being read-only. Or, you can give access to all except for specific ones.");
+                    sender.sendMessage(" \nUsing this you can do things such as grant a user access to only two notes, one note giving them full access (read and write) and the other being read-only. Or, you can give access to all except for specific ones.");
                     sender.sendMessage(ChatColor.YELLOW + " \nThis is a much more advanced and complex look into controlling permissions in notepad. You do not need this to use notepad, for most users the information in the 'sharing' topic is enough.");  
                 }
                 if (page == 2)
@@ -876,7 +882,7 @@ public class NotepadCommand implements CommandExecutor
                 }
                 if (page == 4)
                 {
-                    sender.sendMessage("The permissions currently recognized by notepad right now are read and write. Write is for adding and removing lines. View is for viewing notes.");
+                    sender.sendMessage("The permissions currently recognized by notepad right now are read and write. 'write' is for adding and removing lines. 'read' is for viewing notes.");
                     sender.sendMessage(" \nView is required for users to be able to see a note when they use list with you added as an altdir.");
                     sender.sendMessage(" \nNew notes are not added with the exception of using the '\\ALL' keyword, so if you use the '\\ALL' keyword ensure you set permissions for new notes accordingly.");
                 }
