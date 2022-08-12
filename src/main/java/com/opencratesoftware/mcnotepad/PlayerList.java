@@ -172,9 +172,16 @@ public class PlayerList
         }
     }
     
+    /* child classes may override this to modify the entry being added by the 'add' function */
+    protected PlayerListEntry child_AddEntryModifier(PlayerListEntry entry)
+    {
+        return entry;
+    }
+
     public FunctionResult add(PlayerListEntry addition)
     {
         if (getUUIDCount() >= getCapacity()){ return new FunctionResult(false, ChatColor.RED + "List has reached maximum capacity.", "full"); } // do not add if we've reached capacity
+        addition = child_AddEntryModifier(addition);
         contents += addition.uuid.toString() + " " + Utils.mergeArray(addition.Attributes, " ") + "\n";
         entries[getUUIDCount()] = addition;
 
