@@ -34,6 +34,32 @@ public class TrustList extends PlayerList
         return newList;
     }
 
+    protected PlayerListEntry child_AddEntryModifier(PlayerListEntry entry)
+    {
+        for (Variable attribute : entry.Attributes) 
+        {
+            CommandData permissions = Utils.formatCommand(attribute.Value, " ");
+
+            String newValue = permissions.name;
+            
+            for (int i = 0; i < permissions.params.length; i++) 
+            {
+                String perm = permissions.params[i];
+                
+                perm = perm.toLowerCase();
+
+                if (!perm.equals("read") && !perm.equals("write")) { continue; }
+                if (i > 2) { break; }
+
+                newValue += " " + perm;
+            }
+
+            attribute.Value = newValue;
+        }
+
+        return entry;
+    }
+
     /* Returns trust permissions that corresponds to what trust has been given to a player by the owner of the note named noteName.
     If note name does not include ":", for security purposes we will say no permissions incase a function forgets to use ":" to specify the player.
     This means that even if the owner of the note is playerUUID then you must specify who the noteName owner is either UUID:Name */
