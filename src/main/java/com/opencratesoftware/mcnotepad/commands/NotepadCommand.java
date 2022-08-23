@@ -885,12 +885,12 @@ public class NotepadCommand implements CommandExecutor
                     sender.sendMessage("Now you can specify the permissions to perform the operation with.");
                     sender.sendMessage(" \nThese parameters are structured like this '[note] [permissions] | [note2] [permissions]'. For example, to give a user just view and add permissions to a note named 'note0' you would add 'note0 view add'.");
                     sender.sendMessage(" \nAdditionally, you may use the keyword '\\ALL' in place of the note name, to specify permissions for all notes. Explicitly identifying a note by name will stop notepad from reading permissions, whereas '\\ALL' will allow it to continue. This effectively results in '\\ALL' having less priority.");
-                    sender.sendMessage(" \nYou can do multiple notes for one user by using '|' as a seperator. For example, '/notepad permedit [player] \\ALL read write | note0 read | note1 read write'");
+                    sender.sendMessage(" \nYou can do multiple notes for one user by using '|' as a seperator. For example, '/notepad permedit set [player] \\ALL read write | note0 read | note1 read write'");
                 }
                 if (page == 4)
                 {
                     sender.sendMessage("The permissions currently recognized by notepad right now are read and write. 'write' is for adding and removing lines. 'read' is for viewing notes.");
-                    sender.sendMessage(" \nView is required for users to be able to see a note when they use list with you added as an altdir.");
+                    sender.sendMessage(" \nRead is required for users to be able to see a note when they use list with you added as an altdir.");
                     sender.sendMessage(" \nNew notes are not added with the exception of using the '\\ALL' keyword, so if you use the '\\ALL' keyword ensure you set permissions for new notes accordingly.");
                 }
                 sender.sendMessage(ChatColor.GOLD + " \nShowing page " + String.valueOf(page) + "/4. Append the page number you would like to view to switch pages.");
