@@ -180,12 +180,21 @@ public class PlayerList
 
     public FunctionResult add(PlayerListEntry addition)
     {
+        for (int i = 0; i < getEntries().length; i++) 
+        {
+            if (entries[i].uuid.equals(addition.uuid))
+            {
+                remove(entries[i].uuid); // if this player is already added to the list, remove them so this replaces them.
+            }
+        }
+
         if (getUUIDCount() >= getCapacity()){ return new FunctionResult(false, ChatColor.RED + "List has reached maximum capacity.", "full"); } // do not add if we've reached capacity
+        
         addition = child_AddEntryModifier(addition);
-        String attributesStringized = Utils.mergeArray(addition.Attributes, " ");
+        String attributesStringized = Utils.mergeArray(addition.Attributes, " | ");
         if (attributesStringized.length() > 0)
         {
-            attributesStringized = " " + attributesStringized;
+            attributesStringized = " | " + attributesStringized;
         }
         contents += addition.uuid.toString() +  attributesStringized + "\n";
         entries[getUUIDCount()] = addition;
