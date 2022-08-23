@@ -3,8 +3,6 @@ package com.opencratesoftware.mcnotepad;
 import java.io.File;
 import java.util.UUID;
 
-import org.apache.logging.log4j.util.PropertySource.Util;
-
 import com.opencratesoftware.mcnotepad.structs.CommandData;
 import com.opencratesoftware.mcnotepad.structs.PlayerListEntry;
 import com.opencratesoftware.mcnotepad.structs.TrustPermissions;
@@ -44,6 +42,12 @@ public class TrustList extends PlayerList
 
             String newValue = permissions.name;
             
+            if (!new File(Utils.getNotesDir().toString() + "/" + owner.toString() + "/" + attribute.Name).exists())
+            {
+                attribute.Name = "";
+                continue;
+            } 
+
             for (int i = 0; i < permissions.params.length; i++) 
             {
                 String perm = permissions.params[i];
