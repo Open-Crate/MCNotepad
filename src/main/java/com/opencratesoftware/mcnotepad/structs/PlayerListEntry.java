@@ -9,6 +9,7 @@ public class PlayerListEntry
     public PlayerListEntry(UUID inUUID)
     {
         uuid = inUUID;
+        Attributes = new Variable[0]; // ensure attributes is not NULL
     }
 
     public PlayerListEntry(String Line)

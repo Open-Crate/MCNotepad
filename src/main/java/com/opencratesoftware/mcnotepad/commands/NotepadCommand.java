@@ -21,6 +21,7 @@ import com.opencratesoftware.mcnotepad.utils.Config;
 import com.opencratesoftware.mcnotepad.utils.Utils;
 import com.opencratesoftware.mcnotepad.structs.CommandData;
 import com.opencratesoftware.mcnotepad.structs.PlayerListEntry;
+import com.opencratesoftware.mcnotepad.structs.TrustPermissions;
 import com.opencratesoftware.mcnotepad.structs.Variable;
 
 import net.md_5.bungee.api.ChatColor;
@@ -74,7 +75,7 @@ public class NotepadCommand implements CommandExecutor
             else
             {
                 notesDirectory = new File(Utils.getNotesDir() + altList.getUUIDs()[i]);
-                if (!Utils.playerTrustsPlayer(getSenderUUID(sender), altList.getUUIDs()[i])){ continue; } // if not trusted then dont display the list of notes
+                //if (!Utils.playerTrustsPlayer(getSenderUUID(sender), altList.getUUIDs()[i])){ continue; } // if not trusted then dont display the list of notes
             }
 
             if (!notesDirectory.exists()){ continue; }
@@ -241,7 +242,7 @@ public class NotepadCommand implements CommandExecutor
             }
             else
             {
-                sender.sendMessage(ChatColor.RED + "Could not find file.");
+                sender.sendMessage(ChatColor.RED + "Failed to find file.");
             }
         }
         else
@@ -275,6 +276,10 @@ public class NotepadCommand implements CommandExecutor
 
         Note note = Note.getNote(file);
 
+        TrustPermissions permissions = TrustList.GetUserPermissionsForNote(getSenderUUID(sender), note.getOwner().toString() + ":" + note.getFile().getName());
+
+        if (!permissions.read) { player.sendMessage(ChatColor.RED + "Failed to find file."); return; }
+
         boolean showLineNumbers = false;
 
         if (note.getType() == NoteType.list)
@@ -294,7 +299,7 @@ public class NotepadCommand implements CommandExecutor
         }
 
         player.sendMessage("--------------------------------------------------");
-        player.sendMessage(note.getViewableContents(showLineNumbers));
+        player.sendMessage(note.getViewableContents(showLineNumbers, getSenderUUID(sender)));
         player.sendMessage("--------------------------------------------------");
     }
 
@@ -327,7 +332,7 @@ public class NotepadCommand implements CommandExecutor
             }
         }
 
-        FunctionResult addResult = note.addLine(noteText);
+        FunctionResult addResult = note.addLine(noteText, getSenderUUID(sender));
         if (addResult.successful())
         {
             sender.sendMessage(ChatColor.GREEN + "Successfully added '" + noteText + "' to note '" + args[1] + "'.");
@@ -356,13 +361,13 @@ public class NotepadCommand implements CommandExecutor
         if (!file.exists())
         {
             if (!Silent)
-                sender.sendMessage(ChatColor.RED + "Could not find file.");
+                sender.sendMessage(ChatColor.RED + "Failed to find file.");
             return;
         }
         
         Note note = Note.getNote(file);
 
-        FunctionResult removeResult = note.removeLineAt(Utils.stringToInt(args[2]));
+        FunctionResult removeResult = note.removeLineAt(Utils.stringToInt(args[2]), getSenderUUID(sender));
 
         if(removeResult.successful())
         {
@@ -464,7 +469,7 @@ public class NotepadCommand implements CommandExecutor
         if (!file.exists())
         {
             if (!Silent)
-                sender.sendMessage(ChatColor.RED + "Could not find file.");
+                sender.sendMessage(ChatColor.RED + "Failed to find file.");
             return;
         }
 
@@ -481,7 +486,7 @@ public class NotepadCommand implements CommandExecutor
             }
         }
 
-        FunctionResult addResult = note.addLineAt(lineToAdd, Utils.stringToInt(args[2]));
+        FunctionResult addResult = note.addLineAt(lineToAdd, Utils.stringToInt(args[2]), getSenderUUID(sender));
 
         if (!addResult.successful())
         {
@@ -693,10 +698,10 @@ public class NotepadCommand implements CommandExecutor
             sender.sendMessage(ChatColor.RED + "Error: Could not initialize file. Error information sent to logs.");
         }
 
-        if (!Utils.playerTrustsPlayer(getSenderUUID(sender), uuidToAdd)) // do not rely on this for checking if users trust each other, as untrusts won't be enforced!
+        //if (!Utils.playerTrustsPlayer(getSenderUUID(sender), uuidToAdd)) // do not rely on this for checking if users trust each other, as untrusts won't be enforced!
         { 
-            sender.sendMessage(ChatColor.RED + "Cannot add altdir of someone who hasn't added you to their trustlist.");
-            return; 
+            //sender.sendMessage(ChatColor.RED + "Cannot add altdir of someone who hasn't added you to their trustlist.");
+            ////return; 
         }
 
         FunctionResult addResult = altList.add(new PlayerListEntry(uuidToAdd));

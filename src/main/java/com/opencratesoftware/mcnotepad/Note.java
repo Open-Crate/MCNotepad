@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.UUID;
 
+import com.opencratesoftware.mcnotepad.structs.TrustPermissions;
 import com.opencratesoftware.mcnotepad.utils.Config;
 import com.opencratesoftware.mcnotepad.utils.Utils;
 
@@ -74,10 +75,14 @@ public class Note
         initialize();
     }
 
-    public String getViewableContents(boolean showLineNumbers)
+    public String getViewableContents(boolean showLineNumbers, UUID requester)
     {
         String returnValue = contents.substring(contents.indexOf('\n', 0) + 1);
         
+        TrustPermissions Permissions = TrustList.GetUserPermissionsForNote(requester, owner.toString() + ":" + getFile().getName());
+
+        if (!Permissions.read) { return ChatColor.RED + "Failed to find file."; }
+
         if (showLineNumbers)
         {
             returnValue = "0. " + returnValue;
@@ -94,6 +99,11 @@ public class Note
             }
         }
         return returnValue;
+    }
+
+    public UUID getOwner()
+    {
+        return owner;
     }
 
     public void updateInformation()
@@ -152,7 +162,7 @@ public class Note
     }
 
     // For inserting a line at a specified location, if you want to add a line to the end then use the addline function. Returns true if no errors occur
-    public FunctionResult addLineAt(String lineToAdd, int lineIndex)
+    public FunctionResult addLineAt(String lineToAdd, int lineIndex, UUID requester)
     {
         if (noteFile.length() >= Config.getMaxNoteSize())
         {
@@ -163,6 +173,11 @@ public class Note
         {
             return new FunctionResult(false, "Invalid line index (less than 0)");
         }
+
+        TrustPermissions Permissions = TrustList.GetUserPermissionsForNote(requester, owner.toString() + ":" + getFile().getName());
+
+        if (!Permissions.write) { return new FunctionResult(false, ChatColor.RED + "Failed to find file."); }
+
 
         lineToAdd = Utils.formatStringForNotes(lineToAdd);
 
@@ -184,13 +199,17 @@ public class Note
         return Utils.setFileContents(contents, noteFile);
     }
 
-    public FunctionResult addLine(String lineToAdd)
+    public FunctionResult addLine(String lineToAdd, UUID requester)
     {
         if (noteFile.length() >= Config.getMaxNoteSize())
         {
             return new FunctionResult(false, "Adding to this note would exceed the file size limit set by the server administrators (" + ((float) Config.getMaxNoteSize()) / 1024.0 + " kilobytes) ", "filesizelimit");
         }
         
+        TrustPermissions Permissions = TrustList.GetUserPermissionsForNote(requester, owner.toString() + ":" + getFile().getName());
+
+        if (!Permissions.write) { return new FunctionResult(false, ChatColor.RED + "Failed to find file."); }
+
         lineToAdd = Utils.formatStringForNotes(lineToAdd);
         
         contents += lineToAdd + "\n";
@@ -198,11 +217,15 @@ public class Note
     }
 
     // Removes line at specified line of note (does not count the type identifier at the top of note) Returns true if no errors occur
-    public FunctionResult removeLineAt(int lineIndex)
+    public FunctionResult removeLineAt(int lineIndex, UUID requester)
     {
         int newLinePos = 0;
         int currentLineIndex = -1;
         
+        TrustPermissions Permissions = TrustList.GetUserPermissionsForNote(requester, owner.toString() + ":" + getFile().getName());
+
+        if (!Permissions.write) { return new FunctionResult(false, ChatColor.RED + "Failed to find file."); }
+
         if(lineIndex < 0)
         {
             return new FunctionResult(false, "Invalid line index (less than 0)");

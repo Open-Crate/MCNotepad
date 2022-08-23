@@ -3,6 +3,8 @@ package com.opencratesoftware.mcnotepad;
 import java.io.File;
 import java.util.UUID;
 
+import org.apache.logging.log4j.util.PropertySource.Util;
+
 import com.opencratesoftware.mcnotepad.structs.CommandData;
 import com.opencratesoftware.mcnotepad.structs.PlayerListEntry;
 import com.opencratesoftware.mcnotepad.structs.TrustPermissions;
@@ -82,11 +84,19 @@ public class TrustList extends PlayerList
 
         PlayerListEntry[] trustListEntries = trustList.getEntries();
 
+        if (trusterUUID.equals(playerUUID))
+        {
+            TrustPermissions returnValue = new TrustPermissions();
+            returnValue.read = true;
+            returnValue.write = true;
+            return returnValue;
+        }
+
         PlayerListEntry entry = null;
 
         for (PlayerListEntry playerListEntry : trustListEntries) 
         {
-            if (playerListEntry.uuid == playerUUID) 
+            if (playerListEntry.uuid.equals(playerUUID)) 
             { 
                 entry = playerListEntry; 
             }    
@@ -98,7 +108,7 @@ public class TrustList extends PlayerList
 
         for (Variable attribute : entry.Attributes) 
         {
-            if (attribute.Name == "\\ALL" || attribute.Name == noteName) 
+            if (attribute.Name.equals("\\ALL") || attribute.Name.equals(noteName)) 
             { 
                 CommandData permissions = Utils.formatCommand("name " + attribute.Value, " ");
                 
@@ -106,16 +116,17 @@ public class TrustList extends PlayerList
 
                 for (String perm : permissions.params) 
                 {
-                    if (perm == "read")
+                    if (perm.equals("read"))
                     {
                         setPermissions.read = true;
                     }
-                    else if (perm == "write")
+                    else if (perm.equals("write"))
                     {
                         setPermissions.write = true;
                     }
+
                 }
-                
+
                 returnValue.read = setPermissions.read;
                 returnValue.write = setPermissions.write;
                 /* set permissions this way so that if a user, for example defines with \ALL first, then defines with the explicit note name,

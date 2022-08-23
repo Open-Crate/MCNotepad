@@ -219,14 +219,14 @@ public class Utils
             noteName = clampStringCharacterCount(noteName, Config.getMaxFilenameCharacters() + NoteOwnerName.length() + 1);
             if(NoteOwnerName.length() < 28) // check if passed as a UUID (should be about 37 chars?) or username (always less than or equal to 16)
             {
-                if (playerTrustsPlayer(getNameUUID(sender.getName()), getNameUUID(NoteOwnerName)))
+                //if (playerTrustsPlayer(getNameUUID(sender.getName()), getNameUUID(NoteOwnerName)))
                 {
                     return new File(getNotesDir() + getNameUUID(NoteOwnerName), noteName.substring( Math.min (noteName.indexOf(":") + 1, noteName.length() - 1)) + getNoteExt());
                 }
             }
             else // if using UUID
             {
-                if (playerTrustsPlayer(getNameUUID(sender.getName()), UUID.fromString(NoteOwnerName)))
+                //if (playerTrustsPlayer(getNameUUID(sender.getName()), UUID.fromString(NoteOwnerName)))
                 {
                     return new File(getNotesDir() + NoteOwnerName, noteName.substring( Math.min (noteName.indexOf(":") + 1, noteName.length() - 1)) + getNoteExt());
                 }
@@ -234,7 +234,7 @@ public class Utils
             
             // if code is executing to this point then that means that the trust check failed, so return something that probably doesn't exist
             // so that a file not found error is likely presented. 
-            return new File("getNotesDir()" + "ThisDirectoryProbablyDoesntExist/justlikethisdoesntprobably/alsothis/con/thisshouldbesafe.txt/incaseitisnt.exe/anddoublyso.app/andfinally.sh/done.finished//\\");
+            //return new File("getNotesDir()" + "ThisDirectoryProbablyDoesntExist/justlikethisdoesntprobably/alsothis/con/thisshouldbesafe.txt/incaseitisnt.exe/anddoublyso.app/andfinally.sh/done.finished//\\");
             // random comment: it says "getNotesDir()" rather than getNotesDir() so it doesn't even actually look in the notes directory, wonderful.
         }
 
@@ -520,7 +520,7 @@ public class Utils
         while(true)
         {  
             if (str.length() <= removeStr.length()) { break; }
-            if(str.substring(0, removeStr.length()) != removeStr){ break; }
+            if(str.indexOf(removeStr) != 0){ break; }
             str = str.substring(removeStr.length());
         }
         return str;
@@ -561,7 +561,7 @@ public class Utils
                 subStr = command.substring(0, command.indexOf(seperator));
                 if (command.length() > command.indexOf(seperator) + 1)
                 {
-                    command = command.substring(command.indexOf(seperator) + 1);
+                    command = command.substring(command.indexOf(seperator));
                 }
                 else
                 {
