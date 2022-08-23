@@ -649,4 +649,20 @@ public class Utils
 
         return returnValue;
     }
+
+    public static int findInArray(Object[] array, Object searchFor)
+    {
+        for (int i = 0; i < array.length; i++) 
+        {
+            if (array[i] != null)
+            {
+                if(array[i].equals(searchFor))
+                {
+                    return i;
+                } 
+            }
+        }
+        
+        return -1;
+    }
 }
