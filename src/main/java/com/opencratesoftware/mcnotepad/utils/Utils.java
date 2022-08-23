@@ -501,7 +501,7 @@ public class Utils
         return returnValue;
     }
 
-    public static String mergeArray(Object[] array, String seperator)
+    public static String mergeArray(Object[] array, String seperator, boolean ignoreEmptyStrings)
     {
         if(array.length <= 0) { return ""; }
     
@@ -509,10 +509,19 @@ public class Utils
 
         for (int i = 1; i < array.length; i++)
         {
-            returnValue += seperator + array[i].toString();
+            String str = array[i].toString();
+
+            if (str.equals("") && ignoreEmptyStrings) { continue; }
+
+            returnValue += seperator + str;
         }
 
         return returnValue;
+    }
+
+    public static String mergeArray(Object[] array, String seperator)
+    {
+        return mergeArray(array, seperator, false);
     }
 
     public static String removeAllFromStart(String str, String removeStr)
