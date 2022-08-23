@@ -22,6 +22,8 @@ public class PlayerList
 
     protected Integer uuidCount;
 
+    protected UUID owner;
+
     boolean Initialized = false;
 
     protected PlayerList(){}
@@ -170,6 +172,8 @@ public class PlayerList
         {
             Utils.logError(e.getMessage());
         }
+
+        owner = UUID.fromString(file.getName());
     }
     
     /* child classes may override this to modify the entry being added by the 'add' function */
