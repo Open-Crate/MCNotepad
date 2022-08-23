@@ -195,7 +195,7 @@ public class PlayerList
         if (getUUIDCount() >= getCapacity()){ return new FunctionResult(false, ChatColor.RED + "List has reached maximum capacity.", "full"); } // do not add if we've reached capacity
         
         addition = child_AddEntryModifier(addition);
-        String attributesStringized = Utils.mergeArray(addition.Attributes, " | ");
+        String attributesStringized = Utils.mergeArray(addition.Attributes, " | ", true);
         if (attributesStringized.length() > 0)
         {
             attributesStringized = " | " + attributesStringized;
