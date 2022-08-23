@@ -387,4 +387,29 @@ public class Note
 
         return notesDirectory.listFiles().length;
     }
+
+    public static File[] getPlayerNoteFiles(UUID uuid)
+    {
+        File notesDirectory = new File(Utils.getNotesDir() + uuid.toString());
+
+        if(!notesDirectory.exists() || notesDirectory.isFile()) { return new File[0]; }
+
+        return notesDirectory.listFiles();
+    }
+
+    public static Note[] getPlayerNotes(UUID uuid)
+    {
+        File[] NoteFiles = getPlayerNoteFiles(uuid);
+        
+        Note[] returnValue;
+
+        returnValue = new Note[NoteFiles.length];
+
+        for (int i = 0; i < NoteFiles.length; i++) 
+        {
+            returnValue[i] = new Note(NoteFiles[i]);
+        }
+
+        return returnValue;
+    }
 }
