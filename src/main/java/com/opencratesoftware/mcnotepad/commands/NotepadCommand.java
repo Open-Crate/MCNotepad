@@ -89,6 +89,8 @@ public class NotepadCommand implements CommandExecutor
             {
                 if (outputName)
                 {
+                    TrustPermissions Permissions = TrustList.GetUserPermissionsForNote(getSenderUUID(sender), altList.getUUIDs()[i].toString() + ":" + notes[i].getName());
+                    if (!Permissions.read) { continue; }
                     sender.sendMessage(Bukkit.getServer().getOfflinePlayer(altList.getUUIDs()[i]).getName() + ":" + file.getName().replace(Utils.getNoteExt(), ""));    
                 }
                 else
