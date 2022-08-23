@@ -467,7 +467,7 @@ public class Utils
         {
             if((newLinePos = returnValue.indexOf('\n', newLinePos + 1)) != -1)
             {
-                String contentsPart1 = returnValue.substring(newLinePos);
+                String contentsPart1 = returnValue.substring(newLinePos + 1);
                 if(newLinePos != -1)
                 {
                     returnValue = contentsPart1;
