@@ -362,7 +362,7 @@ public class NotepadCommand implements CommandExecutor
         
         Note note = Note.getNote(file);
 
-        FunctionResult removeResult = note.removeLineAt(Integer.parseInt(args[2]));
+        FunctionResult removeResult = note.removeLineAt(Utils.stringToInt(args[2]));
 
         if(removeResult.successful())
         {
@@ -403,7 +403,7 @@ public class NotepadCommand implements CommandExecutor
             int currentLine = 0;
             while ((fileCurrentLine = fileIn.readLine()) != null)
             {   
-                if (currentLine == Integer.parseInt(args[2]) + 1)
+                if (currentLine == Utils.stringToInt(args[2]) + 1)
                 {
                     lineToMove = fileCurrentLine;
                 }
@@ -416,16 +416,16 @@ public class NotepadCommand implements CommandExecutor
                 sender.sendMessage(ChatColor.RED + "Could not find line in note.");
             }
 
-            if ((Integer.parseInt(args[2]) > (Integer.parseInt(args[3]))))
+            if ((Utils.stringToInt(args[2]) > (Utils.stringToInt(args[3]))))
             {
                 String[] insertArgs = {"insert", args[1], args[3], lineToMove};
                 insertAction(sender, insertArgs, true);
-                String[] removelineArgs = {"removeline", args[1], String.valueOf(Integer.parseInt(args[2]) + 1)};
+                String[] removelineArgs = {"removeline", args[1], String.valueOf(Utils.stringToInt(args[2]) + 1)};
                 removeLineAction(sender, removelineArgs, true);
             }
-            else if (((Integer.parseInt(args[2]) < (Integer.parseInt(args[3])))))
+            else if (((Utils.stringToInt(args[2]) < (Utils.stringToInt(args[3])))))
             {
-                String[] insertArgs = {"insert", args[1],String.valueOf(Integer.parseInt(args[3]) + 1), lineToMove};
+                String[] insertArgs = {"insert", args[1],String.valueOf(Utils.stringToInt(args[3]) + 1), lineToMove};
                 insertAction(sender, insertArgs, true);
                 String[] removelineArgs = {"removeline", args[1], args[2]};
                 removeLineAction(sender, removelineArgs, true);
@@ -481,7 +481,7 @@ public class NotepadCommand implements CommandExecutor
             }
         }
 
-        FunctionResult addResult = note.addLineAt(lineToAdd, Integer.parseInt(args[2]));
+        FunctionResult addResult = note.addLineAt(lineToAdd, Utils.stringToInt(args[2]));
 
         if (!addResult.successful())
         {
@@ -792,7 +792,7 @@ public class NotepadCommand implements CommandExecutor
 
         if(args.length > 1)
         {
-            if (args.length > 2) { if (Utils.isIntString(args[2])) { page = Integer.parseInt(args[2]); } } // if page arg is provided and is an int string, set that as the page number.
+            if (args.length > 2) { if (Utils.isIntString(args[2])) { page = Utils.stringToInt(args[2]); } } // if page arg is provided and is an int string, set that as the page number.
 
             switch (args[1].toLowerCase()) {
                 case "guide":

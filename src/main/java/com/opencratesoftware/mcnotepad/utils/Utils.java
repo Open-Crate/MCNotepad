@@ -589,4 +589,64 @@ public class Utils
         return returnValue;
     }
 
+    public static int stringToInt(String str)
+    {
+        int returnValue = 0;
+            
+        if (str.length() > 0)
+        {
+            for (int i = 0; i < str.length(); i++)
+            {
+                switch (str.charAt(i))
+                {
+                case '0':
+                returnValue = (returnValue * 10);
+                    break;
+
+                case '1':
+                returnValue = (returnValue * 10) + 1;
+                break;
+
+                case '2':
+                returnValue = (returnValue * 10) + 2;
+                    break;
+
+                case '3':
+                returnValue = (returnValue * 10) + 3;
+                    break;
+
+                case '4':
+                returnValue = (returnValue * 10) + 4;
+                    break;
+
+                case '5':
+                returnValue = (returnValue * 10) + 5;
+                break;
+
+                case '6':
+                returnValue = (returnValue * 10) + 6;
+                    break;
+
+                case '7':
+                returnValue = (returnValue * 10) + 7;
+                    break;
+
+                case '8':
+                returnValue = (returnValue * 10) + 8;
+                    break;
+
+                case '9':
+                returnValue = (returnValue * 10) + 9;
+                    break;
+                }
+            }
+
+            if (str.charAt(0) == '-')
+            {
+                returnValue = returnValue * -1;
+            }
+        }
+
+        return returnValue;
+    }
 }
