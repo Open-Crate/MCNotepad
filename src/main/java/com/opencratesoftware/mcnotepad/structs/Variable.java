@@ -4,7 +4,14 @@ public class Variable
 {
     public String toString()
     {
-        return Name + " " + Value;
+        if (!Name.equals(""))
+        {
+            return Name + " " + Value;
+        }
+        else
+        {
+            return "";
+        }
     }
 
     public Variable(String inName, String inValue)
