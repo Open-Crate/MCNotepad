@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.util.UUID;
 
 import com.opencratesoftware.mcnotepad.structs.PlayerListEntry;
+import com.opencratesoftware.mcnotepad.structs.Variable;
 import com.opencratesoftware.mcnotepad.utils.Config;
 import com.opencratesoftware.mcnotepad.utils.Utils;
 
@@ -194,6 +195,24 @@ public class PlayerList
 
         if (getUUIDCount() >= getCapacity()){ return new FunctionResult(false, ChatColor.RED + "List has reached maximum capacity.", "full"); } // do not add if we've reached capacity
         
+        for (int i = 0; i < addition.Attributes.length; i++) 
+        {
+            for (int j = 0; j < addition.Attributes.length; j++) 
+            {
+                if (addition.Attributes[i] == null)
+                {
+                Utils.log(String.valueOf(i));
+                }
+                if (addition.Attributes[i].Name.equals(addition.Attributes[j].Name))
+                {
+                    if (j == i) { continue; } // if we found ourself, continue.
+
+                    addition.Attributes[i].Name = "";
+                    break;
+                }
+            }
+        }
+
         addition = child_AddEntryModifier(addition);
         String attributesStringized = Utils.mergeArray(addition.Attributes, " | ", true);
         if (attributesStringized.length() > 0)
@@ -207,7 +226,7 @@ public class PlayerList
 
         return Utils.setFileContents(contents, file);
     }
-
+    
     public FunctionResult remove(UUID uuidToRemove)
     {
         int removedUUIDIndex = -1;
@@ -237,11 +256,53 @@ public class PlayerList
         return Utils.setFileContents(contents, file); 
     }
 
+    public FunctionResult addAttributesToEntry(PlayerListEntry addition)
+    {
+        PlayerListEntry oldEntry = getEntryByUUID(addition.uuid);
+        PlayerListEntry newEntry = addition;
+        
+        if (oldEntry != null)
+        {
+            int oldAttributesLength = oldEntry.Attributes.length;
+            Variable[] oldAttributes = oldEntry.Attributes;
+            oldEntry.Attributes = new Variable[oldEntry.Attributes.length + newEntry.Attributes.length];
+
+            for (int i = 0; i < oldAttributesLength; i++) 
+            {
+                oldEntry.Attributes[i] = oldAttributes[i];
+            }
+
+            for (int i = 0; i < oldEntry.Attributes.length - oldAttributesLength; i++) 
+            {
+                oldEntry.Attributes[i + oldAttributesLength] = newEntry.Attributes[i];
+            }
+
+            newEntry.Attributes = oldEntry.Attributes;
+        }
+
+        return add(newEntry);
+    }
+
     /* Request your playerlist to end itself, how cruel :( */
     public void delete()
     {
         removeListFromMemory(this);
         file.delete();
+    }
+
+    public PlayerListEntry getEntryByUUID(UUID uuid)
+    {
+        PlayerListEntry[] validEntries = getEntries();
+
+        for (PlayerListEntry entry : validEntries) 
+        {
+            if (entry.uuid.equals(uuid)) 
+            {
+                return entry;
+            }
+        }
+
+        return null;
     }
 
     ///////////////////////

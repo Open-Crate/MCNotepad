@@ -631,7 +631,13 @@ public class NotepadCommand implements CommandExecutor
         
         String userName = args[1];
 
-        String operation = args[2];
+        String operation = args[2].toLowerCase();
+
+        if (!operation.equals("set") && !operation.equals("add"))
+        {
+            sender.sendMessage(ChatColor.RED + "Valid operations are 'set' and 'add'.");
+            return;
+        }
 
         File trustFile = getUserTrustFile(getSenderUUID(sender));
 
@@ -664,9 +670,17 @@ public class NotepadCommand implements CommandExecutor
         {
             Entry.Attributes[i] = new Variable(FormattedPermissions[i].name, Utils.mergeArray(FormattedPermissions[i].params, " "));
         }
- 
-        FunctionResult addResult = trustList.add(Entry);
+        
+        FunctionResult addResult;
 
+        if (operation.equals("set"))
+        { 
+            addResult = trustList.add(Entry);
+        }
+        else
+        {
+            addResult = trustList.addAttributesToEntry(Entry);
+        }
         if (addResult.successful())
         {
             sender.sendMessage(ChatColor.GREEN + "Successfully added '" + userName + "' UUID to file. UUID: '" + getNameUUID(userName).toString() + "'");
