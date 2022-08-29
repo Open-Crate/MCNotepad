@@ -666,10 +666,10 @@ public class NotepadCommand implements CommandExecutor
         PlayerListEntry Entry = new PlayerListEntry(getNameUUID(userName));
 
         String[] permArgs = args;
-        permArgs[0] = ""; // set the first one to "" as merge array won't put a " " before the first string element, which means it won't be seen by formatCommand(mergedPermissions)
-        permArgs[1] = "|";
-        permArgs[2] = "|"; 
-        String mergedPermissions = Utils.mergeArray(permArgs, " ");
+        permArgs[0] = ""; // set to "" causing ignoreEmptyStrings in mergeArray to simply ignore them.
+        permArgs[1] = "";
+        permArgs[2] = ""; 
+        String mergedPermissions = Utils.mergeArray(permArgs, " ", true);
 
         mergedPermissions = mergedPermissions.substring(1);
         
