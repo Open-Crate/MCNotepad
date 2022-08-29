@@ -528,8 +528,8 @@ public class NotepadCommand implements CommandExecutor
         }
 
         TrustList trustList = TrustList.getList(trustFile);
-
-        FunctionResult addResult = trustList.add(new PlayerListEntry(getNameUUID(args[1])));
+        
+        FunctionResult addResult = trustList.add(new PlayerListEntry(getNameUUID(args[1]).toString() + " | \\ALL read write"));
 
         if (addResult.successful())
         {
@@ -671,6 +671,8 @@ public class NotepadCommand implements CommandExecutor
         permArgs[2] = "|"; 
         String mergedPermissions = Utils.mergeArray(permArgs, " ");
         
+        mergedPermissions = mergedPermissions + " | ";
+
         mergedPermissions = mergedPermissions.substring(1);
         
         CommandData Permissions = Utils.formatCommand(mergedPermissions, " | ");
