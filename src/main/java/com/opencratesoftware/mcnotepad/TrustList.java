@@ -41,13 +41,15 @@ public class TrustList extends PlayerList
             CommandData permissions = Utils.formatCommand(attribute.Value, " ");
 
             String newValue = permissions.name;
-            
-            if (!new File(Utils.getNotesDir().toString() + "/" + owner.toString() + "/" + attribute.Name).exists())
+            if (!attribute.Name.equals("\\ALL"))
             {
-                attribute.Name = "";
-                continue;
-            } 
-
+                if (!new File(Utils.getNotesDir().toString() + "/" + owner.toString() + "/" + attribute.Name).exists())
+                {
+                    attribute.Name = "";
+                    continue;
+                } 
+            }
+            
             for (int i = 0; i < permissions.params.length; i++) 
             {
                 String perm = permissions.params[i];
