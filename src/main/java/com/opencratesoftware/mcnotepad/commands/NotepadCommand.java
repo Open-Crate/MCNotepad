@@ -633,9 +633,9 @@ public class NotepadCommand implements CommandExecutor
 
         String operation = args[2].toLowerCase();
 
-        if (!operation.equals("set") && !operation.equals("add"))
+        if (!operation.equals("set") && !operation.equals("add") && !operation.equals("remove"))
         {
-            sender.sendMessage(ChatColor.RED + "Valid operations are 'set' and 'add'.");
+            sender.sendMessage(ChatColor.RED + "Valid operations are 'set', 'add' and 'remove'.");
             return;
         }
 
@@ -676,6 +676,10 @@ public class NotepadCommand implements CommandExecutor
         if (operation.equals("set"))
         { 
             addResult = trustList.add(Entry);
+        }
+        else if (operation.equals("remove"))
+        {
+            addResult = trustList.removeAttributesFromEntry(Entry);
         }
         else
         {

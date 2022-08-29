@@ -185,6 +185,8 @@ public class PlayerList
 
     public FunctionResult add(PlayerListEntry addition)
     {
+        if (addition == null) { return new FunctionResult(false, ChatColor.RED + "Failed to add entry due to not existing. (Entry was null)"); }
+
         for (int i = 0; i < getEntries().length; i++) 
         {
             if (entries[i].uuid.equals(addition.uuid))
@@ -281,6 +283,43 @@ public class PlayerList
         }
 
         return add(newEntry);
+    }
+
+    public FunctionResult removeAttributesFromEntry(PlayerListEntry removal) // this function may be slow, perhaps optimize in future?
+    {
+        PlayerListEntry entry = getEntryByUUID(removal.uuid);
+        
+        if (entry != null)
+        {
+            for (int i = 0; i < entry.Attributes.length; i++) 
+            {
+                if (Utils.findInArray(removal.Attributes, entry.Attributes[i]) != -1)
+                {
+                    Variable[] newAttributes = new Variable[entry.Attributes.length -1];
+                    
+                    int oldAttributesIndex = 0;
+                    for (int j = 0; j < newAttributes.length; j++) 
+                    {
+                        if (oldAttributesIndex != i)
+                        {
+                            newAttributes[j] = entry.Attributes[oldAttributesIndex];
+                        }
+                        else
+                        {
+                            j--; // dont continue to next newattributes index as it will be left null
+                        }
+
+                        oldAttributesIndex++; // but do add to oldattributes to skip the unwanted index
+                    }
+
+                    entry.Attributes = newAttributes; // update attributes
+                    
+                    i--;
+                }
+            }
+        }
+
+        return add(entry);
     }
 
     /* Request your playerlist to end itself, how cruel :( */
