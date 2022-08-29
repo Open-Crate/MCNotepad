@@ -528,7 +528,7 @@ public class Utils
     {
         while(true)
         {  
-            if (str.length() <= removeStr.length()) { break; }
+            if (str.length() < removeStr.length()) { break; }
             if(str.indexOf(removeStr) != 0){ break; }
             str = str.substring(removeStr.length());
         }
