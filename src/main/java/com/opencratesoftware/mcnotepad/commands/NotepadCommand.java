@@ -670,8 +670,6 @@ public class NotepadCommand implements CommandExecutor
         permArgs[1] = "|";
         permArgs[2] = "|"; 
         String mergedPermissions = Utils.mergeArray(permArgs, " ");
-        
-        mergedPermissions = mergedPermissions + " | ";
 
         mergedPermissions = mergedPermissions.substring(1);
         

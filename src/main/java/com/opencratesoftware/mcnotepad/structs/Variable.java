@@ -9,6 +9,11 @@ public class Variable
     {
         if (!Name.equals(""))
         {
+            if (Value == null || Value == "null")
+            {
+                return Name;
+            }
+
             return Name + " " + Value;
         }
         else

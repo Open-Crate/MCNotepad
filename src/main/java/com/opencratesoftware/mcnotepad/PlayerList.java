@@ -201,10 +201,6 @@ public class PlayerList
         {
             for (int j = 0; j < addition.Attributes.length; j++) 
             {
-                if (addition.Attributes[i] == null)
-                {
-                Utils.log(String.valueOf(i));
-                }
                 if (addition.Attributes[i].Name.equals(addition.Attributes[j].Name))
                 {
                     if (j == i) { continue; } // if we found ourself, continue.
