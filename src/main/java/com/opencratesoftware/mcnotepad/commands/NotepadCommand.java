@@ -653,7 +653,7 @@ public class NotepadCommand implements CommandExecutor
 
         if (!operation.equals("set") && !operation.equals("add") && !operation.equals("remove"))
         {
-            sender.sendMessage(ChatColor.RED + "Valid operations are 'set', 'add' and 'remove'.");
+            sender.sendMessage(ChatColor.RED + "Valid operations are 'set', 'add', 'remove' and 'list'.");
             return;
         }
 
