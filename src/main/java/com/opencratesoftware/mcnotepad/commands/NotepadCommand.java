@@ -626,6 +626,7 @@ public class NotepadCommand implements CommandExecutor
         if (args.length < 3)
         {
             sender.sendMessage(ChatColor.RED + "Usage: /notepad permedit <username> <operation> <permissions modifications>");
+            sender.sendMessage(ChatColor.YELLOW + "You can refer to the help topic 'advancedsharing' with '/notepad help advancedsharing' for details on using permedit.");
             return;
         }
         
@@ -641,11 +642,11 @@ public class NotepadCommand implements CommandExecutor
     
             if (!trustFile.exists())    { return; }
             
-            PlayerListEntry entry = trustList.getEntryByUUID(getNameUUID(args[1]));
+            PlayerListEntry entry = trustList.getEntryByUUID(getNameUUID(userName));
 
             if (entry == null) { return; }
 
-            sender.sendMessage(args[1] + ":\n    " + Utils.mergeArray(entry.Attributes, "\n    "));
+            sender.sendMessage(userName + ":\n    " + Utils.mergeArray(entry.Attributes, "\n    "));
 
             return;
         }
@@ -662,7 +663,7 @@ public class NotepadCommand implements CommandExecutor
 
         if (!trustFile.exists())    { return; }
 
-        PlayerListEntry Entry = new PlayerListEntry(getNameUUID(args[1]));
+        PlayerListEntry Entry = new PlayerListEntry(getNameUUID(userName));
 
         String[] permArgs = args;
         permArgs[0] = ""; // set the first one to "" as merge array won't put a " " before the first string element, which means it won't be seen by formatCommand(mergedPermissions)
@@ -704,7 +705,7 @@ public class NotepadCommand implements CommandExecutor
         }
         if (addResult.successful())
         {
-            sender.sendMessage(ChatColor.GREEN + "Successfully added '" + userName + "' UUID to file. UUID: '" + getNameUUID(userName).toString() + "'");
+            sender.sendMessage(ChatColor.GREEN + "Successfully applied requested modifications for UUID of '" + userName + "' on file. UUID: '" + getNameUUID(userName).toString() + "'");
         }
         else
         {
