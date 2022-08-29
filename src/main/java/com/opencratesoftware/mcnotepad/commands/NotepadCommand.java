@@ -623,15 +623,32 @@ public class NotepadCommand implements CommandExecutor
 
     private void permEditAction(CommandSender sender, String[] args)
     {
-        if (args.length < 4)
+        if (args.length < 3)
         {
-            sender.sendMessage(ChatColor.RED + "Usage: /notepad permedit <username> <operation> <permissions>");
+            sender.sendMessage(ChatColor.RED + "Usage: /notepad permedit <username> <operation> <permissions modifications>");
             return;
         }
         
         String userName = args[1];
 
         String operation = args[2].toLowerCase();
+
+        if (operation.equals("list"))
+        {
+            File trustFile = getUserTrustFile(getSenderUUID(sender));
+
+            TrustList trustList = TrustList.getList(trustFile);
+    
+            if (!trustFile.exists())    { return; }
+            
+            PlayerListEntry entry = trustList.getEntryByUUID(getNameUUID(args[1]));
+
+            if (entry == null) { return; }
+
+            sender.sendMessage(args[1] + ":\n    " + Utils.mergeArray(entry.Attributes, "\n    "));
+
+            return;
+        }
 
         if (!operation.equals("set") && !operation.equals("add") && !operation.equals("remove"))
         {
@@ -896,7 +913,7 @@ public class NotepadCommand implements CommandExecutor
                 if (page == 2)
                 {
                     sender.sendMessage("So in order to use this functionality, start with typing a standard '/notepad permedit [user]' but before you send this command, additionally you must specify parameters.");
-                    sender.sendMessage(" \nThe first additional parameter you must specify is an operation to do, the valid operations are 'add', 'remove', and 'set'. 'add' adds all specified parameters to the end, 'remove' removes them from anywhere in the line, and 'set' replaces entirely.");
+                    sender.sendMessage(" \nThe first additional parameter you must specify is an operation to do, the valid operations are 'add', 'remove', 'set' and list. 'add' adds all specified parameters to the end, 'remove' removes them from anywhere in the line, and 'set' replaces entirely. 'list' lists the given permissions for a specific user.");
                 }
                 if (page == 3)
                 {
