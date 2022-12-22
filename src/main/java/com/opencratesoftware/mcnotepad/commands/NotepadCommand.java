@@ -721,12 +721,6 @@ public class NotepadCommand implements CommandExecutor
             sender.sendMessage(ChatColor.RED + "Error: Could not initialize file. Error information sent to logs.");
         }
 
-        //if (!Utils.playerTrustsPlayer(getSenderUUID(sender), uuidToAdd)) // do not rely on this for checking if users trust each other, as untrusts won't be enforced!
-        { 
-            //sender.sendMessage(ChatColor.RED + "Cannot add altdir of someone who hasn't added you to their trustlist.");
-            ////return; 
-        }
-
         FunctionResult addResult = altList.add(new PlayerListEntry(uuidToAdd));
 
         if (addResult.successful())
