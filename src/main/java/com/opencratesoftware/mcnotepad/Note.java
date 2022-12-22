@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.util.UUID;
 
 import org.bukkit.World;
+import org.bukkit.command.CommandSender;
 
 import com.opencratesoftware.mcnotepad.structs.TrustPermissions;
 import com.opencratesoftware.mcnotepad.utils.Config;
@@ -277,6 +278,25 @@ public class Note
             currentLineIndex++;
         }
         return new FunctionResult(true, ChatColor.RED + "Invalid line index (greater than highest line index).");
+    }
+
+    public FunctionResult rename(String newName, CommandSender requester)
+    {
+        newName = Utils.clampStringCharacterCount(newName, Config.getMaxFilenameCharacters());
+
+        String oldName = noteName;
+
+        File newNoteFile = Utils.getNoteFile(requester, newName, true);
+
+        if (!noteFile.renameTo(newNoteFile))
+        {
+            return new FunctionResult(false, ChatColor.RED + "Rename failed for an unknown reason.", "failed");
+        }
+
+        noteFile = newNoteFile;
+        initialize();
+
+        return new FunctionResult(true, ChatColor.GREEN + "Successfully renamed note '" + oldName + "' to '" + newName + "'.");
     }
 
     /* First the ability to request PlayerLists to end themselves, now notes :( */

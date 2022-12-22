@@ -227,7 +227,9 @@ public class NotepadCommand implements CommandExecutor
             sender.sendMessage(ChatColor.YELLOW + "Usage: /notepad delete <Note Name>");
             return;
         }
+
         File file = getNoteFile(sender, args[1], true);
+
         if (UUID.fromString(file.getParentFile().getName()).equals(getSenderUUID(sender))) // do not allow users to delete files not in their directory.
         {
             Note note = Note.getNote(file);
@@ -246,6 +248,38 @@ public class NotepadCommand implements CommandExecutor
             sender.sendMessage(ChatColor.RED + "Did not delete note. Did not detect command user as owner.");
             return;
         }
+    }
+
+    void renameAction(CommandSender sender, String[] args)
+    {
+        if (args.length < 3)
+        {
+            sender.sendMessage(ChatColor.YELLOW + "Usage: /notepad rename <NoteName> <NewNoteName>");
+            return;
+        }
+
+        File file = getNoteFile(sender, args[1], true);
+
+        if (UUID.fromString(file.getParentFile().getName()).equals(getSenderUUID(sender))) // do not allow users to rename files not in their directory.
+        {
+            Note note = Note.getNote(file);
+            
+            if (note.isValid())
+            {
+                sender.sendMessage(note.rename(args[2], sender).getUserFriendlyMessage());
+                return;
+            }
+            else
+            {
+                sender.sendMessage(ChatColor.RED + "Failed to find file.");
+            }
+        }
+        else
+        {
+            sender.sendMessage(ChatColor.RED + "Did not rename note. Did not detect command user as owner.");
+            return;
+        }
+
     }
 
     //////////////////////////
@@ -872,17 +906,17 @@ public class NotepadCommand implements CommandExecutor
                     sender.sendMessage(ChatColor.WHITE + " \nView topic 'advancedsharing' to control permissions more.");
                     sender.sendMessage("--------------------------------------------------");
                     break;
-
+                    
                 case "management":
-                    sender.sendMessage("--------------------------------------------------");
-                    sender.sendMessage("Managing notes in notepad is easy, the three main commands to know are 'new', 'delete' and 'list'.\n ");
-                    sender.sendMessage("new - Adds a new file to your directory/notes folder. Usage is '/notepad new [notename]'. Optionally you can specify a type of note (note or list) by adding so to the end (ex. '/notepad new [notename] note'), the default is list. Lists automatically show numbers on each line whereas notes simply display as raw text.\n ");
-                    sender.sendMessage("delete - Deletes a note. Usage is '/notepad delete [notename]'.\nYou cannot delete other user's notes, even if you are trusted by the owner.\n ");
-                    sender.sendMessage("list - Lists all of your notes. Usage is '/notepad list'.");
-                    sender.sendMessage("--------------------------------------------------");
-                    break;
-                
-                case "advancedsharing":
+                sender.sendMessage("--------------------------------------------------");
+                sender.sendMessage("Managing notes in notepad is easy, the three main commands to know are 'new', 'delete' and 'list'.\n ");
+                sender.sendMessage("new - Adds a new file to your directory/notes folder. Usage is '/notepad new [notename]'. Optionally you can specify a type of note (note or list) by adding so to the end (ex. '/notepad new [notename] note'), the default is list. Lists automatically show numbers on each line whereas notes simply display as raw text.\n ");
+                sender.sendMessage("delete - Deletes a note. Usage is '/notepad delete [notename]'.\nYou cannot delete other user's notes, even if you are trusted by the owner.\n ");
+                sender.sendMessage("list - Lists all of your notes. Usage is '/notepad list'.");
+                sender.sendMessage("--------------------------------------------------");
+                break;
+            
+            case "advancedsharing":
                 sender.sendMessage("--------------------------------------------------");
                 if (page == 1)
                 {
@@ -969,6 +1003,9 @@ public class NotepadCommand implements CommandExecutor
                 deleteFileAction(sender, args);
                 break;
 
+            case "rename":
+                renameAction(sender, args);
+                break;
             case "trust":
                 trustUserAction(sender, args);
                 break;
