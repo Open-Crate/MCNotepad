@@ -158,9 +158,6 @@ public class NotepadCommand implements CommandExecutor
             sender.sendMessage(ChatColor.RED + "WARNING: NOTE COUNT IS MORE THAN THE LIMIT SET BY SERVER ADMINISTRATORS.");
         }
         sender.sendMessage("-----------------------------------");
-        
-
-
     }
 
     private void newFileAction(CommandSender sender, String[] args)
