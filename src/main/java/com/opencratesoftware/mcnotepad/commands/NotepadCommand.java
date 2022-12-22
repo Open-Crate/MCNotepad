@@ -877,7 +877,7 @@ public class NotepadCommand implements CommandExecutor
                 case "actions":
                 sender.sendMessage("--------------------------------------------------");
                 sender.sendMessage("Actions:");
-                sender.sendMessage(ChatColor.YELLOW + "Note/File Management: new, delete, list");
+                sender.sendMessage(ChatColor.YELLOW + "Note/File Management: new, delete, list, rename");
                 sender.sendMessage(ChatColor.GOLD + "Editing/viewing: view, add, removeline, insert, move");
                 sender.sendMessage(ChatColor.YELLOW + "Trust/Sharing: trust, untrust, listtrusted, cleartrusted, permedit");
                 sender.sendMessage(ChatColor.GOLD + "Alternate User Directories/Folders: listalts, addalt, removealt");
