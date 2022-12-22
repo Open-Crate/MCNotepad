@@ -48,6 +48,8 @@ public class Note
             return;
         }
         
+        noteName = noteFile.getName();
+
         owner = UUID.fromString(noteFile.getParentFile().getName());
 
         updateInformation();
@@ -181,7 +183,7 @@ public class Note
         if (!Permissions.write) { return new FunctionResult(false, ChatColor.RED + "Failed to find file."); }
 
 
-        lineToAdd = Utils.formatStringForNotes(lineToAdd);
+        lineToAdd = Utils.formatStringForNotes(lineToAdd, Utils.getPlayerFromUUID(requester));
 
         int newLinePos = 0;
         int currentLineIndex = -1;
@@ -198,7 +200,14 @@ public class Note
             currentLineIndex++;
         }
 
-        return Utils.setFileContents(contents, noteFile);
+        FunctionResult setFileContentsResult = Utils.setFileContents(contents, noteFile); 
+        
+        if (!setFileContentsResult.success)
+        {
+            return setFileContentsResult;
+        }
+        
+        return new FunctionResult(true, ChatColor.GREEN + "Successfully inserted '" + lineToAdd + "' into note '" + noteName + "' at index " + String.valueOf(lineIndex) + ".");
     }
 
     public FunctionResult addLine(String lineToAdd, UUID requester)
@@ -212,10 +221,17 @@ public class Note
 
         if (!Permissions.write) { return new FunctionResult(false, ChatColor.RED + "Failed to find file."); }
 
-        lineToAdd = Utils.formatStringForNotes(lineToAdd);
+        lineToAdd = Utils.formatStringForNotes(lineToAdd, Utils.getPlayerFromUUID(requester));
         
         contents += lineToAdd + "\n";
-        return Utils.setFileContents(contents, noteFile);
+        FunctionResult setFileContentsResult = Utils.setFileContents(contents, noteFile); 
+        
+        if (!setFileContentsResult.success)
+        {
+            return setFileContentsResult;
+        }
+        
+        return new FunctionResult(true, ChatColor.GREEN + "Successfully added '" + lineToAdd + "' to note '" + noteName + "'.");
     }
 
     // Removes line at specified line of note (does not count the type identifier at the top of note) Returns true if no errors occur

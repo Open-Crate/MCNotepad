@@ -63,9 +63,27 @@ public class Utils
         Config.setConfigValues(getConfig());
     }
 
-    public static String formatStringForNotes(String string)
+    public static String formatStringForNotes(String string, Player player)
     {      
         String returnValue = string;
+
+        String[] NoteMacros = {"[POS]"};
+        String[] NoteMacrosResults = {String.valueOf(Math.round(player.getLocation().getX())) + " " + String.valueOf(Math.round(player.getLocation().getY())) + " " + String.valueOf(Math.round(player.getLocation().getZ()))};
+
+        for (int i = 0; i < returnValue.length(); i++) 
+        {
+            for (int j = 0; j < NoteMacros.length; j++) 
+            {
+                if (returnValue.length() < i +  NoteMacros[j].length()) { continue; }
+
+                String substr = returnValue.substring(i, i + NoteMacros[j].length());
+
+                if (substr.equals(NoteMacros[j]))
+                {
+                    returnValue = returnValue.substring(0, i) + NoteMacrosResults[j] + returnValue.substring(i +  NoteMacros[j].length());
+                }
+            }
+        }
 
         returnValue = whitelistFilterString(returnValue);
         

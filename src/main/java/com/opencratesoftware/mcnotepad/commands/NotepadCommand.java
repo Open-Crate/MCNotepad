@@ -329,12 +329,8 @@ public class NotepadCommand implements CommandExecutor
         }
 
         FunctionResult addResult = note.addLine(noteText, getSenderUUID(sender));
-        if (addResult.successful())
-        {
-            sender.sendMessage(ChatColor.GREEN + "Successfully added '" + noteText + "' to note '" + args[1] + "'.");
-            return;
-        }
-        sender.sendMessage(ChatColor.RED + addResult.getUserFriendlyMessage());
+
+        sender.sendMessage(addResult.getUserFriendlyMessage());
 
     }
 
@@ -484,14 +480,7 @@ public class NotepadCommand implements CommandExecutor
 
         FunctionResult addResult = note.addLineAt(lineToAdd, Utils.stringToInt(args[2]), getSenderUUID(sender));
 
-        if (!addResult.successful())
-        {
-            sender.sendMessage(ChatColor.RED + addResult.getUserFriendlyMessage());
-        }
-        else
-        {
-            sender.sendMessage(ChatColor.GREEN + "Successfully inserted line '" + lineToAdd + "' into note '" + args[1] + "'.");
-        }
+        sender.sendMessage(addResult.getUserFriendlyMessage());
     }
 
     /////////////////////////////
