@@ -332,7 +332,14 @@ public class Utils
     // gets the directory where all player notes folders can be found
     public static String getNotesDir(World world)
     {
-        return getDataDir() + "/" + world.getName() + "/" + "/notes/";
+        if (Config.getPerWorldNotes())
+        {
+            return getDataDir() + "/" + world.getName() + "/" + "/notes/";
+        }
+        else
+        {
+            return getDataDir() + "/notes/";
+        }
     }
             
     public static String getNoteExt() // this might be configurable eventually so use a getter to avoid having to update it everywhere

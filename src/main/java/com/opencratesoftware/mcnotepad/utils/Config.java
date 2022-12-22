@@ -26,6 +26,8 @@ public class Config
 
     private static int maxFilenameCharacters = 0;
 
+    private static boolean perWorldNotes = false;
+
     public static void setConfigValues(Configuration config)
     {
         maxMemorizedNotes = config.getInt("max-notes-in-memory");
@@ -37,6 +39,7 @@ public class Config
         useFilenameCharWhitelist = config.getBoolean("use-filename-character-whitelist");
         filenameCharWhitelist = config.getCharacterList("filename-whitelisted-characters");
         maxFilenameCharacters = config.getInt("filename-max-characters");
+        perWorldNotes = config.getBoolean("per-world-notes");
     }    
 
     public static int getMaxMemorizedNotes() { return maxMemorizedNotes; }
@@ -56,4 +59,6 @@ public class Config
     public static boolean getUseFilenameCharacterWhitelist() { return useFilenameCharWhitelist; } 
 
     public static int getMaxFilenameCharacters() { return maxFilenameCharacters; }
+
+    public static boolean getPerWorldNotes() { return perWorldNotes; }
 }
