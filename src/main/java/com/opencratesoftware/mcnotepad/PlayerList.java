@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.UUID;
 
+import org.bukkit.World;
+
 import com.opencratesoftware.mcnotepad.structs.PlayerListEntry;
 import com.opencratesoftware.mcnotepad.structs.Variable;
 import com.opencratesoftware.mcnotepad.utils.Config;

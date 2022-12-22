@@ -69,12 +69,12 @@ public class NotepadCommand implements CommandExecutor
             boolean outputName = true; 
             if (i == -1) // -1 means search the senders dir
             {
-                notesDirectory = new File(Utils.getNotesDir() + Utils.getSenderUUID(sender));
+                notesDirectory = new File(Utils.getNotesDir(Utils.getPlayerFromSender(sender).getWorld()) + Utils.getSenderUUID(sender));
                 outputName = false; // dont output the senders name to themself (anymore)
             }
             else
             {
-                notesDirectory = new File(Utils.getNotesDir() + altList.getUUIDs()[i]);
+                notesDirectory = new File(Utils.getNotesDir(Utils.getPlayerFromSender(sender).getWorld()) + altList.getUUIDs()[i]);
                 //if (!Utils.playerTrustsPlayer(getSenderUUID(sender), altList.getUUIDs()[i])){ continue; } // if not trusted then dont display the list of notes
             }
 
@@ -105,7 +105,7 @@ public class NotepadCommand implements CommandExecutor
             return;
         }
 
-        File senderNotesDir = new File(Utils.getNotesDir() + getSenderUUID(sender));
+        File senderNotesDir = new File(Utils.getNotesDir(Utils.getPlayerFromSender(sender).getWorld()) + getSenderUUID(sender));
         int senderNoteCount = 0;
         if (senderNotesDir.exists())
         { 

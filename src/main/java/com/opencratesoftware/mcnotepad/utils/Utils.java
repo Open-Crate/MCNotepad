@@ -4,8 +4,10 @@ import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 
 import com.opencratesoftware.mcnotepad.FunctionResult;
 import com.opencratesoftware.mcnotepad.structs.CommandData;
@@ -191,6 +193,16 @@ public class Utils
         return getNameUUID(sender.getName());
     }
 
+    public static Player getPlayerFromUUID(UUID uuid)
+    {
+        return Bukkit.getServer().getPlayer(uuid);
+    }
+
+    public static Player getPlayerFromSender(CommandSender sender)
+    {
+        return getPlayerFromUUID(getSenderUUID(sender));
+    }
+
     public static boolean isIntString(String str)
     {   
         String numberChars = "-0123456789";
@@ -219,11 +231,11 @@ public class Utils
             noteName = clampStringCharacterCount(noteName, Config.getMaxFilenameCharacters() + NoteOwnerName.length() + 1);
             if(NoteOwnerName.length() < 28) // check if passed as a UUID (should be about 37 chars?) or username (always less than or equal to 16)
             {
-                return new File(getNotesDir() + getNameUUID(NoteOwnerName), noteName.substring( Math.min (noteName.indexOf(":") + 1, noteName.length() - 1)) + getNoteExt());
+                return new File(getNotesDir(Utils.getPlayerFromSender(sender).getWorld()) + getNameUUID(NoteOwnerName), noteName.substring( Math.min (noteName.indexOf(":") + 1, noteName.length() - 1)) + getNoteExt());
             }
             else // if using UUID
             {
-                return new File(getNotesDir() + NoteOwnerName, noteName.substring( Math.min (noteName.indexOf(":") + 1, noteName.length() - 1)) + getNoteExt());
+                return new File(getNotesDir(Utils.getPlayerFromSender(sender).getWorld()) + NoteOwnerName, noteName.substring( Math.min (noteName.indexOf(":") + 1, noteName.length() - 1)) + getNoteExt());
             }
         }
 
@@ -231,7 +243,7 @@ public class Utils
 
         noteName = clampStringCharacterCount(noteName, Config.getMaxFilenameCharacters());
 
-        File file = new File(getNotesDir() + getNameUUID(sender.getName()), noteName + getNoteExt()); // set 'file' to point to a file possibly inside of the user's note directory named the given note name
+        File file = new File(getNotesDir(Utils.getPlayerFromSender(sender).getWorld()) + getNameUUID(sender.getName()), noteName + getNoteExt()); // set 'file' to point to a file possibly inside of the user's note directory named the given note name
         
         if (!file.exists()) // check if the file exists
         {
@@ -318,9 +330,9 @@ public class Utils
     }
             
     // gets the directory where all player notes folders can be found
-    public static String getNotesDir()
+    public static String getNotesDir(World world)
     {
-        return getDataDir() + "/notes/";
+        return getDataDir() + "/" + world.getName() + "/" + "/notes/";
     }
             
     public static String getNoteExt() // this might be configurable eventually so use a getter to avoid having to update it everywhere

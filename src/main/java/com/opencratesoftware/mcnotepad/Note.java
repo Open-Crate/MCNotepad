@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.UUID;
 
+import org.bukkit.World;
+
 import com.opencratesoftware.mcnotepad.structs.TrustPermissions;
 import com.opencratesoftware.mcnotepad.utils.Config;
 import com.opencratesoftware.mcnotepad.utils.Utils;
@@ -379,27 +381,27 @@ public class Note
     /* User Note Storage Information */
     ///////////////////////////////////
 
-    public static int getPlayerNoteCount(UUID uuid)
+    public static int getPlayerNoteCount(UUID uuid, World world)
     {
-        File notesDirectory = new File(Utils.getNotesDir() + uuid.toString());
+        File notesDirectory = new File(Utils.getNotesDir(world) + uuid.toString());
 
         if(!notesDirectory.exists() || notesDirectory.isFile()) { return 0; }
 
         return notesDirectory.listFiles().length;
     }
 
-    public static File[] getPlayerNoteFiles(UUID uuid)
+    public static File[] getPlayerNoteFiles(UUID uuid, World world)
     {
-        File notesDirectory = new File(Utils.getNotesDir() + uuid.toString());
+        File notesDirectory = new File(Utils.getNotesDir(world) + uuid.toString());
 
         if(!notesDirectory.exists() || notesDirectory.isFile()) { return new File[0]; }
 
         return notesDirectory.listFiles();
     }
 
-    public static Note[] getPlayerNotes(UUID uuid)
+    public static Note[] getPlayerNotes(UUID uuid, World world)
     {
-        File[] NoteFiles = getPlayerNoteFiles(uuid);
+        File[] NoteFiles = getPlayerNoteFiles(uuid, world);
         
         Note[] returnValue;
 
