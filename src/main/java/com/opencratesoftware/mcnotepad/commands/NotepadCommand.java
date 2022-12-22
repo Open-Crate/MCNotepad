@@ -164,7 +164,7 @@ public class NotepadCommand implements CommandExecutor
     {
         if(args.length == 1)
         {
-            sender.sendMessage(ChatColor.RED + "Usage: /notepad new <New Note Name> or Usage: /notepad new <New Note Name> <Note Type>");
+            sender.sendMessage(ChatColor.YELLOW + "Usage: /notepad new <New Note Name> or Usage: /notepad new <New Note Name> <Note Type>");
             return;
         }
 
@@ -224,7 +224,7 @@ public class NotepadCommand implements CommandExecutor
     {
         if (args.length < 2)
         {
-            sender.sendMessage(ChatColor.RED + "Usage: /notepad delete <Note Name>");
+            sender.sendMessage(ChatColor.YELLOW + "Usage: /notepad delete <Note Name>");
             return;
         }
         File file = getNoteFile(sender, args[1], true);
@@ -256,7 +256,7 @@ public class NotepadCommand implements CommandExecutor
     {
         if(args.length < 2)
         {
-            sender.sendMessage(ChatColor.RED + "Usage: /notepad view <Note Name> <Should Show Line Numbers>");
+            sender.sendMessage(ChatColor.YELLOW + "Usage: /notepad view <Note Name> <Should Show Line Numbers>");
             return;
         }
         
@@ -303,7 +303,8 @@ public class NotepadCommand implements CommandExecutor
     {
         if (args.length < 3)
         {
-            sender.sendMessage(ChatColor.RED + "Usage: /notepad add <note name> <note text>");
+            sender.sendMessage(ChatColor.YELLOW + "Usage: /notepad add <note name> <note text>");
+            sender.sendMessage(ChatColor.GOLD + "Tip: use '[POS]'' to paste your current position into the line");
             return;
         }
 
@@ -340,7 +341,7 @@ public class NotepadCommand implements CommandExecutor
         {
             if (!Silent)
             {
-                sender.sendMessage(ChatColor.RED + "Usage: /notepad removeline <note name> <line number>");
+                sender.sendMessage(ChatColor.YELLOW + "Usage: /notepad removeline <note name> <line number>");
                 sender.sendMessage(ChatColor.GOLD + "Tip: Use '/notepad view <note name> true' to see line numbers on non-list files.");
             }
             return;
@@ -378,7 +379,7 @@ public class NotepadCommand implements CommandExecutor
     {
         if (args.length < 4)
         {
-            sender.sendMessage(ChatColor.RED + "Usage: /notepad move <note name> <line number> <destination line number>");
+            sender.sendMessage(ChatColor.YELLOW + "Usage: /notepad move <note name> <line number> <destination line number>");
             return;
         }
 
@@ -448,8 +449,9 @@ public class NotepadCommand implements CommandExecutor
         {
             if (!Silent)
             {
-                sender.sendMessage(ChatColor.RED + "Usage: /notepad insert <note name> <line number> <line text>");
-                sender.sendMessage(ChatColor.YELLOW + "Tip: Use '/notepad view <note name> true' to see line numbers on non-list files.");
+                sender.sendMessage(ChatColor.YELLOW + "Usage: /notepad insert <note name> <line number> <line text>");
+                sender.sendMessage(ChatColor.GOLD + "Tip: Use '/notepad view <note name> true' to see line numbers on non-list files.");
+                sender.sendMessage(ChatColor.GOLD + "Tip: use '[POS]'' to paste your current position into the line");
             }
             return;
         }
@@ -491,7 +493,7 @@ public class NotepadCommand implements CommandExecutor
     {
         if (args.length < 2)
         {
-            sender.sendMessage(ChatColor.RED + "Usage: /notepad trust <username>");
+            sender.sendMessage(ChatColor.YELLOW + "Usage: /notepad trust <username>");
             return;
         }
         File trustFile = getUserTrustFile(getSenderUUID(sender));
@@ -529,7 +531,7 @@ public class NotepadCommand implements CommandExecutor
     {
         if (args.length < 2)
         {
-            sender.sendMessage(ChatColor.RED + "Usage: /notepad untrust <username or UUID>");
+            sender.sendMessage(ChatColor.YELLOW + "Usage: /notepad untrust <username or UUID>");
             return;
         }
         File trustFile = getUserTrustFile(getSenderUUID(sender));
@@ -608,8 +610,8 @@ public class NotepadCommand implements CommandExecutor
     {
         if (args.length < 3)
         {
-            sender.sendMessage(ChatColor.RED + "Usage: /notepad permedit <username> <operation> <permissions modifications>");
-            sender.sendMessage(ChatColor.YELLOW + "You can refer to the help topic 'advancedsharing' with '/notepad help advancedsharing' for details on using permedit.");
+            sender.sendMessage(ChatColor.YELLOW + "Usage: /notepad permedit <username> <operation> <permissions modifications>");
+            sender.sendMessage(ChatColor.GOLD + "You can refer to the help topic 'advancedsharing' with '/notepad help advancedsharing' for details on using permedit.");
             return;
         }
         
@@ -704,7 +706,7 @@ public class NotepadCommand implements CommandExecutor
     {
         if (args.length < 2)
         {
-            sender.sendMessage(ChatColor.RED + "Usage: /notepad addalt <username>");
+            sender.sendMessage(ChatColor.YELLOW + "Usage: /notepad addalt <username>");
             return;
         }
 
@@ -741,7 +743,7 @@ public class NotepadCommand implements CommandExecutor
     {
         if (args.length < 2)
         {
-            sender.sendMessage(ChatColor.RED + "Usage: /notepad removealt <username or UUID>");
+            sender.sendMessage(ChatColor.YELLOW + "Usage: /notepad removealt <username or UUID>");
             return;
         }
         
@@ -824,7 +826,7 @@ public class NotepadCommand implements CommandExecutor
                 case "guide":
                 sender.sendMessage("--------------------------------------------------");
                 sender.sendMessage("This brief guide will instruct you on how to get started making and using notes/lists.\n \nFirst, to create a new list, use '/notepad new <notename>'. Optionally, you can specify list or note by adding so to the end. A list shows numbers on the side by default when using view. Default note type is list.\n ");
-                sender.sendMessage("Now, to add to the note use '/notepad add <notename> <text to add>' this will add a new line of text to the end of the note.\n ");
+                sender.sendMessage("Now, to add to the note use '/notepad add <notename> <text to add>' this will add a new line of text to the end of the note. You can use '[POS]' to paste your current position.\n ");
                 sender.sendMessage("Use '/notepad view <notename>' to see your note. If your note type is not a list, it will not show numbers on the end by default. Add ' true' to the end of the command to show numbers. To show a list without line numbers, use ' false'.\n ");
                 sender.sendMessage("To remove a line from your note, use '/notepad removeline <notename> <line number>' line number should be the number to the side of whatever line you want to remove, when you use the view command with numbers showing.\n ");
                 sender.sendMessage("To delete your note, use /notepad delete <notename>");
@@ -940,7 +942,7 @@ public class NotepadCommand implements CommandExecutor
         if (args.length == 0)
         {
             sender.sendMessage(ChatColor.YELLOW + "Usage: /notepad <action> <additional args>");
-            sender.sendMessage(ChatColor.YELLOW + "Use '/notepad help' for additional help.");
+            sender.sendMessage(ChatColor.GOLD + "Use '/notepad help' for additional help.");
             return false;
         }
         
