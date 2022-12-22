@@ -199,30 +199,27 @@ public class NotepadCommand implements CommandExecutor
             }
 
         }
+    
+        Note note;
+        String type = "list";
+
+        if(args.length > 2)
         {
-
-            Note note;
-            String type = "list";
-
-            if(args.length > 2)
-            {
-                note = Note.getNote(file, NoteType.valueOf(args[2].toLowerCase()));
-                type = note.getType().toString();
-            }
-            else
-            {
-                note = Note.getNote(file, NoteType.list);
-            }
-            
-            if(note.isValid())
-            {
-                sender.sendMessage(ChatColor.GREEN + "Successfully created new " + type + ".");
-            }
-            else
-            {
-                sender.sendMessage(ChatColor.RED + "Error: Failed to create file. Error information sent to logs");
-            }
-
+            note = Note.getNote(file, NoteType.valueOf(args[2].toLowerCase()));
+            type = note.getType().toString();
+        }
+        else
+        {
+            note = Note.getNote(file, NoteType.list);
+        }
+        
+        if(note.isValid())
+        {
+            sender.sendMessage(ChatColor.GREEN + "Successfully created new " + type + ".");
+        }
+        else
+        {
+            sender.sendMessage(ChatColor.RED + "Error: Failed to create file. Error information sent to logs");
         }
     }
 
