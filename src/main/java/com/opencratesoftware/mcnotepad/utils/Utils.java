@@ -68,8 +68,30 @@ public class Utils
     {      
         String returnValue = string;
 
-        String[] NoteMacros = {"[POS]"};
-        String[] NoteMacrosResults = {String.valueOf(Math.round(player.getLocation().getX())) + " " + String.valueOf(Math.round(player.getLocation().getY())) + " " + String.valueOf(Math.round(player.getLocation().getZ()))};
+        String posString = String.valueOf(Math.round(player.getLocation().getX())) + " " + String.valueOf(Math.round(player.getLocation().getY())) + " " + String.valueOf(Math.round(player.getLocation().getZ()));
+        String dimensionString = "";
+        Environment environment = player.getWorld().getEnvironment();
+
+        switch (environment) {
+            case NORMAL:
+                dimensionString = "minecraft:overworld";
+                break;
+            case NETHER:
+                dimensionString = "minecraft:the_nether";
+                break;
+            case THE_END:
+                dimensionString = "minecraft:the_end";
+                break;
+            case CUSTOM:
+                break;
+            }
+
+        String[] NoteMacros = {"[POS]", "[TP_HERE_CMD]"};
+        String[] NoteMacrosResults = 
+        {
+            posString,
+            "/execute in " + dimensionString + " run tp @s " + posString
+        };
 
         for (int i = 0; i < returnValue.length(); i++) 
         {
