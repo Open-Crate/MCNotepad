@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -63,7 +64,15 @@ public class Note
     {
         if (!noteFile.exists())
         {
-            return;
+            try
+            {
+                noteFile.createNewFile();
+            }
+            catch (Exception e)
+            {
+                Bukkit.getLogger().log(Level.SEVERE, "Failed to initialize note due to noteFile failing to be created " + noteFile.toString());
+                
+            }
         }
         
         noteName = noteFile.getName();
@@ -434,7 +443,6 @@ public class Note
 
     public static Note getNote(File file, NoteType noteType)
     {
-
         for (Note note : notes) 
         {
             if(note != null)

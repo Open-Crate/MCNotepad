@@ -5,6 +5,7 @@ max-characters-per-line: 236
 max-notes-in-memory: 8
 
 per-world-notes: true
+per-dimension-notes: false
 
 player-list-capacity: 16
 max-player-lists-in-memory: 4

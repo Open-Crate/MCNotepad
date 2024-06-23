@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.World.Environment;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -249,6 +250,7 @@ public class Utils
             noteName = clampStringCharacterCount(noteName, Config.getMaxFilenameCharacters() + NoteOwnerName.length() + 1);
             if(NoteOwnerName.length() < 28) // check if passed as a UUID (should be about 37 chars?) or username (always less than or equal to 16)
             {
+                
                 return new File(getNotesDir(Utils.getPlayerFromSender(sender).getWorld()) + getNameUUID(NoteOwnerName), noteName.substring( Math.min (noteName.indexOf(":") + 1, noteName.length() - 1)) + getNoteExt());
             }
             else // if using UUID
@@ -352,7 +354,17 @@ public class Utils
     {
         if (Config.getPerWorldNotes())
         {
-            return getDataDir() + "/" + world.getName() + "/" + "/notes/";
+            String worldName = world.getName();
+            if (!Config.getPerDimensionNotes() && world.getEnvironment().equals(Environment.NETHER))
+            {
+                worldName = worldName.substring(0, worldName.lastIndexOf("_nether"));
+            }
+            else if (!Config.getPerDimensionNotes() && world.getEnvironment().equals(Environment.THE_END))
+            {
+                worldName = worldName.substring(0, worldName.lastIndexOf("_the_end"));
+            }
+            Bukkit.getLogger().info(worldName);
+            return getDataDir() + "/" + worldName + "/" + "/notes/";
         }
         else
         {

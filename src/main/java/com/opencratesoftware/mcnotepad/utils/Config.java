@@ -28,6 +28,8 @@ public class Config
 
     private static boolean perWorldNotes = false;
 
+    private static boolean perDimensionNotes = false;
+
     public static void setConfigValues(Configuration config)
     {
         maxMemorizedNotes = config.getInt("max-notes-in-memory");
@@ -40,6 +42,7 @@ public class Config
         filenameCharWhitelist = config.getCharacterList("filename-whitelisted-characters");
         maxFilenameCharacters = config.getInt("filename-max-characters");
         perWorldNotes = config.getBoolean("per-world-notes");
+        perDimensionNotes = config.getBoolean("per-dimension-notes");
     }    
 
     public static int getMaxMemorizedNotes() { return maxMemorizedNotes; }
@@ -61,4 +64,6 @@ public class Config
     public static int getMaxFilenameCharacters() { return maxFilenameCharacters; }
 
     public static boolean getPerWorldNotes() { return perWorldNotes; }
+
+    public static boolean getPerDimensionNotes() { return perDimensionNotes; }
 }

@@ -174,18 +174,20 @@ public class NotepadCommand implements CommandExecutor
         }
 
         File file = getNoteFile(sender, args[1], true);
+        
+        if(!Utils.getSenderUUID(sender).equals(UUID.fromString(file.getParentFile().getName())))
+        {
+            sender.sendMessage(ChatColor.RED + "Cannot create files for other players.");
+            return;
+        }
+
+        file.getParentFile().mkdirs();
 
         if (file.getParentFile().exists())
         {
-            if(!Utils.getSenderUUID(sender).equals(UUID.fromString(file.getParentFile().getName())))
-            {
-                sender.sendMessage(ChatColor.RED + "Cannot create files for other players.");
-                return;
-            }
-
             if (file.exists())
             {
-                sender.sendMessage(ChatColor.RED + "File already exists");
+                sender.sendMessage(ChatColor.YELLOW + "File already exists");
                 return;
             }
             
@@ -199,7 +201,6 @@ public class NotepadCommand implements CommandExecutor
                     return;
                 }
             }
-
         }
     
         Note note;
