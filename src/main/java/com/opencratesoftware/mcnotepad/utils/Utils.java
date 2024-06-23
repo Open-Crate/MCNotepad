@@ -385,7 +385,6 @@ public class Utils
             {
                 worldName = worldName.substring(0, worldName.lastIndexOf("_the_end"));
             }
-            Bukkit.getLogger().info(worldName);
             return getDataDir() + "/" + worldName + "/" + "/notes/";
         }
         else

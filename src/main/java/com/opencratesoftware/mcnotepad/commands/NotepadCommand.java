@@ -181,8 +181,6 @@ public class NotepadCommand implements CommandExecutor
             return;
         }
 
-        file.getParentFile().mkdirs();
-
         if (file.getParentFile().exists())
         {
             if (file.exists())

@@ -64,15 +64,7 @@ public class Note
     {
         if (!noteFile.exists())
         {
-            try
-            {
-                noteFile.createNewFile();
-            }
-            catch (Exception e)
-            {
-                Bukkit.getLogger().log(Level.SEVERE, "Failed to initialize note due to noteFile failing to be created " + noteFile.toString());
-                
-            }
+            Bukkit.getLogger().log(Level.SEVERE, "Failed to initialize note due to noteFile not existing " + noteFile.toString());
         }
         
         noteName = noteFile.getName();
@@ -88,6 +80,20 @@ public class Note
     public void initialize(NoteType noteType)
     {
         noteFile.getParentFile().mkdirs();
+        
+        if (!noteFile.exists() && noteFile.getParentFile().listFiles().length < Config.getMaxNotesPerPlayer())
+        {
+            try 
+            {
+                noteFile.createNewFile();
+                Utils.setFileContents(noteType.toString(), noteFile);
+            } 
+            catch (Exception e) 
+            {
+                Utils.logError(e.getMessage());
+                return;
+            }
+        }
 
         initialize();
     }
