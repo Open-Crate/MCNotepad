@@ -80,7 +80,7 @@ public class Note
     public void initialize(NoteType noteType)
     {
         noteFile.getParentFile().mkdirs();
-        
+
         if (!noteFile.exists() && noteFile.getParentFile().listFiles().length < Config.getMaxNotesPerPlayer())
         {
             try 
@@ -144,15 +144,37 @@ public class Note
                 break;
             }
 
-            int bracketEndIndex = noteContentsString.indexOf("]", bracketStartIndex + 1);
+            int bracketEndIndex = bracketStartIndex;
 
-            if (bracketEndIndex < 0)
+            boolean foundLastBracket = false;
+
+            while (!foundLastBracket)
+            {
+                bracketEndIndex = noteContentsString.indexOf("]", bracketEndIndex + 1);
+
+                if (bracketEndIndex < 0)
+                {
+                    componentBuilder.append(Component.text(noteContentsString));
+                    noteContentsString = "";
+                    foundLastBracket = false;
+                    break;
+                }
+
+                if (!noteContentsString.substring(bracketEndIndex + 1, bracketEndIndex + 3).equals("(\""))
+                {
+
+                    continue;
+                }
+
+                foundLastBracket = true;
+            }
+
+            if (!foundLastBracket)
             {
                 componentBuilder.append(Component.text(noteContentsString));
-                noteContentsString = "";
                 break;
             }
-            
+
             if (noteContentsString.indexOf("\n", bracketStartIndex) < bracketEndIndex && noteContentsString.indexOf("\n", bracketStartIndex) > bracketStartIndex)
             {
                 componentBuilder.append(Component.text(noteContentsString.substring(0, bracketEndIndex + 1)));
@@ -168,13 +190,6 @@ public class Note
             {
                 componentBuilder.append(Component.text(noteContentsString.substring(0, bracketEndIndex + 1)));
                 noteContentsString = noteContentsString.substring(bracketEndIndex + 1);
-                continue;
-            }
-            
-            if (!noteContentsString.substring(bracketEndIndex + 1, bracketEndIndex + 3).equals("(\""))
-            {
-                componentBuilder.append(Component.text(noteContentsString.substring(0, commandEndIndex + 1)));
-                noteContentsString = noteContentsString.substring(commandEndIndex + 1);
                 continue;
             }
 
