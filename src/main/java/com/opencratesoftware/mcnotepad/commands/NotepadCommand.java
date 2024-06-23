@@ -3,6 +3,7 @@ package com.opencratesoftware.mcnotepad.commands;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -24,6 +25,10 @@ import com.opencratesoftware.mcnotepad.structs.PlayerListEntry;
 import com.opencratesoftware.mcnotepad.structs.TrustPermissions;
 import com.opencratesoftware.mcnotepad.structs.Variable;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.ComponentBuilder;
+import net.kyori.adventure.text.ComponentBuilderApplicable;
+import net.kyori.adventure.text.TextComponent;
 import net.md_5.bungee.api.ChatColor;
 
 public class NotepadCommand implements CommandExecutor
@@ -329,7 +334,7 @@ public class NotepadCommand implements CommandExecutor
         }
 
         player.sendMessage("--------------------------------------------------");
-        player.sendMessage(note.getViewableContents(showLineNumbers, getSenderUUID(sender)));
+        player.sendMessage(note.getViewableContents(showLineNumbers, getSenderUUID(sender)));            
         player.sendMessage("--------------------------------------------------");
     }
 

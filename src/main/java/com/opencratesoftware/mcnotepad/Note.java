@@ -3,15 +3,32 @@ package com.opencratesoftware.mcnotepad;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import com.opencratesoftware.mcnotepad.structs.TrustPermissions;
 import com.opencratesoftware.mcnotepad.utils.Config;
 import com.opencratesoftware.mcnotepad.utils.Utils;
 
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.ComponentBuilder;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.TextComponent.Builder;
+import net.kyori.adventure.text.event.ClickCallback;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.ClickCallback.Options;
+import net.kyori.adventure.text.format.Style;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.util.Buildable;
 import net.md_5.bungee.api.ChatColor;
 
 public class Note 
@@ -55,7 +72,7 @@ public class Note
 
         updateInformation();
 
-        hasInitialized = true;
+        hasInitialized = true;  
     }
 
     
@@ -63,47 +80,112 @@ public class Note
     {
         noteFile.getParentFile().mkdirs();
 
-        if (!noteFile.exists() && noteFile.getParentFile().listFiles().length < Config.getMaxNotesPerPlayer())
-        {
-            try 
-            {
-                noteFile.createNewFile();
-                Utils.setFileContents(noteType.toString(), noteFile);
-            } 
-            catch (Exception e) 
-            {
-                Utils.logError(e.getMessage());
-                return;
-            }
-        }
-
         initialize();
     }
 
-    public String getViewableContents(boolean showLineNumbers, UUID requester)
+    public Component getViewableContents(boolean showLineNumbers, UUID requester)
     {
-        String returnValue = contents.substring(contents.indexOf('\n', 0) + 1);
-        
+        Builder componentBuilder = Component.text();
         TrustPermissions Permissions = TrustList.GetUserPermissionsForNote(requester, owner.toString() + ":" + getFile().getName());
 
-        if (!Permissions.read) { return ChatColor.RED + "Failed to find file."; }
+        if (!Permissions.read)
+        {
+            return Component.text("Failed to find file.", Style.style(TextColor.color(Color.RED.asRGB())));
+        }
+
+        String noteContentsString = contents.substring(contents.indexOf('\n', 0) + 1);
+        
+        if (noteContentsString.endsWith("\n"))
+        {
+            noteContentsString = noteContentsString.substring(0, noteContentsString.length() - 1);
+        }
 
         if (showLineNumbers)
         {
-            returnValue = "0. " + returnValue;
+            noteContentsString = "0. " + noteContentsString;
             int newLinePos = 0;
             int currentLine = 1;
-            while ((newLinePos = returnValue.indexOf('\n', newLinePos + 1)) != -1) 
+            while ((newLinePos = noteContentsString.indexOf('\n', newLinePos + 1)) != -1) 
             {
-                if (newLinePos > returnValue.length() - 2)
+                if (newLinePos > noteContentsString.length() - 2)
+                {
                     break;
+                }
 
-                returnValue = returnValue.substring(0, newLinePos + 1) + String.valueOf(currentLine) + ". " + returnValue.substring(newLinePos + 1);
+                noteContentsString = noteContentsString.substring(0, newLinePos + 1) + String.valueOf(currentLine) + ". " + noteContentsString.substring(newLinePos + 1);
                 newLinePos = newLinePos + (String.valueOf(currentLine) + ". ").length();
                 currentLine++;
             }
         }
-        return returnValue;
+
+        while (true)
+        {
+            int bracketStartIndex = noteContentsString.indexOf("[");   
+            
+            if (bracketStartIndex < 0)
+            {
+                componentBuilder.append(Component.text(noteContentsString));
+                noteContentsString = "";
+                break;
+            }
+
+            int bracketEndIndex = noteContentsString.indexOf("]", bracketStartIndex + 1);
+
+            if (bracketEndIndex < 0)
+            {
+                componentBuilder.append(Component.text(noteContentsString));
+                noteContentsString = "";
+                break;
+            }
+            
+            if (noteContentsString.indexOf("\n", bracketStartIndex) < bracketEndIndex && noteContentsString.indexOf("\n", bracketStartIndex) > bracketStartIndex)
+            {
+                componentBuilder.append(Component.text(noteContentsString.substring(0, bracketEndIndex + 1)));
+                noteContentsString = noteContentsString.substring(bracketEndIndex + 1);
+                continue;
+            }
+
+            String clickableText = noteContentsString.substring(bracketStartIndex + 1, bracketEndIndex);
+
+            int commandEndIndex = noteContentsString.indexOf("\")", bracketEndIndex + 1);
+
+            if (commandEndIndex < 0)
+            {
+                componentBuilder.append(Component.text(noteContentsString.substring(0, bracketEndIndex + 1)));
+                noteContentsString = noteContentsString.substring(bracketEndIndex + 1);
+                continue;
+            }
+            
+            if (!noteContentsString.substring(bracketEndIndex + 1, bracketEndIndex + 3).equals("(\""))
+            {
+                componentBuilder.append(Component.text(noteContentsString.substring(0, commandEndIndex + 1)));
+                noteContentsString = noteContentsString.substring(commandEndIndex + 1);
+                continue;
+            }
+
+            String clickCommand = noteContentsString.substring(bracketEndIndex + 3, commandEndIndex);
+            
+            componentBuilder.append(Component.text(noteContentsString.substring(0, bracketStartIndex)));
+
+            Component clickableComponent = Component.text(clickableText)
+                .style(Style.style(TextColor.color(0.75f, 0.6f, 1.0f)))
+                .hoverEvent(Component.text("Will execute '" + clickCommand + "' as though you entered it upon being double clicked."))
+                .clickEvent(ClickEvent.callback(new CommandClickEvent(clickCommand), Options.builder().uses(-1).build()));
+
+            componentBuilder.append(clickableComponent);
+            if (noteContentsString.length() > commandEndIndex + 1)
+            {
+                noteContentsString = noteContentsString.substring(commandEndIndex + 2);
+            }
+            else
+            {
+                componentBuilder.append(Component.text(noteContentsString));
+                noteContentsString = "";
+                break;
+            }
+        }
+
+        return componentBuilder.asComponent();
     }
 
     public UUID getOwner()

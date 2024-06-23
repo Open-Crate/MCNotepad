@@ -58,7 +58,6 @@ public class PlayerList
         Initialized = true;
     }
 
-    // in most cases using this will get better performance than getUUIDsRaw as this will only have non null UUIDS in the array, however the overhead of this may not be worth it in some cases, and in those cases use getUUIDsRaw
     public UUID[] getUUIDs()
     {
         UUID[] returnValue = new UUID[getUUIDCount()];
